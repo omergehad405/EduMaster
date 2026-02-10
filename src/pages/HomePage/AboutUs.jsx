@@ -2,7 +2,7 @@ import React from 'react'
 
 function AboutUs() {
     return (
-        <section className='flex items-center lg:justify-center justify-between gap-20 pl-10 pr-20 pt-5 bg-white relative'>
+        <section className='flex items-center lg:justify-center justify-between gap-20 pl-10 pr-20 py-20 pt-5 bg-white relative'>
             <img src="./aboutUs.jpg" alt="about us image" className='hidden md:block ' />
 
             <div className='mt-10 w-[500px]'>

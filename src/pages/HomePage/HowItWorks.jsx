@@ -50,17 +50,17 @@ function HowItWorks() {
     }, []);
 
     return (
-        <section className="px-20 my-16">
+        <section className="px-4 md:px-20 my-16">
             <h1 className="font-bold uppercase text-center text-3xl border-b-2 border-(--second-color) w-fit mx-auto mb-12">
                 how it
                 <span className="text-(--second-color) pl-1">works</span>
             </h1>
             <div className="relative flex justify-center">
                 <ul className="relative w-full max-w-3xl mx-auto">
-                    {/* Timeline */}
-                    <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-3 z-0" ref={timelineRef} style={{}}>
+                    {/* Timeline: show only on md and above */}
+                    <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-3 z-0 hidden md:block" ref={timelineRef}>
                         {/* Timeline base (white, rounded) */}
-                        <div className="absolute w-full h-full bg-white rounded-full shadow" style={{}} />
+                        <div className="absolute w-full h-full bg-white rounded-full shadow" />
                         {/* Timeline fill (second color, rounded, dynamic height) */}
                         <div className="absolute w-full bg-(--second-color) rounded-full transition-all duration-700"
                             style={{
@@ -75,23 +75,27 @@ function HowItWorks() {
                         return (
                             <li
                                 key={idx}
-                                className="relative flex justify-between items-center mb-16"
+                                className={`relative mb-14
+                                    md:flex md:justify-between md:items-center
+                                    flex items-center
+                                `}
                                 style={{ zIndex: 1 }}
                             >
-                                {/* Left */}
-                                <div className={`w-1/2 hidden md:flex ${isLeft ? 'justify-end pr-8' : 'justify-end pr-8 invisible'}`}>
-                                    {isLeft && (
+                                {/* Desktop Layout */}
+                                <div className={`w-1/2 hidden md:flex ${isLeft ? 'justify-end pr-8' : 'justify-start pl-8'}`}>
+                                    {((isLeft && stepRefs.current[idx]) || (!isLeft && stepRefs.current[idx])) && (
                                         <div
                                             ref={el => stepRefs.current[idx] = el}
                                             className={
-                                                `howitworks-box 
+                                                `howitworks-box
                                                 ${visibleSteps[idx] ? 'howitworks-box-visible' : ''} 
-                                                opacity-0 transform translate-y-10 
                                                 py-4 px-8 bg-white 
-                                                border-r-4 border-(--second-color)
-                                                border-l-4 border-(--main-color)
-                                                rounded-lg shadow-lg min-w-[230px] text-right
-                                                transition-all duration-700`
+                                                ${isLeft 
+                                                    ? 'border-r-4 border-(--second-color) border-l-4 border-(--main-color) text-right' 
+                                                    : 'border-l-4 border-(--main-color) border-r-4 border-(--second-color) text-left'}
+                                                rounded-lg shadow-lg min-w-[230px]
+                                                transition-all duration-700
+                                                `
                                             }
                                             style={{ transitionDelay: `${idx * 170}ms` }}
                                         >
@@ -102,7 +106,7 @@ function HowItWorks() {
                                     )}
                                 </div>
                                 {/* Timeline number */}
-                                <div className="flex flex-col items-center z-10">
+                                <div className="hidden md:flex flex-col items-center z-10">
                                     <span className={`
                                         flex items-center justify-center w-12 h-12 
                                         bg-(--second-color) text-white font-bold
@@ -113,28 +117,38 @@ function HowItWorks() {
                                         {idx + 1}
                                     </span>
                                 </div>
-                                {/* Right */}
-                                <div className={`w-1/2 flex md:${!isLeft ? 'justify-start pl-8' : 'justify-start pl-8 invisible'} ${isLeft ? 'md:invisible' : ''} justify-start pl-8`}>
-                                    {(!isLeft || window.innerWidth < 768) && (
+                                {/* Mobile Layout */}
+                                <div className="flex md:hidden w-full">
+                                    <div className="flex items-center w-full">
+                                        <span className={`
+                                            flex-shrink-0 flex items-center justify-center w-10 h-10 mr-3
+                                            bg-(--second-color) text-white font-bold
+                                            rounded-full shadow-md border-4 border-white text-lg
+                                            transition-transform duration-200
+                                            ${visibleSteps[idx] ? 'scale-105' : ''}
+                                        `}>
+                                            {idx + 1}
+                                        </span>
                                         <div
                                             ref={el => stepRefs.current[idx] = el}
                                             className={
-                                                `howitworks-box 
+                                                `howitworks-box-mobile
+                                                howitworks-box
                                                 ${visibleSteps[idx] ? 'howitworks-box-visible' : ''}
-                                                opacity-0 transform translate-y-10 
-                                                py-4 px-8 bg-white 
+                                                py-4 px-5 bg-white
                                                 border-l-4 border-(--main-color)
                                                 border-r-4 border-(--second-color)
-                                                rounded-lg shadow-lg min-w-[230px] text-left
-                                                transition-all duration-700`
+                                                rounded-lg shadow-lg w-full text-left
+                                                transition-all duration-700
+                                                `
                                             }
                                             style={{ transitionDelay: `${idx * 170}ms` }}
                                         >
-                                            <span className="font-semibold text-lg text-(--second-color)">
+                                            <span className="font-semibold text-base text-(--second-color)">
                                                 {step}
                                             </span>
                                         </div>
-                                    )}
+                                    </div>
                                 </div>
                             </li>
                         );
@@ -151,6 +165,12 @@ function HowItWorks() {
                         text-align: left !important;
                         border-right: 4px solid var(--second-color) !important;
                         border-left: 4px solid var(--main-color) !important;
+                    }
+                    .howitworks-box-mobile {
+                        min-width: 0 !important;
+                        padding-left: 0.5rem;
+                        padding-right: 0.5rem;
+                        margin: 0;
                     }
                 }
                 .howitworks-box {
