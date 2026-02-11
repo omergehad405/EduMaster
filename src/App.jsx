@@ -7,18 +7,17 @@ import Dashboard from './fetures/Dashboard/Dashboard'
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />                    {/* OUTSIDE Routes */}
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Header />
       <main className="flex-1">
         <Routes>
           <Route index element={<HomePage />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Add other missing routes */}
           <Route path="/learn" element={<div>Learn Page</div>} />
           <Route path="/test" element={<div>Test Page</div>} />
         </Routes>
       </main>
-      <Footer />                     {/* OUTSIDE Routes */}
+      <Footer />
     </div>
   )
 }
