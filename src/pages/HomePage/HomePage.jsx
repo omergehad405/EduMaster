@@ -10,6 +10,7 @@ import FAQsection from './FAQsection'
 function HomePage() {
     return (
         <div>
+            {/* STEP 1: Uncomment ONE section at a time */}
             <HeroSection />
             <AboutUs />
             <OurFeatures />

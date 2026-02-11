@@ -6,7 +6,7 @@ import { FaHome } from 'react-icons/fa'
 import { GiBookshelf } from "react-icons/gi";
 import { MdQuiz } from "react-icons/md";
 import { FaXmark } from 'react-icons/fa6';
-import { MdDashboardCustomize } from "react-icons/md"; // More distinctive dashboard icon
+import { MdDashboardCustomize } from "react-icons/md";
 
 function Header() {
     const [mood, setMood] = useState("dark")
