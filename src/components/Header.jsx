@@ -104,8 +104,8 @@ function Header() {
                                         className={`
                                             capitalize flex items-center gap-2 font-bold cursor-pointer rounded-lg px-3 py-2 transition-all duration-300
                                             ${isLinkActive(link)
-                                                ? "bg-(--second-color) text-white"
-                                                : "hover:bg-(--second-color)/80 hover:text-white text-gray-800"}
+                                                ? "bg-(--second-color) text-(--main-color)"
+                                                : "hover:bg-(--second-color)/80 hover:text-(--main-color) text-gray-800"}
                                         `}
                                         onClick={() => setSidebarOpen(false)}
                                     >
@@ -118,7 +118,7 @@ function Header() {
 
                         {/* Logout button at the bottom */}
                         <div className="w-full mt-auto">
-                            <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
+                            <button className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
                                 Logout
                             </button>
                         </div>
@@ -159,8 +159,8 @@ function Header() {
                                         className={`
                                             capitalize flex items-center gap-2 font-bold cursor-pointer rounded-lg px-3 py-2 transition-all duration-300
                                             ${isLinkActive(link)
-                                                ? "bg-(--second-color) text-white"
-                                                : "hover:bg-(--second-color)/80 hover:text-white text-gray-800"}
+                                                ? "bg-(--second-color) text-(--main-color)"
+                                                : "hover:bg-(--second-color)/80 hover:text-(--main-color) text-gray-800"}
                                         `}
                                         onClick={() => setSidebarOpen(false)}
                                     >
@@ -172,7 +172,7 @@ function Header() {
                         </div>
                         {/* Logout button at the bottom */}
                         <div className="w-full mt-auto">
-                            <button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
+                            <button className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
                                 Logout
                             </button>
                         </div>

@@ -6,8 +6,8 @@ function OurFeatures() {
             <h1 className='font-bold uppercase text-left text-3xl border-b-2 w-fit'>our<span className='text-(--second-color) pl-1'>Features</span></h1>
             <div className="flex flex-wrap flex-row gap-8 mt-10 justify-center w-full">
                 <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-white font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-white before:w-0 before:h-0">
+                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--main-color) font-bold flex items-center justify-center
+                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
                         <span>01</span>
                     </div>
                     <div className='border border-gray-300 w-full h-full p-5 pt-20'>
@@ -21,8 +21,8 @@ function OurFeatures() {
                     </div>
                 </div>
                 <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-white font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-white before:w-0 before:h-0">
+                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--main-color) font-bold flex items-center justify-center
+                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
                         <span>02</span>
                     </div>
                     <div className='border border-gray-300 w-full h-full p-5 pt-20'>
@@ -36,8 +36,8 @@ function OurFeatures() {
                     </div>
                 </div>
                 <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-white font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-white before:w-0 before:h-0">
+                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--main-color) font-bold flex items-center justify-center
+                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
                         <span>03</span>
                     </div>
                     <div className='border border-gray-300 w-full h-full p-5 pt-20'>
@@ -51,8 +51,8 @@ function OurFeatures() {
                     </div>
                 </div>
                 <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-white font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-white before:w-0 before:h-0">
+                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--main-color) font-bold flex items-center justify-center
+                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
                         <span>04</span>
                     </div>
                     <div className='border border-gray-300 w-full h-full p-5 pt-20'>

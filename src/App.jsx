@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom'
 import HomePage from './pages/HomePage/HomePage'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import Dashboard from './fetures/Dashboard/Dashboard'
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Header />
       <Routes>
         <Route index element={<HomePage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
       <Footer />
     </>

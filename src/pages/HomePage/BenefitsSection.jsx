@@ -30,7 +30,7 @@ const benefits = [
 
 function BenefitsSection() {
     return (
-        <section className="px-4 sm:px-16 md:px-20 py-16 bg-white">
+        <section className="px-4 sm:px-16 md:px-20 py-16 bg-(--main-color)">
             <h1 className="font-bold text-3xl md:text-4xl uppercase text-center border-b-2 border-(--second-color) w-fit mx-auto mb-8 tracking-wide">
                 why <span className="text-(--second-color)">you'll love it</span>
             </h1>
@@ -41,7 +41,7 @@ function BenefitsSection() {
                         className={`
                             relative
                             flex flex-col items-center
-                            bg-gradient-to-br from-(--main-color) via-white to-(--second-color)/10
+                            bg-gradient-to-br from-(--main-color) via-(--main-color) to-(--second-color)/10
                             rounded-3xl shadow-xl
                             px-7 py-10 w-[275px] min-h-[250px] transition
                             opacity-0 translate-y-9 animate-fadein

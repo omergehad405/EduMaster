@@ -82,7 +82,7 @@ function FAQsection() {
     };
 
     return (
-        <section className="py-16 px-4 md:px-0 my-12 bg-white rounded-xl shadow-[0_6px_40px_0_rgba(0,0,0,0.10)]">
+        <section className="py-16 px-4 md:px-0 my-12 bg-(--main-color) rounded-xl shadow-[0_6px_40px_0_rgba(0,0,0,0.10)]">
             <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-2 text-(--second-color) mb-10">
                 <span className='text-black'>Frequently</span> Asked Questions
             </h2>
@@ -106,8 +106,8 @@ function FAQsection() {
                         <div
                             id={`faq-content-${idx}`}
                             className={`px-6 pb-4 text-gray-600 text-base leading-relaxed transition-all duration-300 ${openIndex === idx
-                                    ? 'max-h-[300px] opacity-100 pointer-events-auto'
-                                    : 'max-h-0 opacity-0 pointer-events-none'
+                                ? 'max-h-[300px] opacity-100 pointer-events-auto'
+                                : 'max-h-0 opacity-0 pointer-events-none'
                                 }`}
                             style={{
                                 overflow: 'hidden',

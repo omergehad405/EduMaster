@@ -93,7 +93,7 @@ function HowItWorks() {
                                             className={`
                                                 howitworks-stepbox
                                                 ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                                                bg-white shadow-lg border-l-4 border-(--second-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] mr-8 text-right
+                                                bg-(--main-color) shadow-lg border-l-4 border-(--second-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] mr-8 text-right
                                                 transition-all duration-700
                                             `}
                                             data-align="left"
@@ -109,8 +109,8 @@ function HowItWorks() {
                                     <span
                                         className={`
                                             flex items-center justify-center w-12 h-12
-                                            bg-(--second-color) text-white font-bold
-                                            rounded-full shadow-md border-4 border-white text-xl
+                                            bg-(--second-color) text-(--main-color) font-bold
+                                            rounded-full shadow-md border-4 border-(--main-color) text-xl
                                             transition-transform duration-300
                                             ${visibleSteps[idx] ? 'scale-105' : ''}
                                         `}
@@ -131,7 +131,7 @@ function HowItWorks() {
                                             className={`
                                                 howitworks-stepbox
                                                 ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                                                bg-white shadow-lg border-r-4 border-(--main-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] ml-8 text-left
+                                                bg-(--main-color) shadow-lg border-r-4 border-(--main-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] ml-8 text-left
                                                 transition-all duration-700
                                             `}
                                             data-align="right"
@@ -157,8 +157,8 @@ function HowItWorks() {
                             ref={el => stepRefs.current[idx] = el}
                             className={`
                                 flex items-center justify-center w-10 h-10
-                                bg-(--second-color) text-white font-bold
-                                rounded-full shadow-md border-4 border-white text-lg mt-1
+                                bg-(--second-color) text-(--main-color) font-bold
+                                rounded-full shadow-md border-4 border-(--main-color) text-lg mt-1
                                 transition-transform duration-200
                                 ${visibleSteps[idx] ? 'scale-105' : ''}
                             `}
@@ -170,7 +170,7 @@ function HowItWorks() {
                                 ml-1 flex items-center
                                 howitworks-stepbox-mobile howitworks-stepbox
                                 ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                                py-3 px-5 bg-white
+                                py-3 px-5 bg-(--main-color)
                                 border-l-4 border-(--main-color)
                                 border-r-4 border-(--second-color)
                                 rounded-lg shadow-lg w-full text-left

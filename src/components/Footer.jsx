@@ -7,7 +7,7 @@ import { MdDashboard } from "react-icons/md";
 
 function Footer() {
     return (
-        <footer className="bg-(--main-color) py-10 px-6 text-white mt-10 shadow-inner">
+        <footer className="bg-(--main-color) py-10 px-6 text-(--main-color) mt-10 shadow-inner">
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8 flex-wrap">
                 {/* Left: Logo and Name */}
                 <div className="flex flex-col items-start mb-6 md:mb-0">
@@ -15,7 +15,7 @@ function Footer() {
                         <span className="font-bold text-2xl text-black uppercase">edu
                             <span className="text-(--second-color)">Master</span>
                         </span>
-                        <img src="/logo.jpg" alt="logo" className="w-10 h-10 mr-2 rounded-full bg-white object-cover" />
+                        <img src="/logo.jpg" alt="logo" className="w-10 h-10 mr-2 rounded-full bg-(--main-color) object-cover" />
 
                     </div>
                     <p className="text-md text-gray-500 font-semibold mt-2">Empowering learners for the future</p>
@@ -46,14 +46,14 @@ function Footer() {
                     <span className="block text-xs mb-5 text-gray-400">— Nelson Mandela</span>
                     <Link
                         to="/learn"
-                        className="bg-(--second-color) hover:bg-white text-(--main-color) hover:text-(--second-color) transition-all font-bold py-2 px-6 rounded shadow capitalize text-sm text-center"
+                        className="bg-(--second-color) hover:bg-(--main-color) text-(--main-color) hover:text-(--second-color) transition-all font-bold py-2 px-6 rounded shadow capitalize text-sm text-center"
                     >
                         Start Learning Now
                     </Link>
                 </div>
             </div>
             {/* Optional: bottom copyright */}
-            <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-gray-300">
+            <div className="mt-10 border-t border-(--main-color)/10 pt-6 text-center text-xs text-gray-300">
                 &copy; {new Date().getFullYear()} eduMaster. All rights reserved.
             </div>
         </footer>
