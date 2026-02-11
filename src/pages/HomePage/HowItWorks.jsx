@@ -1,174 +1,96 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React from 'react';
 
+// Example steps and (optional) icons/images - you can replace the icon/image import below with your own if needed
 const steps = [
-    "Choose a learning track",
-    "Study lessons",
-    "Upload your notes or PDF",
-    "Generate quiz",
-    "Review results",
+    {
+        title: "Sign up for free",
+        desc: "Create your profile and select your preferred learning track to get started.",
+        icon: (
+            <svg className="w-12 h-12 mx-auto mb-2 text-[var(--second-color)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 11c1.104 0 2-.896 2-2V7a4 4 0 10-8 0v2c0 1.104.896 2 2 2h4zm-4 6a4 4 0 008 0V11a4 4 0 00-8 0v6z" /></svg>
+        ),
+    },
+    {
+        title: "Pick your topics",
+        desc: "Choose the lessons or topics you wish to learn from our available catalog.",
+        icon: (
+            <svg className="w-12 h-12 mx-auto mb-2 text-[var(--second-color)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M12 4V20" /><rect width="20" height="8" x="2" y="4" rx="2" /><rect width="4" height="4" x="2" y="16" rx="1" /></svg>
+        ),
+    },
+    {
+        title: "Upload notes or PDFs",
+        desc: "Easily upload your own notes or PDF documents for personalized quizzes.",
+        icon: (
+            <svg className="w-12 h-12 mx-auto mb-2 text-[var(--second-color)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 5v14m7-7H5" /></svg>
+        ),
+    },
+    {
+        title: "Generate quiz & review",
+        desc: "Automatically generate quizzes based on your uploaded material and review your results.",
+        icon: (
+            <svg className="w-12 h-12 mx-auto mb-2 text-[var(--second-color)]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M9 12l2 2 4-4" /></svg>
+        ),
+    },
 ];
 
 function HowItWorks() {
-    const stepRefs = useRef([]);
-    const [visibleSteps, setVisibleSteps] = useState(Array(steps.length).fill(false));
-    const [timelineFillHeight, setTimelineFillHeight] = useState(0);
-
-    const handleScroll = useCallback(() => {
-        const nextVisible = Array(steps.length).fill(false);
-        let highestIdx = -1;
-
-        stepRefs.current.forEach((ref, idx) => {
-            if (ref) {
-                const rect = ref.getBoundingClientRect();
-                if (rect.top < window.innerHeight * 0.75) {
-                    nextVisible[idx] = true;
-                    highestIdx = idx > highestIdx ? idx : highestIdx;
-                }
-            }
-        });
-
-        if (window.innerWidth >= 768 && highestIdx > -1) {
-            const stepEl = stepRefs.current[highestIdx];
-            if (stepEl) {
-                const parentRect = stepEl.parentElement.parentElement.getBoundingClientRect();
-                const elRect = stepEl.getBoundingClientRect();
-                const offset = (elRect.top + elRect.height / 2) - parentRect.top;
-                setTimelineFillHeight(offset);
-            }
-        }
-
-        setVisibleSteps(nextVisible);
-    }, []);
-
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll();
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [handleScroll]);
-
-    useEffect(() => {
-        const onResize = () => {
-            setTimeout(() => handleScroll(), 70);
-        };
-        window.addEventListener('resize', onResize);
-        return () => window.removeEventListener('resize', onResize);
-    }, [handleScroll]);
-
     return (
         <section className="px-4 md:px-20 my-16">
-            <h1 className="font-bold uppercase text-center text-3xl border-b-2 border-[var(--second-color)] w-fit mx-auto mb-12">
-                how it
+            <h1 className="font-bold uppercase text-center text-3xl border-b-2 border-[var(--second-color)] w-fit mx-auto mb-6">
+                How it
                 <span className="text-[var(--second-color)] pl-1">works</span>
             </h1>
+            <p className="mb-12 text-center text-gray-500 text-lg max-w-2xl mx-auto">
+                Follow these 4 easy steps to start learning, upload your notes, and generate personalized quizzes!
+            </p>
 
-            {/* DESKTOP TIMELINE - YOUR ORIGINAL STYLE + ANIMATION */}
-            <div className="hidden md:block w-full max-w-3xl mx-auto overflow-visible relative">
-                {/* Full vertical line background */}
-                <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-1 bg-[var(--second-color)]/20 z-0 rounded" />
-                {/* Animated timeline fill - GROWS ON SCROLL */}
-                <div
-                    className="absolute left-1/2 -translate-x-1/2 w-1 bg-[var(--second-color)] z-10 rounded transition-all duration-700"
-                    style={{ height: `${timelineFillHeight}px` }}
-                />
-                <ul className="relative z-20">
-                    {steps.map((step, idx) => {
-                        const alignLeft = idx % 2 === 0;
-                        return (
-                            <li key={idx} className="mb-20 flex items-center w-full relative" style={{ minHeight: '120px' }}>
-                                <div className={`w-1/2 flex ${alignLeft ? 'justify-end' : 'justify-start'} pr-6 pl-6`}>
-                                    {alignLeft && (
-                                        <div
-                                            ref={el => stepRefs.current[idx] = el}
-                                            className={`
-                                                howitworks-stepbox
-                                                ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                                                bg-[var(--main-color)] shadow-lg border-l-4 border-[var(--second-color)] rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] mr-8 text-right
-                                                transition-all duration-700
-                                            `}
-                                            data-align="left"
-                                        >
-                                            <span className="font-semibold text-lg text-[var(--second-color)]">
-                                                {step}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {!alignLeft && <div style={{ minWidth: 0, minHeight: 0 }} />}
-                                </div>
-                                <div className="flex flex-col items-center z-20 w-0 basis-0">
-                                    <span
-                                        className={`
-                                            flex items-center justify-center w-12 h-12
-                                            bg-[var(--second-color)] text-[var(--main-color)] font-bold
-                                            rounded-full shadow-md border-4 border-[var(--main-color)] text-xl
-                                            transition-transform duration-300
-                                            ${visibleSteps[idx] ? 'scale-105' : ''}
-                                        `}
-                                        style={{
-                                            boxShadow: visibleSteps[idx] ? '0 4px 16px rgba(37,99,235,0.18)' : undefined
-                                        }}
-                                    >
-                                        {idx + 1}
-                                    </span>
-                                    {idx !== steps.length - 1 && (
-                                        <div className="w-1 bg-[var(--second-color)]/40 flex-1 mt-0 mb-0" style={{ minHeight: '41px' }} />
-                                    )}
-                                </div>
-                                <div className={`w-1/2 flex ${!alignLeft ? 'justify-start' : 'justify-end'} pl-6 pr-6`}>
-                                    {!alignLeft && (
-                                        <div
-                                            ref={el => stepRefs.current[idx] = el}
-                                            className={`
-                                                howitworks-stepbox
-                                                ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                                                bg-[var(--main-color)] shadow-lg border-r-4 border-[var(--main-color)] rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] ml-8 text-left
-                                                transition-all duration-700
-                                            `}
-                                            data-align="right"
-                                        >
-                                            <span className="font-semibold text-lg text-[var(--second-color)]">
-                                                {step}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {alignLeft && <div style={{ minWidth: 0, minHeight: 0 }} />}
-                                </div>
-                            </li>
-                        );
-                    })}
-                </ul>
+            <div className="hidden md:flex flex-wrap justify-center items-stretch gap-8 bg-gradient-to-b from-[#6658ea] to-[#7c67ff] px-0 pt-10 pb-20 rounded-md relative" style={{ boxShadow: '0 6px 28px 0 rgba(0,0,0,.09)' }}>
+                {/* Overlay for white background "cards" */}
+                <div className="absolute left-0 bottom-0 w-full h-1/2 bg-white rounded-b-md pointer-events-none z-0" />
+                <div className="flex flex-wrap gap-8 w-full justify-center z-10 relative">
+                    {steps.map((step, idx) => (
+                        <div
+                            key={idx}
+                            className={`flex flex-col items-center bg-white rounded-lg shadow-xl px-6 py-8 w-72 min-h-[280px] transition-transform duration-300 hover:-translate-y-1`}
+                            style={{
+                                boxShadow: "0 2px 12px rgb(30 41 76 / 10%), 0 1.5px 6px rgba(80, 94, 153, 0.10)",
+                                position: "relative",
+                                zIndex: 2,
+                            }}
+                        >
+                            <div className={`flex items-center justify-center rounded-full bg-white border-4 border-[var(--second-color)] w-14 h-14 shadow-lg -mt-12 mb-2`}>
+                                <span className="font-bold text-[var(--second-color)] text-xl">{idx + 1}</span>
+                            </div>
+                            {/* Icon if you want, or replace with img */}
+                            {step.icon}
+                            <h3 className="font-bold text-base mb-2 text-gray-900 text-center">{step.title}</h3>
+                            <p className="text-gray-500 text-sm text-center">{step.desc}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* MOBILE TIMELINE - YOUR ORIGINAL STYLE */}
-            <ul className="flex flex-col md:hidden gap-8 max-w-xl mx-auto">
+            {/* MOBILE STYLE */}
+            <ul className="flex flex-col md:hidden gap-8 max-w-xl mx-auto mt-10">
                 {steps.map((step, idx) => (
                     <li key={idx} className="flex items-start gap-3 relative">
                         <span
-                            ref={el => stepRefs.current[idx] = el}
                             className={`
                                 flex items-center justify-center w-10 h-10
                                 bg-[var(--second-color)] text-[var(--main-color)] font-bold
-                                rounded-full shadow-md border-4 border-[var(--main-color)] text-lg mt-1
-                                transition-transform duration-200
-                                ${visibleSteps[idx] ? 'scale-105' : ''}
-                            `}
-                            style={{ transitionDelay: `${idx * 120}ms` }}
+                                rounded-full shadow-md border-4 border-[var(--main-color)] text-lg mt-1`}
                         >
                             {idx + 1}
                         </span>
                         <div className={`
-                            ml-1 flex items-center
-                            howitworks-stepbox-mobile howitworks-stepbox
-                            ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
-                            py-3 px-5 bg-[var(--main-color)]
+                            ml-1 flex flex-col items-start howitworks-stepbox-mobile py-3 px-5 bg-[var(--main-color)]
                             border-l-4 border-[var(--main-color)]
                             border-r-4 border-[var(--second-color)]
                             rounded-lg shadow-lg w-full text-left
                             font-semibold text-[var(--second-color)] text-base
-                            transition-all duration-700
-                        `}
-                            style={{ transitionDelay: `${idx * 120 + 70}ms` }}
+                            `}
                         >
-                            {step}
+                            <div className="font-bold text-gray-900 mb-2">{step.title}</div>
+                            <div className="text-gray-500 text-sm">{step.desc}</div>
                         </div>
                     </li>
                 ))}
@@ -176,58 +98,11 @@ function HowItWorks() {
 
             <style>{`
                 @media (max-width: 767px) {
-                    .howitworks-stepbox {
-                        min-width: unset !important;
-                        width: 100%;
-                        margin-left: 0 !important;
-                        margin-right: 0 !important;
-                        text-align: left !important;
-                        border-right: 4px solid var(--second-color) !important;
-                        border-left: 4px solid var(--main-color) !important;
-                        opacity: 0;
-                        transform: translateY(40px) scale(0.97) !important;
-                    }
                     .howitworks-stepbox-mobile {
                         min-width: 0 !important;
                         padding-left: 0.5rem;
                         padding-right: 0.5rem;
                         margin: 0;
-                    }
-                    .howitworks-stepbox-visible {
-                        opacity: 1 !important;
-                        transform: translateY(0px) scale(1) !important;
-                        pointer-events: auto;
-                    }
-                }
-                @media (min-width: 768px) {
-                    /* YOUR ORIGINAL ANIMATION - LEFT SLIDE */
-                    .howitworks-stepbox[data-align="left"] {
-                        opacity: 0;
-                        transform: translateX(-100px);
-                        transition-property: opacity, transform;
-                        transition-duration: 700ms;
-                        transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                        pointer-events: none;
-                    }
-                    /* YOUR ORIGINAL ANIMATION - RIGHT SLIDE */
-                    .howitworks-stepbox[data-align="right"] {
-                        opacity: 0;
-                        transform: translateX(100px);
-                        transition-property: opacity, transform;
-                        transition-duration: 700ms;
-                        transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                        pointer-events: none;
-                    }
-                    /* REVEAL ON SCROLL */
-                    .howitworks-stepbox-visible[data-align="left"] {
-                        opacity: 1 !important;
-                        transform: translateX(0) !important;
-                        pointer-events: auto;
-                    }
-                    .howitworks-stepbox-visible[data-align="right"] {
-                        opacity: 1 !important;
-                        transform: translateX(0) !important;
-                        pointer-events: auto;
                     }
                 }
             `}</style>
