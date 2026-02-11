@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 
 const steps = [
     "Choose a learning track",
@@ -10,43 +10,59 @@ const steps = [
 
 function HowItWorks() {
     const stepRefs = useRef([]);
-    const timelineRef = useRef();
+    const [visibleSteps, setVisibleSteps] = useState(Array(steps.length).fill(false)); // For desktop and mobile steps visibility
+    const [timelineFillHeight, setTimelineFillHeight] = useState(0);
 
-    const [visibleSteps, setVisibleSteps] = useState(Array(steps.length).fill(false));
-    const [fillPercent, setFillPercent] = useState(0);
-
+    // Unified scroll detection for all breakpoints
     useEffect(() => {
-        const revealStep = (idx) => {
-            setVisibleSteps((prev) => {
-                if (prev[idx]) return prev;
-                const copy = [...prev];
-                copy[idx] = true;
-                return copy;
-            });
-        };
-
-        const handleScroll = () => {
-            let lastVisibleIdx = -1;
+        function handleScroll() {
+            const nextVisible = [...visibleSteps];
+            let highestIdx = -1;
             stepRefs.current.forEach((ref, idx) => {
-                if (ref) {
+                if (ref && !nextVisible[idx]) {
                     const rect = ref.getBoundingClientRect();
-                    if (rect.top < window.innerHeight * 0.8) {
-                        revealStep(idx);
-                        lastVisibleIdx = idx;
+                    if (rect.top < window.innerHeight * 0.85) {
+                        nextVisible[idx] = true;
+                        highestIdx = idx > highestIdx ? idx : highestIdx;
                     }
+                } else if (ref && window.innerWidth >= 768 && nextVisible[idx]) {
+                    // Already visible, good for preserving effect in desktop
+                    if (idx > highestIdx) highestIdx = idx;
                 }
             });
 
-            const percent = lastVisibleIdx < 0
-                ? 0
-                : ((lastVisibleIdx + 1) / steps.length) * 100;
-            setFillPercent(percent);
-        };
+            if (window.innerWidth >= 768) {
+                // For timeline fill, animate up to the highest visible step
+                if (highestIdx > -1) {
+                    const stepEl = stepRefs.current[highestIdx];
+                    if (stepEl) {
+                        const parentRect = stepEl.parentElement.parentElement.getBoundingClientRect();
+                        const elRect = stepEl.getBoundingClientRect();
+                        const offset = (elRect.top + elRect.height / 2) - parentRect.top;
+                        setTimelineFillHeight(offset);
+                    }
+                }
+            }
+
+            setVisibleSteps(nextVisible);
+        }
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         handleScroll();
-
         return () => window.removeEventListener('scroll', handleScroll);
+        // eslint-disable-next-line
+    }, [visibleSteps]);
+
+    useEffect(() => {
+        // Re-run scroll check on resize (responsive: screens could shrink/grow)
+        function onResize() {
+            setTimeout(() => {
+                // force a state change to re-calc step visibility
+                setVisibleSteps(prev => [...prev]);
+            }, 70);
+        }
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
     }, []);
 
     return (
@@ -55,109 +71,123 @@ function HowItWorks() {
                 how it
                 <span className="text-(--second-color) pl-1">works</span>
             </h1>
-            <div className="relative flex justify-center">
-                <ul className="relative w-full max-w-3xl mx-auto">
-                    {/* Timeline: show only on md and above */}
-                    <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-3 z-0 hidden md:block" ref={timelineRef}>
-                        {/* Timeline base (white, rounded) */}
-                        <div className="absolute w-full h-full bg-white rounded-full shadow" />
-                        {/* Timeline fill (second color, rounded, dynamic height) */}
-                        <div className="absolute w-full bg-(--second-color) rounded-full transition-all duration-700"
-                            style={{
-                                height: `${fillPercent}%`,
-                                top: 0,
-                                left: 0,
-                                zIndex: 2,
-                            }} />
-                    </div>
+
+            {/* Desktop Timeline */}
+            <div className="hidden md:block w-full max-w-3xl mx-auto overflow-visible relative">
+                {/* Full vertical line background */}
+                <div className="absolute left-1/2 top-0 -translate-x-1/2 h-full w-1 bg-(--second-color)/20 z-0 rounded" />
+                {/* Animated timeline fill */}
+                <div
+                    className="absolute left-1/2 -translate-x-1/2 w-1 bg-(--second-color) z-10 rounded transition-all duration-700"
+                    style={{ height: `${timelineFillHeight}px` }}
+                />
+                <ul className="relative z-20">
                     {steps.map((step, idx) => {
-                        const isLeft = idx % 2 === 0;
+                        const alignLeft = idx % 2 === 0;
                         return (
-                            <li
-                                key={idx}
-                                className={`relative mb-14
-                                    md:flex md:justify-between md:items-center
-                                    flex items-center
-                                `}
-                                style={{ zIndex: 1 }}
-                            >
-                                {/* Desktop Layout */}
-                                <div className={`w-1/2 hidden md:flex ${isLeft ? 'justify-end pr-8' : 'justify-start pl-8'}`}>
-                                    {((isLeft && stepRefs.current[idx]) || (!isLeft && stepRefs.current[idx])) && (
+                            <li key={idx} className="mb-20 flex items-center w-full relative" style={{ minHeight: '120px' }}>
+                                <div className={`w-1/2 flex ${alignLeft ? 'justify-end' : 'justify-start'} pr-6 pl-6`}>
+                                    {alignLeft && (
                                         <div
                                             ref={el => stepRefs.current[idx] = el}
-                                            className={
-                                                `howitworks-box
-                                                ${visibleSteps[idx] ? 'howitworks-box-visible' : ''} 
-                                                py-4 px-8 bg-white 
-                                                ${isLeft 
-                                                    ? 'border-r-4 border-(--second-color) border-l-4 border-(--main-color) text-right' 
-                                                    : 'border-l-4 border-(--main-color) border-r-4 border-(--second-color) text-left'}
-                                                rounded-lg shadow-lg min-w-[230px]
+                                            className={`
+                                                howitworks-stepbox
+                                                ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
+                                                bg-white shadow-lg border-l-4 border-(--second-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] mr-8 text-right
                                                 transition-all duration-700
-                                                `
-                                            }
-                                            style={{ transitionDelay: `${idx * 170}ms` }}
+                                            `}
+                                            data-align="left"
                                         >
                                             <span className="font-semibold text-lg text-(--second-color)">
                                                 {step}
                                             </span>
                                         </div>
                                     )}
+                                    {!alignLeft && <div style={{ minWidth: 0, minHeight: 0 }} />}
                                 </div>
-                                {/* Timeline number */}
-                                <div className="hidden md:flex flex-col items-center z-10">
-                                    <span className={`
-                                        flex items-center justify-center w-12 h-12 
-                                        bg-(--second-color) text-white font-bold
-                                        rounded-full shadow-md border-4 border-white text-xl
-                                        transition-transform duration-200
-                                        ${visibleSteps[idx] ? 'scale-105' : ''}
-                                    `}>
+                                <div className="flex flex-col items-center z-20 w-0 basis-0">
+                                    <span
+                                        className={`
+                                            flex items-center justify-center w-12 h-12
+                                            bg-(--second-color) text-white font-bold
+                                            rounded-full shadow-md border-4 border-white text-xl
+                                            transition-transform duration-300
+                                            ${visibleSteps[idx] ? 'scale-105' : ''}
+                                        `}
+                                        style={{
+                                            boxShadow: visibleSteps[idx] ? '0 4px 16px rgba(37,99,235,0.18)' : undefined
+                                        }}
+                                    >
                                         {idx + 1}
                                     </span>
+                                    {idx !== steps.length - 1 && (
+                                        <div className="w-1 bg-(--second-color)/40 flex-1 mt-0 mb-0" style={{ minHeight: '41px' }} />
+                                    )}
                                 </div>
-                                {/* Mobile Layout */}
-                                <div className="flex md:hidden w-full">
-                                    <div className="flex items-center w-full">
-                                        <span className={`
-                                            flex-shrink-0 flex items-center justify-center w-10 h-10 mr-3
-                                            bg-(--second-color) text-white font-bold
-                                            rounded-full shadow-md border-4 border-white text-lg
-                                            transition-transform duration-200
-                                            ${visibleSteps[idx] ? 'scale-105' : ''}
-                                        `}>
-                                            {idx + 1}
-                                        </span>
+                                <div className={`w-1/2 flex ${!alignLeft ? 'justify-start' : 'justify-end'} pl-6 pr-6`}>
+                                    {!alignLeft && (
                                         <div
                                             ref={el => stepRefs.current[idx] = el}
-                                            className={
-                                                `howitworks-box-mobile
-                                                howitworks-box
-                                                ${visibleSteps[idx] ? 'howitworks-box-visible' : ''}
-                                                py-4 px-5 bg-white
-                                                border-l-4 border-(--main-color)
-                                                border-r-4 border-(--second-color)
-                                                rounded-lg shadow-lg w-full text-left
+                                            className={`
+                                                howitworks-stepbox
+                                                ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
+                                                bg-white shadow-lg border-r-4 border-(--main-color) rounded-lg px-8 py-6 min-w-[210px] max-w-[320px] ml-8 text-left
                                                 transition-all duration-700
-                                                `
-                                            }
-                                            style={{ transitionDelay: `${idx * 170}ms` }}
+                                            `}
+                                            data-align="right"
                                         >
-                                            <span className="font-semibold text-base text-(--second-color)">
+                                            <span className="font-semibold text-lg text-(--second-color)">
                                                 {step}
                                             </span>
                                         </div>
-                                    </div>
+                                    )}
+                                    {alignLeft && <div style={{ minWidth: 0, minHeight: 0 }} />}
                                 </div>
                             </li>
                         );
                     })}
                 </ul>
             </div>
+
+            {/* Mobile Timeline */}
+            <ul className="flex flex-col md:hidden gap-8 max-w-xl mx-auto">
+                {steps.map((step, idx) => (
+                    <li key={idx} className="flex items-start gap-3 relative">
+                        <span
+                            ref={el => stepRefs.current[idx] = el}
+                            className={`
+                                flex items-center justify-center w-10 h-10
+                                bg-(--second-color) text-white font-bold
+                                rounded-full shadow-md border-4 border-white text-lg mt-1
+                                transition-transform duration-200
+                                ${visibleSteps[idx] ? 'scale-105' : ''}
+                            `}
+                            style={{ transitionDelay: `${idx * 120}ms` }}
+                        >
+                            {idx + 1}
+                        </span>
+                        <div className={`
+                                ml-1 flex items-center
+                                howitworks-stepbox-mobile howitworks-stepbox
+                                ${visibleSteps[idx] ? 'howitworks-stepbox-visible' : ''}
+                                py-3 px-5 bg-white
+                                border-l-4 border-(--main-color)
+                                border-r-4 border-(--second-color)
+                                rounded-lg shadow-lg w-full text-left
+                                font-semibold text-(--second-color) text-base
+                                transition-all duration-700
+                            `}
+                            style={{ transitionDelay: `${idx * 120 + 70}ms` }}
+                        >
+                            {step}
+                        </div>
+                    </li>
+                ))}
+            </ul>
+
             <style>{`
                 @media (max-width: 767px) {
-                    .howitworks-box {
+                    .howitworks-stepbox {
                         min-width: unset !important;
                         width: 100%;
                         margin-left: 0 !important;
@@ -165,27 +195,54 @@ function HowItWorks() {
                         text-align: left !important;
                         border-right: 4px solid var(--second-color) !important;
                         border-left: 4px solid var(--main-color) !important;
+                        opacity: 0;
+                        transform: translateY(40px) scale(0.97) !important;
                     }
-                    .howitworks-box-mobile {
+                    .howitworks-stepbox-mobile {
                         min-width: 0 !important;
                         padding-left: 0.5rem;
                         padding-right: 0.5rem;
                         margin: 0;
                     }
+                    .howitworks-stepbox-visible {
+                        opacity: 1 !important;
+                        transform: translateY(0px) scale(1) !important;
+                        pointer-events: auto;
+                    }
                 }
-                .howitworks-box {
-                    opacity: 0;
-                    transform: translateY(40px) scale(0.97);
-                    transition-property: opacity, transform;
-                    transition-timing-function: cubic-bezier(0.24,0.93,0.39,0.99);
-                }
-                .howitworks-box-visible {
-                    opacity: 1 !important;
-                    transform: translateY(0px) scale(1) !important;
+                @media (min-width: 768px) {
+                    .howitworks-stepbox[data-align="left"] {
+                        opacity: 0;
+                        left: -50rem;
+                        position: relative;
+                        transition-property: opacity, left;
+                        transition-duration: 700ms;
+                        transition-timing-function: cubic-bezier(0.24,0.93,0.39,0.99);
+                        pointer-events: none;
+                    }
+                    .howitworks-stepbox[data-align="right"] {
+                        opacity: 0;
+                        left: 50rem;
+                        position: relative;
+                        transition-property: opacity, left;
+                        transition-duration: 700ms;
+                        transition-timing-function: cubic-bezier(0.24,0.93,0.39,0.99);
+                        pointer-events: none;
+                    }
+                    .howitworks-stepbox-visible[data-align="left"] {
+                        opacity: 1 !important;
+                        left: 0 !important;
+                        pointer-events: auto;
+                    }
+                    .howitworks-stepbox-visible[data-align="right"] {
+                        opacity: 1 !important;
+                        left: 0 !important;
+                        pointer-events: auto;
+                    }
                 }
             `}</style>
         </section>
     );
 }
 
-export default HowItWorks
+export default HowItWorks;
