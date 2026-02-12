@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage/HomePage'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Dashboard from './fetures/Dashboard/Dashboard'
+import TestPage from './fetures/Test/TestPage'
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/learn" element={<div>Learn Page</div>} />
-          <Route path="/test" element={<div>Test Page</div>} />
+          <Route path="/test" element={<TestPage />} />
         </Routes>
       </main>
       <Footer />

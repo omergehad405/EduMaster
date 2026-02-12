@@ -10,17 +10,34 @@
 
 @custom-variant hover (&:hover);
 
-
 :root{
   --main-color:#fff;
   --second-color:#796af7;
   --dark-color:#0F172A;
 }
 
-body{
-  background-color: #eee;
+/* Custom scrollbar styles */
+* {
+  scrollbar-width: thin;              /* For Firefox */
+  scrollbar-color: var(--second-color) #e0e0e0; /* thumb color, track color */
 }
 
-.wavy {
-  clip-path: shape(from 0 0,curve to 5.77% 32px with 3.85% 36px,curve to 9.62% 27px with 7.69% 28px,curve to 13.46% 24px with 11.54% 26px,curve to 17.31% 31px with 15.38% 22px,curve to 21.15% 43px with 19.23% 40px,curve to 25% 31.5px with 23.08% 46px,curve to 28.85% 20px with 26.92% 17px,curve to 32.69% 13.5px with 30.77% 23px,curve to 36.54% 21px with 34.62% 4px,curve to 40.38% 23px with 38.46% 38px,curve to 44.23% 5px with 42.31% 8px,curve to 48.08% 8.5px with 46.15% 2px,curve to 51.92% 15.5px with 50% 15px,curve to 55.77% 8.5px with 53.85% 16px,curve to 59.62% 23.5px with 57.69% 1px,curve to 63.46% 27.5px with 61.54% 46px,curve to 67.31% 13px with 65.38% 9px,curve to 71.15% 12.5px with 69.23% 17px,curve to 75% 21.5px with 73.08% 8px,curve to 78.85% 28.5px with 76.92% 35px,curve to 82.69% 35.5px with 80.77% 22px,curve to 86.54% 26px with 84.62% 49px,curve to 90.38% 15px with 88.46% 3px,curve to 94.23% 37px with 92.31% 27px,curve to 100% 0 with 96.15% 47px,vline to 100%,curve to 94.23% calc(100% - 23.5px) with 96.15% calc(100% - 12px),curve to 90.38% calc(100% - 19.5px) with 92.31% calc(100% - 35px),curve to 86.54% calc(100% - 5px) with 88.46% calc(100% - 4px),curve to 82.69% calc(100% - 13px) with 84.62% calc(100% - 6px),curve to 78.85% calc(100% - 29.5px) with 80.77% calc(100% - 20px),curve to 75% calc(100% - 30.5px) with 76.92% calc(100% - 39px),curve to 71.15% calc(100% - 29.5px) with 73.08% calc(100% - 22px),curve to 67.31% calc(100% - 19.5px) with 69.23% calc(100% - 37px),curve to 63.46% calc(100% - 3px) with 65.38% calc(100% - 2px),curve to 59.62% calc(100% - 5px) with 61.54% calc(100% - 4px),curve to 55.77% calc(100% - 27.5px) with 57.69% calc(100% - 6px),curve to 51.92% calc(100% - 47.5px) with 53.85% calc(100% - 49px),curve to 48.08% calc(100% - 27.5px) with 50% calc(100% - 46px),curve to 44.23% calc(100% - 19.5px) with 46.15% calc(100% - 9px),curve to 40.38% calc(100% - 18.5px) with 42.31% calc(100% - 30px),curve to 36.54% calc(100% - 28px) with 38.46% calc(100% - 7px),curve to 32.69% calc(100% - 26.5px) with 34.62% calc(100% - 49px),curve to 28.85% calc(100% - 5.5px) with 30.77% calc(100% - 4px),curve to 25% calc(100% - 15px) with 26.92% calc(100% - 7px),curve to 21.15% calc(100% - 12.5px) with 23.08% calc(100% - 23px),curve to 17.31% calc(100% - 12px) with 19.23% calc(100% - 2px),curve to 13.46% calc(100% - 31px) with 15.38% calc(100% - 22px),curve to 9.62% calc(100% - 27.5px) with 11.54% calc(100% - 40px),curve to 5.77% calc(100% - 22.5px) with 7.69% calc(100% - 15px),curve to 0 100% with 3.85% calc(100% - 30px),vline to 0);
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: #e0e0e0; /* Track color */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--second-color);
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #e0e0e0; /* Track color to contrast thumb */
+}
+
+body{
+  background-color: #eee;
 }
