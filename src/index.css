@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+}
+
+@custom-variant hover (&:hover);
+
+:root{
+  --main-color:#fff;
+  --second-color:#796af7;
+  --dark-color:#0F172A;
+}
+
+/* Custom scrollbar styles */
+* {
+  scrollbar-width: thin;              /* For Firefox */
+  scrollbar-color: var(--second-color) #e0e0e0; /* thumb color, track color */
+}
+
+/* Chrome, Edge and Safari */
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: #e0e0e0; /* Track color */
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--second-color);
+  border-radius: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #e0e0e0; /* Track color to contrast thumb */
+}
+
+body{
+  background-color: #eee;
+}
