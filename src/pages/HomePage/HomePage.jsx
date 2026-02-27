@@ -6,6 +6,7 @@ import HowItWorks from './HowItWorks'
 import BenefitsSection from './BenefitsSection'
 import CTAsection from './CTAsection'
 import FAQsection from './FAQsection'
+import PointSystem from './PointSystem'
 
 function HomePage() {
     return (
@@ -14,6 +15,7 @@ function HomePage() {
             <HeroSection />
             <AboutUs />
             <OurFeatures />
+            <PointSystem />
             <HowItWorks />
             <BenefitsSection />
             <CTAsection />

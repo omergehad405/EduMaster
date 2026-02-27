@@ -1,16 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import useLearn from "../../hooks/useLearn";
 
 function LessonsSidebar({ trackId, unlockedLessonId }) {
-  const { lessons, fetchTrackById, loading } = useLearn();
+  const { lessons, loading } = useLearn();
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (trackId) {
-      fetchTrackById(trackId);
-    }
-  }, [trackId]);
 
   if (loading) return <p className="text-gray-400">Loading lessons...</p>;
 

@@ -43,7 +43,7 @@ const Statistics = () => {
             <div className="flex items-center justify-between">
                 <h1 className="capitalize font-semibold text-lg">Statistic</h1>
                 <Link
-                    to="statistic"
+                    to="/statistcs"
                     className="bg-[#eee] hover:bg-(--second-color) text-black hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer"
                 >
                     view all
@@ -82,13 +82,15 @@ const Statistics = () => {
 
             <div className="flex flex-wrap justify-between mt-6 gap-3">
                 <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow">
-                    <div className="text-xs text-gray-500 mb-1">Tracks Enrolled</div>
-                    <div className="font-bold text-2xl text-(--second-color)">{user.enrolledTracks.length}</div>
+                    <div className="text-xs text-gray-500 mb-1">Total XP</div>
+                    <div className="font-bold text-2xl text-(--second-color)">{user.xp || 0}</div>
                 </div>
 
-                <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow">
-                    <div className="text-xs text-gray-500 mb-1">Tracks Completed</div>
-                    <div className="font-bold text-2xl text-(--second-color)">{user.completedTracks.length}</div>
+                <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow flex flex-col items-center justify-center">
+                    <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                        Current Streak 🔥
+                    </div>
+                    <div className="font-bold text-2xl text-orange-500">{user.streak?.current || 0} Days</div>
                 </div>
 
                 <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow">

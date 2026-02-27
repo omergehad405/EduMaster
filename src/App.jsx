@@ -10,7 +10,10 @@ import TrackPage from './fetures/Learn/TrackPage'
 import Register from './pages/Register/Register'
 import Login from './pages/Register/Login'
 import Lesson from './fetures/Learn/Lesson'
-import CoursesPage from './fetures/Dashboard/CoursesPage'
+import CoursesPage from './pages/CoursesPage'
+import StatisticsPage from './pages/StatisticsPage'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
@@ -29,9 +32,18 @@ function App() {
           <Route path="/test" element={<TestPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          {/* pages  */}
+          <Route path="/statistcs" element={<StatisticsPage />} />
         </Routes>
       </main>
       <Footer />
+      <ToastContainer
+        position="top-right"
+        newestOnTop={false}
+        closeOnClick
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   )
 }

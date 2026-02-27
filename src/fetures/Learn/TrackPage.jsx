@@ -1,14 +1,16 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TracksSidebar from './TracksSidebar';
 import useLearn from '../../hooks/useLearn';
 import AuthContext from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 import axios from 'axios';
+import TrackFinalQuiz from './TrackFinalQuiz';
 
 function TrackPage() {
   const { trackId } = useParams();
   const { currentTrack, lessons, fetchTrackById } = useLearn();
-  const { user, token } = useContext(AuthContext);
+  const { user, token, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +19,12 @@ function TrackPage() {
     }
   }, [trackId, fetchTrackById]);
 
-  const isEnrolled = user?.enrolledTracks?.some(id => id === trackId);
+  const isEnrolled = user?.enrolledTracks?.some(id => String(id) === String(trackId));
+
+  const allLessonsCompleted = useMemo(
+    () => lessons.length > 0 && lessons.every((l) => l.completed),
+    [lessons]
+  );
 
   const handleEnroll = async () => {
     if (!trackId || !token) {
@@ -26,11 +33,19 @@ function TrackPage() {
     }
 
     try {
-      await axios.post(
+      const res = await axios.post(
         "http://localhost:5000/api/users/enroll",
         { trackId: String(trackId) }, // convert to string
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      if (res.data?.enrolledTracks && res.data?.progress && setUser) {
+        setUser(prev => prev ? {
+          ...prev,
+          enrolledTracks: res.data.enrolledTracks,
+          progress: res.data.progress,
+        } : prev);
+      }
+      toast.success('You have enrolled in this track!', { autoClose: 2500 });
       // Redirect to first lesson automatically
       if (lessons.length > 0) {
         navigate(`/tracks/${trackId}/lesson/${lessons[0]._id}`);
@@ -125,6 +140,11 @@ function TrackPage() {
                 Continue Learning
               </button>
             </div>
+          )}
+
+          {/* Final big quiz for the whole track */}
+          {isEnrolled && allLessonsCompleted && (
+            <TrackFinalQuiz track={currentTrack} lessons={lessons} canShow />
           )}
         </div>
       </div>

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import useAuth from "../../hooks/useAuth";
+import useAuth from "../hooks/useAuth";
+import { toast } from "react-toastify";
 
 function CoursesPage() {
     const { user, token, loading } = useAuth();
     const [courses, setCourses] = useState([]);
+    const [completedTracks, setCompletedTracks] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,6 +22,8 @@ function CoursesPage() {
                 const userData = res.data.data.user;
                 const enrolledTracks = userData.enrolledTracks || [];
                 const userProgress = userData.progress || [];
+                const userCompletedTracks = (userData.completedTracks || []).map(String);
+                setCompletedTracks(userCompletedTracks);
 
                 if (enrolledTracks.length === 0) {
                     setCourses([]);
@@ -45,9 +49,7 @@ function CoursesPage() {
                     const progressForTrack = userProgress.find(
                         (p) => String(p.track) === String(track._id)
                     );
-                    const completedLessonIds = (
-                        progressForTrack?.completedLessons || []
-                    ).map(String);
+                    const completedLessonIds = (progressForTrack?.completedLessons || []).map(String);
                     const completedLessonsCount = completedLessonIds.length;
 
                     let currentLessonId = null;
@@ -55,30 +57,32 @@ function CoursesPage() {
                         const firstIncomplete = lessons.find(
                             (lesson) => !completedLessonIds.includes(String(lesson._id))
                         );
-
-                        if (firstIncomplete) {
-                            currentLessonId = firstIncomplete._id;
-                        } else {
-                            currentLessonId = lessons[lessons.length - 1]._id;
-                        }
+                        currentLessonId = firstIncomplete ? firstIncomplete._id : lessons[lessons.length - 1]._id;
                     }
 
-                    const progressPercent = track.lessonsCount
-                        ? Math.round(
-                            (completedLessonsCount / track.lessonsCount) * 100
-                        )
+                    const totalLessons = lessons.length; // <-- use real lessons length
+                    const progressPercent = totalLessons
+                        ? Math.round((completedLessonsCount / totalLessons) * 100)
                         : 0;
+
+                    const allLessonsDone = totalLessons > 0 && completedLessonsCount === totalLessons;
+                    const isTrackCompleted = userCompletedTracks.includes(String(track._id));
 
                     return {
                         id: track._id,
                         name: track.title,
                         level: track.level,
-                        totalLessons: track.lessonsCount,
+                        totalLessons,
                         completedLessons: completedLessonsCount,
                         currentLessonId,
                         progressPercent,
+                        allLessonsDone,
+                        isTrackCompleted,
                     };
                 });
+
+                // optionally filter only unfinished tracks
+                setCourses(coursesData.filter(course => course.completedLessons < course.totalLessons || !course.isTrackCompleted));
 
                 setCourses(coursesData);
             } catch (err) {
@@ -138,7 +142,6 @@ function CoursesPage() {
                             key={course.id}
                             className="relative overflow-hidden rounded-2xl bg-(--second-color) text-white shadow-xl flex flex-col"
                         >
-
                             <div className="relative p-6 flex flex-col flex-1">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-xs uppercase tracking-wide bg-white/20 px-3 py-1 rounded-full">
@@ -166,21 +169,42 @@ function CoursesPage() {
                                         <span>{course.progressPercent}% completed</span>
                                         <span>
                                             {course.completedLessons === course.totalLessons
-                                                ? "Track completed"
+                                                ? (course.isTrackCompleted ? "Track completed" : "Final quiz required")
                                                 : "In progress"}
                                         </span>
                                     </div>
 
-                                    {course.currentLessonId ? (
+                                    {/* --- Main Button Logic --- */}
+                                    {!course.isTrackCompleted && course.allLessonsDone ? (
+                                        // The user isn't done with the final quiz yet, but has finished all lessons
+                                        <button
+                                            className="w-full bg-yellow-300 text-black font-semibold py-2.5 rounded-full hover:bg-yellow-200 transition"
+                                            onClick={() => {
+                                                toast.info("Go to final quiz...", { autoClose: 1200 });
+                                                navigate(`/tracks/${course.id}`);
+                                            }}
+                                        >
+                                            Take Final Quiz
+                                        </button>
+                                    ) : course.currentLessonId && !course.allLessonsDone ? (
+                                        // Not finished all lessons, can continue learning
                                         <button
                                             className="w-full bg-white text-indigo-600 font-semibold py-2.5 rounded-full hover:bg-blue-50 transition"
-                                            onClick={() =>
+                                            onClick={() => {
+                                                toast.info("Opening lesson...", { autoClose: 1200 });
                                                 navigate(
                                                     `/tracks/${course.id}/lesson/${course.currentLessonId}`
-                                                )
-                                            }
+                                                );
+                                            }}
                                         >
                                             Continue Learning
+                                        </button>
+                                    ) : course.isTrackCompleted ? (
+                                        <button
+                                            className="w-full bg-emerald-700 text-white font-semibold py-2.5 rounded-full cursor-not-allowed"
+                                            disabled
+                                        >
+                                            Track Completed
                                         </button>
                                     ) : (
                                         <button
@@ -190,6 +214,7 @@ function CoursesPage() {
                                             No lessons available
                                         </button>
                                     )}
+                                    {/* --- End Main Button Logic --- */}
                                 </div>
                             </div>
                         </div>

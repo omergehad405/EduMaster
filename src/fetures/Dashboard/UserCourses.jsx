@@ -1,12 +1,18 @@
-// src/pages/user/UserCourses.jsx
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
+import { toast } from "react-toastify";
+
+// Helper: returns true if user has finished all lessons in this track
+function allLessonsCompleted(course) {
+    return course.completedLessons === course.totalLessons && course.totalLessons > 0;
+}
 
 function UserCourses() {
     const { user, token, loading } = useAuth();
     const [courses, setCourses] = useState([]);
+    const [completedTracks, setCompletedTracks] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -14,23 +20,23 @@ function UserCourses() {
             if (!user || !token) return;
 
             try {
-                // جلب بيانات كاملة للـ user
                 const res = await axios.get(`http://localhost:5000/api/users/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
                 const userData = res.data.data.user;
 
-                // تأكد من enrolledTracks
                 const enrolledTracks = userData.enrolledTracks || [];
                 const userProgress = userData.progress || [];
+                const userCompletedTracks = (userData.completedTracks || []).map(String);
+                setCompletedTracks(userCompletedTracks);
 
                 if (enrolledTracks.length === 0) {
                     setCourses([]);
                     return;
                 }
 
-                // جلب تفاصيل كل track (مع الدروس)
+                // Fetch track details (with lessons) for each enrolled track
                 const tracksData = await Promise.all(
                     enrolledTracks.map(async (trackId) => {
                         const trackRes = await axios.get(`http://localhost:5000/api/tracks/${trackId}`, {
@@ -40,7 +46,7 @@ function UserCourses() {
                     })
                 );
 
-                // دمج progress لكل track
+                // Gather course progress for each track, plus completion state
                 const coursesData = tracksData.map((trackData) => {
                     const track = trackData.track;
                     const lessons = trackData.lessons || [];
@@ -51,7 +57,7 @@ function UserCourses() {
                     const completedLessonIds = (progressForTrack?.completedLessons || []).map(String);
                     const completedLessonsCount = completedLessonIds.length;
 
-                    // تحديد الدرس الحالي الذي يتوقف عنده المستخدم
+                    // Find the first incomplete lesson (for continue button)
                     let currentLessonId = null;
                     if (lessons.length > 0) {
                         const firstIncomplete = lessons.find(
@@ -61,10 +67,15 @@ function UserCourses() {
                         if (firstIncomplete) {
                             currentLessonId = firstIncomplete._id;
                         } else {
-                            // كل الدروس مكتملة -> نرجع لآخر درس
+                            // All lessons completed, set to last lesson
                             currentLessonId = lessons[lessons.length - 1]._id;
                         }
                     }
+
+                    // Is the track in completedTracks?
+                    const isTrackCompleted = userCompletedTracks.includes(String(track._id));
+                    // Is the user finished all lessons for this track (but maybe not marked as complete)
+                    const allLessonsDone = lessons.length > 0 && completedLessonsCount === lessons.length;
 
                     return {
                         id: track._id,
@@ -73,10 +84,14 @@ function UserCourses() {
                         totalLessons: track.lessonsCount,
                         completedLessons: completedLessonsCount,
                         currentLessonId,
+                        isTrackCompleted,
+                        allLessonsDone,
+                        // For additional display if needed
                     };
                 });
 
-                setCourses(coursesData);
+                // Filter: show only un-finished tracks (not in completedTracks)
+                setCourses(coursesData.filter(course => !course.isTrackCompleted));
             } catch (err) {
                 console.error("Error fetching courses:", err.response?.data || err.message);
             }
@@ -90,9 +105,9 @@ function UserCourses() {
     if (courses.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-10">
-                <p className="text-gray-500 mb-3">You have not started any courses yet.</p>
+                <p className="text-gray-500 mb-3">You have not started any unfinished tracks yet.</p>
                 <Link
-                    to="/courses"
+                    to="/learn"
                     className="bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-500"
                 >
                     Start Learning
@@ -104,7 +119,7 @@ function UserCourses() {
     return (
         <section>
             <div className='flex items-center justify-between mb-5'>
-                <h1 className='capitalize font-semibold text-lg text-white'>My Courses</h1>
+                <h1 className='capitalize font-semibold text-lg text-white'>My Unfinished Courses</h1>
                 <Link
                     to="/courses"
                     className='bg-[#eee] hover:bg-(--second-color) text-black hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer'
@@ -118,7 +133,44 @@ function UserCourses() {
                         ? Math.round((course.completedLessons / course.totalLessons) * 100)
                         : 0;
 
-                    return (
+                    let actionButton = null;
+
+                    if (course.currentLessonId && !course.allLessonsDone) {
+                        // Not finished all lessons, can continue learning (go to first incomplete lesson)
+                        actionButton = (
+                            <button
+                                className="mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-500 transition"
+                                onClick={() => {
+                                    toast.info("Opening lesson...", { autoClose: 1200 });
+                                    navigate(`/tracks/${course.id}/lesson/${course.currentLessonId}`);
+                                }}
+                            >
+                                Continue Learning
+                            </button>
+                        );
+                    } else if (course.allLessonsDone && !course.isTrackCompleted) {
+                        // All lessons done, but track not marked as completed: do the final quiz (i.e., navigate to the track page)
+                        actionButton = (
+                            <button
+                                className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-500 transition"
+                                onClick={() => {
+                                    toast.info("Take final quiz to complete track!", { autoClose: 1800 });
+                                    navigate(`/tracks/${course.id}`);
+                                }}
+                            >
+                                Take Final Quiz
+                            </button>
+                        );
+                    } else {
+                        actionButton = (
+                            <button
+                                className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-full cursor-not-allowed"
+                                disabled
+                            >
+                                No lessons available
+                            </button>
+                        );
+                    } return (
                         <div
                             key={course.id}
                             className="bg-(--main-color) p-5 rounded-lg w-full sm:w-[300px] mx-auto"
@@ -137,23 +189,7 @@ function UserCourses() {
                                 ></div>
                             </div>
                             <p className="mt-2 text-sm">{progressPercent}% completed</p>
-                            {course.currentLessonId ? (
-                                <button
-                                    className="mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-500 transition"
-                                    onClick={() =>
-                                        navigate(`/tracks/${course.id}/lesson/${course.currentLessonId}`)
-                                    }
-                                >
-                                    Continue Learning
-                                </button>
-                            ) : (
-                                <button
-                                    className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-full cursor-not-allowed"
-                                    disabled
-                                >
-                                    No lessons available
-                                </button>
-                            )}
+                            {actionButton}
                         </div>
                     );
                 })}
