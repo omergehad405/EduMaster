@@ -10,10 +10,24 @@
 
 @custom-variant hover (&:hover);
 
-:root{
-  --main-color:#fff;
-  --second-color:#796af7;
-  --dark-color:#0F172A;
+:root {
+  --main-color: #ffffff;
+  --second-color: #796af7;
+  --bg-color: #eeeeee;
+  --text-color: #0F172A;
+}
+
+.dark {
+  --main-color: #0F172A;
+  --second-color: #796af7;
+  --bg-color: #0F172A;
+  --text-color: #ffffff;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom scrollbar styles */
@@ -38,6 +52,3 @@
   background: #e0e0e0; /* Track color to contrast thumb */
 }
 
-body{
-  background-color: #eee;
-}

@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Statistics from './Statistics'
 import UserCourses from './UserCourses'
 import RecentActivity from './RecentActivity'
 import QuickActions from './QuickActions'
+import { useLocation } from 'react-router-dom'
 
 function Dashboard() {
+    const location = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
+
+
     return (
         <section className='py-10 px-20 flex flex-wrap gap-5'>
             <div className='lg:w-[350px] w-full lg:sticky lg:top-10 h-fit'>

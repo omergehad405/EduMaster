@@ -1,7 +1,7 @@
 // src/pages/tracks/LearnPage.jsx
 import React, { useEffect, useState } from 'react'
 import { FaSearch } from 'react-icons/fa'
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TracksSidebar from './TracksSidebar';
 import useLearn from "../../hooks/useLearn"
 
@@ -9,7 +9,12 @@ function LearnPage() {
     const [search, setSearch] = useState("");
     const { tracks, fetchTracks } = useLearn();
     const [result, setResult] = useState([]);
+    const location = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
+    
     useEffect(() => {
         fetchTracks();
     }, [fetchTracks]);

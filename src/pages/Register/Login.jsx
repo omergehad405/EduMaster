@@ -1,14 +1,18 @@
 // Login.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth.js";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
+    const location = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({
@@ -68,7 +72,7 @@ const Login = () => {
                         <div className="flex items-center justify-between mt-6">
                             <button
                                 type="submit"
-                                className="bg-[--second-color] cursor-pointer text-white px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition"
+                                className="bg-(--second-color) cursor-pointer text-white px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition"
                             >
                                 Login
                             </button>

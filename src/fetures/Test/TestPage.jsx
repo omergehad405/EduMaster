@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FileUpload from "./FileUpload"
 import AiChatbot from "./AiChatbot"
 import Quiz from "./Quiz"
+import { useLocation } from 'react-router-dom';
 
 const tabInfo = [
     {
@@ -34,7 +35,11 @@ const tabInfo = [
 
 function TestPage() {
     const [selected, setSelected] = useState(0);
+    const location = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
     return (
         <section className="px-0 py-8 md:px-10 lg:px-32">
             {/* Tab Nav */}

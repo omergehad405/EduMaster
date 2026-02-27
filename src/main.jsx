@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import Provider from './context/provider.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter basename="/EduMaster">
+  <BrowserRouter basename="/EduMaster/">
     <StrictMode>
       <Provider >
         <App />

@@ -1,7 +1,7 @@
 // Register.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth.js";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
 const Register = () => {
     const { register, loading } = useAuth();
@@ -16,7 +16,11 @@ const Register = () => {
     });
     const [error, setError] = useState("");
     const [preview, setPreview] = useState(null);
+    const location = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [location]);
     const handleChange = (e) => {
         const { name, value, type, checked, files } = e.target;
         if (type === "checkbox") {

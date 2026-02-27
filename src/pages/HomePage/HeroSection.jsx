@@ -12,7 +12,7 @@ function HeroSection() {
     }, [])
 
     return (
-        <div className='flex items-center lg:justify-center justify-between relative overflow-hidden lg:h-[90vh] h-[70vh]'>
+        <div className='bg-(--bg-color) flex items-center lg:justify-center justify-between relative overflow-hidden lg:h-[90vh] h-[70vh]'>
             <div
                 className={`
                     w-[500px] px-20 

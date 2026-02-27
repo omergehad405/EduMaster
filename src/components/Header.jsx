@@ -1,68 +1,69 @@
-import React, { useState } from 'react'
-import { FaMoon, FaSun } from 'react-icons/fa'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { IoMenu } from "react-icons/io5";
 import { FaHome } from 'react-icons/fa'
 import { GiBookshelf } from "react-icons/gi";
 import { MdQuiz } from "react-icons/md";
 import { FaXmark } from 'react-icons/fa6';
 import { MdDashboardCustomize } from "react-icons/md";
-import { GiNotebook } from "react-icons/gi"; // Added icon for "My Courses"
+import { GiNotebook } from "react-icons/gi";
 import useAuth from '../hooks/useAuth';
+import ThemeBtn from './ThemeBtn';
 
 function Header() {
     const { user, logout } = useAuth()
-    const [mood, setMood] = useState("dark")
     const [lang, setLang] = useState("ar")
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const navigate = useNavigate()
-    const location = useLocation();
 
-    const handleMood = () => {
-        setMood(mood === "dark" ? "light" : "dark")
-    }
+
     const handleLang = () => {
-        setLang(lang === "ar" ? "en" : "ar")
+        setLang(lang === "ar" ? "en" : "ar");
     }
 
-    // FIX: handleLogOut used for logout button as recommended, and used in both desktop and mobile
+    // Close sidebar when logging out
     const handleLogOut = () => {
+        setSidebarOpen(false);
         logout();
-        navigate("/")
+        navigate("/");
     }
 
-    // List of sidebar links
+    // Links for the sidebar (besides 'Home', all need authentication)
     const sidebarLinks = [
         {
             label: 'Home',
             to: '/',
             icon: <FaHome />,
-            exact: true
+            exact: true,
+            public: true
         },
         {
             label: 'Dashboard',
             to: '/dashboard',
             icon: <MdDashboardCustomize />,
-            exact: false
+            exact: false,
+            public: false
         },
         {
             label: 'View tracks',
             to: '/learn',
             icon: <GiBookshelf />,
-            exact: false
+            exact: false,
+            public: false
         },
-        // Added "My Courses" link here
         {
             label: 'My Courses',
             to: '/courses',
             icon: <GiNotebook />,
-            exact: false
+            exact: false,
+            public: false
         },
         {
             label: 'Test your self',
             to: '/test',
             icon: <MdQuiz />,
-            exact: false
+            exact: false,
+            public: false
         }
     ];
 
@@ -71,6 +72,18 @@ function Header() {
         if (link.exact)
             return location.pathname === link.to;
         return location.pathname.startsWith(link.to);
+    }
+
+    // Handler for sidebar link clicks: 
+    // If user is not logged in and link is not public, redirect to /register
+    // Otherwise proceed as normal navigation
+    const handleSidebarLinkClick = (link) => (e) => {
+        setSidebarOpen(false);
+        if (!user && !link.public && link.to !== "/") {
+            e.preventDefault();
+            navigate("/register");
+        }
+        // Otherwise, normal navigation
     }
 
     return (
@@ -89,9 +102,7 @@ function Header() {
                 <div className='flex items-center gap-3 '>
                     <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
                     <div className='flex items-center gap-3'>
-                        <button onClick={handleMood} className='cursor-pointer bg-[#eee] p-2 rounded-md'>
-                            {mood === "dark" ? (<FaMoon />) : (<FaSun />)}
-                        </button>
+                        <ThemeBtn />
                         <button onClick={handleLang} className='cursor-pointer bg-[#eee] py-1 px-2 rounded-md font-semibold capitalize'>
                             {lang === "ar" ? "ar" : "en"}
                         </button>
@@ -128,7 +139,7 @@ function Header() {
                                                 ? "bg-(--second-color) text-(--main-color)"
                                                 : "hover:bg-(--second-color)/80 hover:text-(--main-color) text-gray-800"}
                                         `}
-                                        onClick={() => setSidebarOpen(false)}
+                                        onClick={handleSidebarLinkClick(link)}
                                     >
                                         {link.icon}
                                         <span>{link.label}</span>
@@ -139,7 +150,10 @@ function Header() {
 
                         {/* Logout button at the bottom */}
                         <div className="w-full mt-auto">
-                            <button onClick={handleLogOut} className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
+                            <button
+                                onClick={handleLogOut}
+                                className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize"
+                            >
                                 Logout
                             </button>
                         </div>
@@ -152,9 +166,7 @@ function Header() {
                 <div className='flex items-center justify-between w-full gap-3 '>
                     <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
                     <div className='flex items-center gap-3'>
-                        <button onClick={handleMood} className='cursor-pointer bg-[#eee] p-2 rounded-md'>
-                            {mood === "dark" ? (<FaMoon />) : (<FaSun />)}
-                        </button>
+                        <ThemeBtn />
                         <button onClick={handleLang} className='cursor-pointer bg-[#eee] py-1 px-2 rounded-md font-semibold capitalize'>
                             {lang === "ar" ? "ar" : "en"}
                         </button>
@@ -173,7 +185,7 @@ function Header() {
                                 <img className={`hidden w-[50px]`} src='logo.jpg' alt='logo' />
                             </div>
                             <div className='flex flex-col gap-3 mt-5'>
-                                {sidebarLinks.map((link, idx) => (
+                                {sidebarLinks.map((link) => (
                                     <Link
                                         key={link.label}
                                         to={link.to}
@@ -183,7 +195,7 @@ function Header() {
                                                 ? "bg-(--second-color) text-(--main-color)"
                                                 : "hover:bg-(--second-color)/80 hover:text-(--main-color) text-gray-800"}
                                         `}
-                                        onClick={() => setSidebarOpen(false)}
+                                        onClick={handleSidebarLinkClick(link)}
                                     >
                                         {link.icon}
                                         <span>{link.label}</span>
@@ -193,7 +205,9 @@ function Header() {
                         </div>
                         {/* Logout button at the bottom */}
                         <div className="w-full mt-auto">
-                            <button onClick={handleLogOut} className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
+                            <button
+                                onClick={handleLogOut}
+                                className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
                                 Logout
                             </button>
                         </div>
