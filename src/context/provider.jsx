@@ -1,11 +1,15 @@
 import { AuthProvider } from "./AuthContext";
 import { LearnProvider } from "./LearnContext";
+import { QuizProvider } from "./QuizContext";
 
 function Provider({ children }) {
     return (
         <AuthProvider>
-            <LearnProvider> {children}</LearnProvider>
-
+            <QuizProvider >
+                <LearnProvider>
+                    {children}
+                </LearnProvider>
+            </QuizProvider>
         </AuthProvider >
     );
 }

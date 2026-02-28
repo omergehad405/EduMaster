@@ -14,6 +14,8 @@ import CoursesPage from './pages/CoursesPage'
 import StatisticsPage from './pages/StatisticsPage'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import MyQuizzesPage from './pages/MyQuizzesPage'
+import QuizReviewPage from './pages/QuizReviewPage'
 
 function App() {
   return (
@@ -32,6 +34,8 @@ function App() {
           <Route path="/test" element={<TestPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/my-quizzes" element={<MyQuizzesPage />} />
+          <Route path="/quiz-review/:quizId" element={<QuizReviewPage />} />
           {/* pages  */}
           <Route path="/statistcs" element={<StatisticsPage />} />
         </Routes>
