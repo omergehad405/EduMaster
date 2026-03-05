@@ -23,11 +23,11 @@ function ThemeBtn() {
     }
 
     return (
-        <button 
-            onClick={handleTheme} 
+        <button
+            onClick={handleTheme}
             className='cursor-pointer bg-gray-200 dark:bg-gray-800 p-2 rounded-md transition'
         >
-            {theme === "dark" ? <FaSun className="text-yellow-400" /> : <FaMoon />}
+            {theme === "dark" ? <FaSun className="text-yellow-400" /> : <FaMoon className="text-white" />}
         </button>
     )
 }

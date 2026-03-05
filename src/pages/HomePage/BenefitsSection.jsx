@@ -41,7 +41,7 @@ function BenefitsSection() {
                         className={`
                             relative
                             flex flex-col items-center
-                            bg-gradient-to-br from-(--main-color) via-(--main-color) to-(--second-color)/10
+                            bg-linear-to-br from-(--bg-color) via-(--bg-color) to-(--second-color)/10
                             rounded-3xl shadow-xl
                             px-7 py-10 w-[275px] min-h-[250px] transition
                             opacity-0 translate-y-9 animate-fadein
@@ -55,15 +55,15 @@ function BenefitsSection() {
                         }}
                     >
                         <span
-                            className="text-4xl md:text-5xl mb-4 drop-shadow font-bold"
+                            className="text-4xl md:text-5xl mb-4 drop-shadow font-bold "
                             aria-label={benefit.title}
                         >
                             {benefit.emoji}
                         </span>
-                        <h2 className="text-xl md:text-2xl font-extrabold text-(--second-color) text-center mb-2 tracking-tight drop-shadow">
+                        <h2 className="text-xl md:text-2xl font-extrabold text-(--text-color) text-center mb-2 tracking-tight drop-shadow">
                             {benefit.title}
                         </h2>
-                        <p className="text-center text-gray-600 font-medium text-base md:text-lg">
+                        <p className="text-center text-(--p-color) font-medium text-base md:text-lg">
                             {benefit.description}
                         </p>
                         {/* sparkles */}

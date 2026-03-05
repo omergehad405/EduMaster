@@ -61,10 +61,10 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-white">
-            <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className="min-h-screen w-full flex items-center justify-center bg-(--bg-color)">
+            <div className="flex w-full max-w-4xl bg-(--bg-color) shadow-lg rounded-lg overflow-hidden">
                 {/* Left image section - you add the photo as needed */}
-                <div className="hidden md:block md:w-1/2 relative">
+                <div className="hidden lg:block md:w-1/2 relative">
                     <div
                         className="absolute inset-0"
                         style={{
@@ -73,12 +73,12 @@ const Register = () => {
                             backgroundPosition: 'center',
                         }}
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-400 opacity-80"></div>
+                        <div className="absolute inset-0 bg-linear-to-r from-purple-500 to-pink-400 opacity-80"></div>
                     </div>
                 </div>
                 {/* Form section */}
-                <div className="w-full md:w-1/2 bg-white p-10">
-                    <h2 className="text-3xl font-bold mb-8">Sign Up</h2>
+                <div className="w-full lg:w-1/2 p-10">
+                    <h2 className="text-3xl font-bold mb-8 text-(--text-color)">Sign Up</h2>
                     <form
                         className="space-y-5"
                         onSubmit={handleSubmit}
@@ -86,7 +86,7 @@ const Register = () => {
                         encType="multipart/form-data"
                     >
                         <div>
-                            <label className="text-xs text-gray-500">Email</label>
+                            <label className="text-xs text-(--p-color)">Email</label>
                             <input
                                 type="email"
                                 name="email"
@@ -99,7 +99,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500">Username</label>
+                            <label className="text-xs text-(--p-color)">Username</label>
                             <input
                                 type="text"
                                 name="username"
@@ -112,7 +112,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500">Password</label>
+                            <label className="text-xs text-(--p-color)">Password</label>
                             <input
                                 type="password"
                                 name="password"
@@ -125,7 +125,7 @@ const Register = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500">Repeat Password</label>
+                            <label className="text-xs text-(--p-color)">Repeat Password</label>
                             <input
                                 type="password"
                                 name="repassword"
@@ -139,7 +139,7 @@ const Register = () => {
                         </div>
                         {/* Avatar upload field with style */}
                         <div>
-                            <label className="text-xs text-gray-500 block mb-2">
+                            <label className="text-xs text-(--p-color) block mb-2">
                                 Avatar Image
                                 <span className="ml-1 text-gray-300 text-xs font-normal">(optional)</span>
                             </label>
@@ -198,7 +198,7 @@ const Register = () => {
                                 className="mr-2"
                                 required
                             />
-                            <label htmlFor="agree" className="text-xs text-gray-500 select-none">
+                            <label htmlFor="agree" className="text-xs text-(--p-color) select-none">
                                 I agree to the <span className="text-purple-500 font-semibold cursor-pointer">Terms of Use</span>
                             </label>
                         </div>
@@ -209,13 +209,13 @@ const Register = () => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-(--second-color) cursor-pointer text-white px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"
+                                className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"
                             >
                                 {loading ? "Creating account..." : "Sign Up"}
                             </button>
                             <Link
                                 to="/login"
-                                className="text-gray-700 font-semibold text-sm hover:underline"
+                                className="text-(--p-color) font-semibold text-sm hover:underline"
                             >
                                 Sign in →
                             </Link>

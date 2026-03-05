@@ -82,32 +82,32 @@ function AiChatbot() {
   };
 
   return (
-    <div className="flex flex-col w-full h-[480px] border rounded-xl overflow-hidden">
-      <div ref={chatRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-gray-50">
+    <div className="flex flex-col w-full h-[480px] border rounded-xl overflow-hidden bg-(--main-color)">
+      <div ref={chatRef} className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.sender === 'user' ? 'flex-row-reverse text-right' : 'flex-row text-left'} gap-2`}>
-            <div className={`inline-block px-4 py-2 rounded-2xl max-w-[70%] break-words ${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
+            <div className={`inline-block px-4 py-2 rounded-2xl max-w-[70%] break-words ${msg.sender === 'user' ? 'bg-(--second-color) text-(--text-color)' : 'bg-(--bg-color) text-(--p-color)'}`}>
               {msg.text}
             </div>
           </div>
         ))}
         {isTyping && (
           <div className="flex flex-row gap-2 text-left">
-            <div className="inline-block px-4 py-2 rounded-2xl max-w-[70%] bg-gray-100 text-gray-900">
+            <div className="inline-block px-4 py-2 rounded-2xl max-w-[70%] bg-gray-100 text-(--p-color)">
               <TypingAnimation />
             </div>
           </div>
         )}
       </div>
-      <form onSubmit={handleSend} className="flex gap-2 p-3 border-t bg-gray-50">
+      <form onSubmit={handleSend} className="flex gap-2 p-3 border-t bg-(--bg-color)">
         <input
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
           placeholder="Send a message..."
-          className="flex-1 px-4 py-2 rounded-2xl border border-gray-300"
+          className="flex-1 px-4 py-2 rounded border border-gray-300"
         />
-        <button type="submit" disabled={isTyping || !input.trim()} className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button type="submit" disabled={isTyping || !input.trim()} className="px-4 py-2 bg-(--second-color) text-(--text-color) rounded">
           Send
         </button>
       </form>

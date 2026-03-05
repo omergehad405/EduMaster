@@ -14,7 +14,7 @@ function LessonsSidebar({ trackId, unlockedLessonId }) {
   };
 
   return (
-    <div className="bg-gray-800 w-64 p-5 flex flex-col gap-2">
+    <div className="bg-gray-800 lg:w-64 w-full p-5 flex flex-wrap items-center lg:flex-col gap-2">
       {lessons.length === 0 ? (
         <p className="text-gray-400">No lessons available.</p>
       ) : (
@@ -25,11 +25,10 @@ function LessonsSidebar({ trackId, unlockedLessonId }) {
             <div
               key={lesson._id}
               onClick={() => handleLessonClick(lesson, isLocked)}
-              className={`py-2 px-3 rounded-md flex justify-between items-center cursor-pointer 
-                ${
-                  isLocked
-                    ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                    : "bg-blue-500 text-white hover:bg-white hover:text-blue-500"
+              className={`w-[200px] h-[50px] py-2 px-3 rounded-md flex justify-between items-center cursor-pointer 
+                ${isLocked
+                  ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-white hover:text-blue-500"
                 }`}
             >
               <span>{lesson.title}</span>

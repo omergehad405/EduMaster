@@ -29,17 +29,17 @@ function QuickActions() {
     return (
         <section className='bg-(--main-color) rounded-xl p-5 shadow'>
             <div className='flex items-center justify-between mb-5'>
-                <h1 className='capitalize font-semibold text-lg'>Quick Actions</h1>
+                <h1 className='capitalize font-semibold text-lg text(--text-color)'>Quick Actions</h1>
             </div>
             <div className="flex flex-col gap-3">
                 {actions.map((action, idx) => (
                     <Link
                         key={idx}
                         to={action.to}
-                        className="flex items-center gap-4 bg-gray-50 hover:bg-(--second-color) text-black hover:text-(--main-color) transition-colors p-3 rounded-lg shadow-sm border border-gray-100 cursor-pointer"
+                        className="flex items-center gap-4 bg-(--bg-color) hover:bg-(--main-color) transition-colors p-3 rounded-lg shadow-sm border border-gray-100 cursor-pointer"
                     >
                         <div className='text-(--second-color) '>{action.icon}</div>
-                        <span className="font-medium text-gray-800 text-sm">{action.label}</span>
+                        <span className="font-medium text-(--p-color) text-sm">{action.label}</span>
                     </Link>
                 ))}
             </div>

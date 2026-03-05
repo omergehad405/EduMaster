@@ -13,6 +13,7 @@ const Login = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [location]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({
@@ -23,7 +24,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+        setError("");
         const result = await login(form.email, form.password);
 
         if (result.success) {
@@ -34,19 +35,36 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-white">
-            <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+        <div className=" w-full flex items-center justify-center bg-(--bg-color)">
+            <div className="flex w-full max-w-4xl bg-(--bg-color) shadow-lg rounded-lg overflow-hidden">
+                {/* Left image (on desktop, hidden on mobile) - matches Register.jsx */}
+                <div className="hidden lg:block md:w-1/2 relative">
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            backgroundImage: `url('./singup.jpg')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-linear-to-r from-purple-500 to-pink-400 opacity-80"></div>
+                    </div>
+                </div>
                 {/* Form section */}
-                <div className="w-full md:w-1/2 bg-white p-10 order-2 md:order-1">
-                    <h2 className="text-3xl font-bold mb-8">log In</h2>
-                    <form className="space-y-5" onSubmit={handleSubmit} autoComplete="off">
+                <div className="w-full lg:w-1/2 p-10">
+                    <h2 className="text-3xl font-bold mb-8 text-(--text-color)">Log In</h2>
+                    <form
+                        className="space-y-5"
+                        onSubmit={handleSubmit}
+                        autoComplete="off"
+                    >
                         <div>
-                            <label className="text-xs text-gray-500">Email</label>
+                            <label className="text-xs text-(--p-color)">Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 placeholder="Email address..."
-                                className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm"
+                                className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm bg-transparent text-(--text-color)"
                                 value={form.email}
                                 onChange={handleChange}
                                 required
@@ -54,12 +72,12 @@ const Login = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-gray-500">Password</label>
+                            <label className="text-xs text-(--p-color)">Password</label>
                             <input
                                 type="password"
                                 name="password"
                                 placeholder="Password..."
-                                className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm"
+                                className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm bg-transparent text-(--text-color)"
                                 value={form.password}
                                 onChange={handleChange}
                                 required
@@ -72,31 +90,18 @@ const Login = () => {
                         <div className="flex items-center justify-between mt-6">
                             <button
                                 type="submit"
-                                className="bg-(--second-color) cursor-pointer text-white px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition"
+                                className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"
                             >
                                 Login
                             </button>
                             <Link
                                 to="/register"
-                                className="text-gray-700 font-semibold text-sm hover:underline"
+                                className="text-(--p-color) font-semibold text-sm hover:underline"
                             >
                                 Sign up →
                             </Link>
                         </div>
                     </form>
-                </div>
-                {/* Image section, right side on md+ */}
-                <div className="hidden md:block md:w-1/2 relative order-1 md:order-2">
-                    <div
-                        className="absolute inset-0"
-                        style={{
-                            backgroundImage: `url('./singup.jpg')`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                        }}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-l from-purple-500 to-pink-400 opacity-80"></div>
-                    </div>
                 </div>
             </div>
         </div>

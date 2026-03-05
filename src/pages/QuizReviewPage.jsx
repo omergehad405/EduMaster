@@ -59,7 +59,7 @@ const QuizReviewPage = () => {
             <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600">Loading quiz review...</p>
+                    <p className="text-(--p-color)">Loading quiz review...</p>
                 </div>
             </div>
         );
@@ -71,7 +71,7 @@ const QuizReviewPage = () => {
                 <div className="text-center p-8 max-w-md">
                     <div className="text-red-500 text-4xl mb-4">⚠️</div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-4">Error</h2>
-                    <p className="text-gray-600 mb-6">{error}</p>
+                    <p className="text-(--p-color) mb-6">{error}</p>
                     <button
                         onClick={() => navigate('/my-quizzes')}
                         className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
@@ -108,7 +108,7 @@ const QuizReviewPage = () => {
                 <div className="text-center mb-12">
                     <button
                         onClick={() => navigate('/my-quizzes')}
-                        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 font-medium"
+                        className="inline-flex items-center gap-2 text-(--p-color) hover:text-gray-900 mb-6 font-medium"
                     >
                         ← Back to My Quizzes
                     </button>
@@ -116,21 +116,21 @@ const QuizReviewPage = () => {
                         <h1 className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
                             {quiz.fileName}
                         </h1>
-                        <p className="text-gray-600 text-lg">Review your performance</p>
+                        <p className="text-(--p-color) text-lg">Review your performance</p>
                         <div className="grid md:grid-cols-3 gap-4 mt-6">
                             <div className="text-center p-4 bg-blue-50 rounded-2xl">
                                 <div className="text-3xl font-bold text-blue-600">{quiz.questions.length}</div>
-                                <div className="text-sm text-gray-600">Questions</div>
+                                <div className="text-sm text-(--p-color)">Questions</div>
                             </div>
                             <div className="text-center p-4 bg-green-50 rounded-2xl">
                                 <div className="text-3xl font-bold text-green-600">
                                     {attempts.length > 0 ? `${attempts[0].score}/${attempts[0].total}` : '0'}
                                 </div>
-                                <div className="text-sm text-gray-600">Best Score</div>
+                                <div className="text-sm text-(--p-color)">Best Score</div>
                             </div>
                             <div className="text-center p-4 bg-purple-50 rounded-2xl">
                                 <div className="text-3xl font-bold text-purple-600">{attempts.length}</div>
-                                <div className="text-sm text-gray-600">Attempts</div>
+                                <div className="text-sm text-(--p-color)">Attempts</div>
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@ const QuizReviewPage = () => {
                             </h2>
                             <div className="text-right">
                                 <div className="text-4xl font-black text-green-500">{currentAttempt.score}</div>
-                                <div className="text-lg text-gray-600">{currentAttempt.total} questions</div>
+                                <div className="text-lg text-(--p-color)">{currentAttempt.total} questions</div>
                                 <div className="text-2xl font-bold text-blue-600">
                                     {getPercentage(currentAttempt)}%
                                 </div>
@@ -243,7 +243,7 @@ const QuizReviewPage = () => {
                     <div className="text-center py-20">
                         <div className="text-6xl mb-4">📝</div>
                         <h3 className="text-2xl font-bold text-gray-800 mb-4">No attempts yet</h3>
-                        <p className="text-gray-600 mb-8">Take the quiz first to see your results here!</p>
+                        <p className="text-(--p-color) mb-8">Take the quiz first to see your results here!</p>
                         <button
                             onClick={() => navigate('/test')}
                             className="px-8 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 shadow-lg"

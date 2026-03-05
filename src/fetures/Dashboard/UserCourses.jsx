@@ -105,11 +105,11 @@ function UserCourses() {
         fetchCourses();
     }, [user, token]);
 
-    if (loading) return <p>Loading courses...</p>;
+    if (loading) return <p className="text-(--p-color)">Loading courses...</p>;
 
     if (courses.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center py-10">
+            <div className="flex flex-col items-center justify-center p-10 bg-(--main-color) rounded-xl">
                 <p className="text-gray-500 mb-3">You have not started any unfinished tracks yet.</p>
                 <Link
                     to="/learn"
@@ -122,12 +122,12 @@ function UserCourses() {
     }
 
     return (
-        <section>
+        <section className="bg-(--main-color) rounded-xl p-5 shadow">
             <div className='flex items-center justify-between mb-5'>
-                <h1 className='capitalize font-semibold text-lg text-white'>My Unfinished Courses</h1>
+                <h1 className='capitalize font-semibold text-lg text-(--text-color)'>My Unfinished Courses</h1>
                 <Link
                     to="/courses"
-                    className='bg-[#eee] hover:bg-(--second-color) text-black hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer'
+                    className='bg-(--bg-color) text-(--text-color) rounded-full py-1 px-5 text-sm capitalize cursor-pointer'
                 >
                     View All
                 </Link>
@@ -144,7 +144,7 @@ function UserCourses() {
                         // Not finished all lessons, can continue learning (go to first incomplete lesson)
                         actionButton = (
                             <button
-                                className="mt-4 bg-green-600 text-white py-2 px-4 rounded-full hover:bg-green-500 transition"
+                                className="mt-4 bg-(--second-color) text-(--p-color) cursor-pointer py-2 px-4 rounded-full"
                                 onClick={() => {
                                     toast.info("Opening lesson...", { autoClose: 1200 });
                                     navigate(`/tracks/${course.id}/lesson/${course.currentLessonId}`);
@@ -157,7 +157,7 @@ function UserCourses() {
                         // All lessons done, but track not marked as completed: do the final quiz (i.e., navigate to the track page)
                         actionButton = (
                             <button
-                                className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-500 transition"
+                                className="mt-4 bg-(--second-color) text-(--p-color) py-2 px-4 rounded-full transition"
                                 onClick={() => {
                                     toast.info("Take final quiz to complete track!", { autoClose: 1800 });
                                     navigate(`/tracks/${course.id}`);
@@ -169,7 +169,7 @@ function UserCourses() {
                     } else {
                         actionButton = (
                             <button
-                                className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-full cursor-not-allowed"
+                                className="mt-4 bg-gray-500 text-(--text-color) py-2 px-4 rounded-full cursor-not-allowed"
                                 disabled
                             >
                                 No lessons available
@@ -178,18 +178,18 @@ function UserCourses() {
                     } return (
                         <div
                             key={course.id}
-                            className="bg-(--main-color) p-5 rounded-lg w-full sm:w-[300px] mx-auto"
+                            className="bg-(--bg-color) p-5 rounded-lg w-full sm:w-[300px] mx-auto"
                         >
                             <h2 className="text-2xl font-bold mb-2">{course.name}</h2>
-                            <div className="flex gap-2 mb-3">
-                                <span className="bg-(--second-color) text-(--main-color) px-2 py-1 rounded-full text-sm">{course.level}</span>
-                                <span className="bg-(--second-color) text-(--main-color) px-2 py-1 rounded-full text-sm">
+                            <div className="flex gap-2 mb-3 ">
+                                <span className="bg-gray-600 text-(--p-color) px-2 py-1 rounded-full text-sm">{course.level}</span>
+                                <span className="bg-gray-600 text-(--p-color) px-2 py-1 rounded-full text-sm">
                                     {course.completedLessons} / {course.totalLessons} classes
                                 </span>
                             </div>
                             <div className="w-full bg-gray-600 h-3 rounded-full overflow-hidden">
                                 <div
-                                    className="h-full bg-green-500 rounded-full"
+                                    className="h-full bg-(--second-color) rounded-full"
                                     style={{ width: `${progressPercent}%` }}
                                 ></div>
                             </div>

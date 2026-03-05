@@ -103,7 +103,7 @@ function CoursesPage() {
 
     if (loading) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center bg-(--dark-color)">
+            <div className="min-h-[60vh] flex items-center justify-center bg-(--bg-color)">
                 <p className="text-gray-300 text-lg">Loading your courses...</p>
             </div>
         );
@@ -129,13 +129,13 @@ function CoursesPage() {
     }
 
     return (
-        <div className="bg-(--dark-color) min-h-screen py-10 px-4 md:px-12 lg:px-20">
+        <div className="bg-(--bg-color) min-h-screen py-10 px-4 md:px-12 lg:px-20">
             <div className="max-w-6xl mx-auto">
                 <div className="mb-10">
-                    <h1 className="text-3xl md:text-4xl font-bold text-(--main-color) mb-3">
+                    <h1 className="text-3xl md:text-4xl font-bold text-(--text-color) mb-3">
                         Your Courses
                     </h1>
-                    <p className="text-gray-300 max-w-2xl">
+                    <p className="text-(--p-color) max-w-2xl">
                         Continue where you left off, or review completed lessons to
                         strengthen your knowledge.
                     </p>
@@ -145,11 +145,11 @@ function CoursesPage() {
                     {courses.map((course) => (
                         <div
                             key={course.id}
-                            className="relative overflow-hidden rounded-2xl bg-(--second-color) text-white shadow-xl flex flex-col"
+                            className="relative overflow-hidden rounded-2xl bg-(--main-color) text-(--text-color) shadow-xl flex flex-col"
                         >
                             <div className="relative p-6 flex flex-col flex-1">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-xs uppercase tracking-wide bg-white/20 px-3 py-1 rounded-full">
+                                    <span className="text-xs uppercase tracking-wide bg-gray-600 px-3 py-1 rounded-full">
                                         {course.level}
                                     </span>
                                     <span className="text-sm font-semibold">
@@ -164,13 +164,13 @@ function CoursesPage() {
                                 </p>
 
                                 <div className="mt-auto">
-                                    <div className="w-full bg-blue-900/60 h-2 rounded-full overflow-hidden mb-2">
+                                    <div className="w-full bg-gray-600 h-2 rounded-full overflow-hidden mb-2">
                                         <div
-                                            className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+                                            className="h-full bg-(--second-color) rounded-full transition-all duration-300"
                                             style={{ width: `${course.progressPercent}%` }}
                                         />
                                     </div>
-                                    <div className="flex items-center justify-between text-xs text-blue-100 mb-4">
+                                    <div className="flex items-center justify-between text-xs text-(--p-color) mb-4">
                                         <span>{course.progressPercent}% completed</span>
                                         <span>
                                             {course.completedLessons === course.totalLessons
@@ -194,7 +194,7 @@ function CoursesPage() {
                                     ) : course.currentLessonId && !course.allLessonsDone ? (
                                         // Not finished all lessons, can continue learning
                                         <button
-                                            className="w-full bg-white text-indigo-600 font-semibold py-2.5 rounded-full hover:bg-blue-50 transition"
+                                            className="w-full bg-(--second-color) text-(--p-color) font-semibold py-2.5 rounded-full hover:text-(--text-color) transition cursor-pointer"
                                             onClick={() => {
                                                 toast.info("Opening lesson...", { autoClose: 1200 });
                                                 navigate(

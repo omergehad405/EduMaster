@@ -103,14 +103,14 @@ function Header() {
                     <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
                     <div className='flex items-center gap-3'>
                         <ThemeBtn />
-                        <button onClick={handleLang} className='cursor-pointer bg-[#eee] py-1 px-2 rounded-md font-semibold capitalize'>
+                        <button onClick={handleLang} className='cursor-pointer bg-gray-200 dark:bg-gray-800 py-1 px-2 rounded-md font-semibold capitalize'>
                             {lang === "ar" ? "ar" : "en"}
                         </button>
                     </div>
                 </div>
                 <div className='flex items-center gap-5'>
                     {!user && (
-                        <Link to="/register" className='rounded-sm hidden md:block bg-(--second-color) text-(--main-color) hover:bg-(--main-color) hover:text-(--second-color) font-bold py-2 px-5 cursor-pointer border border-[--second-color] transition-all duration-500 capitalize'>
+                        <Link to="/register" className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50">
                             signUp
                         </Link>
                     )}
@@ -136,8 +136,8 @@ function Header() {
                                         className={`
                                             capitalize flex items-center gap-2 font-bold cursor-pointer rounded-lg px-3 py-2 transition-all duration-300
                                             ${isLinkActive(link)
-                                                ? "bg-(--second-color) text-(--main-color)"
-                                                : "hover:bg-(--second-color)/80 hover:text-(--main-color) text-gray-800"}
+                                                ? "bg-(--second-color) text-(--text-color)"
+                                                : "hover:bg-(--second-color)/80 hover:text-(--text-color) text-(--text-color)"}
                                         `}
                                         onClick={handleSidebarLinkClick(link)}
                                     >

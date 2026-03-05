@@ -20,7 +20,7 @@ function HeroSection() {
                     ${animateText ? 'translate-x-0 opacity-100' : '-translate-x-32 opacity-0'}
                 `}
             >
-                <h1 className='text-black font-bold text-4xl'>
+                <h1 className='text-(--text-color) font-bold text-4xl'>
                     Learn <span className='text-(--second-color)'>Smarter</span>,Test <span className='text-(--second-color)'>Yourself</span>, Master <span className='text-(--second-color)'>Any Topic</span>.
                 </h1>
                 <p className='text-md text-gray-500 my-5'>AI-powered learning tracks + instant quizzes from your own files.</p>

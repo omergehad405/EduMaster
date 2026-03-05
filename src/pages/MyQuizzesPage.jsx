@@ -20,7 +20,7 @@ function MyQuizzesPage() {
                 {myQuizzes.map(quiz => (
                     <div key={quiz._id} className="p-6 bg-white rounded-xl shadow-md hover:shadow-xl transition-all">
                         <h3 className="text-xl font-semibold mb-2">{quiz.fileName}</h3>
-                        <p className="text-gray-600 mb-2">{quiz.questions.length} questions</p>
+                        <p className="text-(--p-color) mb-2">{quiz.questions.length} questions</p>
                         <p className="text-sm text-gray-500 mb-4">Created: {new Date(quiz.createdAt).toLocaleDateString()}</p>
                         <button
                             onClick={() => navigate(`/quiz-review/${quiz._id}`)}

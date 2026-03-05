@@ -9,7 +9,7 @@ import axios from 'axios';
 
 function Lesson() {
   const { trackId, lessonId } = useParams();
-  const { lessons, fetchTrackById, loading } = useLearn();
+  const { lessons, fetchTrackById } = useLearn();
   const { token } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -52,8 +52,10 @@ function Lesson() {
     markLessonEntered();
   }, [lessonId, token]);
 
+  // Deliberately reset quizCompleted on lesson change (ignore lint for demo case)
   useEffect(() => {
     setQuizCompleted(false);
+    // eslint-disable-next-line
   }, [lessonId]);
 
   const currentIndex = lessons.findIndex(l => l._id === lessonId);
@@ -135,14 +137,19 @@ function Lesson() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 bg-gray-900 min-h-screen">
+    <div className="flex lg:flex-row flex-col gap-8 bg-gray-900 min-h-screen">
       <LessonsSidebar trackId={trackId} unlockedLessonId={unlockNextLessonId} />
 
-      <div className="flex-1 px-8 py-10 text-gray-200">
-
-        <div className="h-2 bg-gray-700 w-full mb-5">
-          <div className="h-2 bg-indigo-500" style={{ width: `${progress}%` }} />
+      <div className="flex-1 px-8 py-10 text-gray-200 relative">
+        {/* Sticky Full-Width Progress Bar */}
+        <div className="fixed left-0 top-0 w-full z-30">
+          <div className="h-2 bg-gray-700 w-full">
+            <div className="h-2 bg-indigo-500 transition-all duration-200" style={{ width: `${progress}%` }} />
+          </div>
         </div>
+
+        {/* To make sure content is not hidden by progress bar */}
+        <div className="h-2 mb-5" />
 
         <div className="flex justify-between mb-5">
           <button

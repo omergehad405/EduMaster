@@ -34,17 +34,17 @@ const Statistics = () => {
         };
 
         fetchProgress();
-    }, [user]);
+    }, [user, token]);
 
     if (!user) return <div>Loading...</div>;
 
     return (
         <section className="rounded-xl p-5 bg-(--main-color)">
             <div className="flex items-center justify-between">
-                <h1 className="capitalize font-semibold text-lg">Statistic</h1>
+                <h1 className="capitalize font-semibold text-lg text-(--text-color)">Statistic</h1>
                 <Link
                     to="/statistcs"
-                    className="bg-[#eee] hover:bg-(--second-color) text-black hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer"
+                    className="bg-(--bg-color) hover:bg-(--second-color) text-(--text-color) hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer"
                 >
                     view all
                 </Link>
@@ -75,26 +75,26 @@ const Statistics = () => {
                         />
                     </div>
                 </div>
-                <h1 className="flex items-center justify-center gap-1 capitalize font-semibold mt-3 text-xl">
+                <h1 className="flex items-center justify-center gap-1 capitalize font-semibold mt-3 text-xl text-(--text-color)">
                     welcome, <span className="text-(--second-color) font-bold">{user.username}</span> <span>👋</span>
                 </h1>
             </div>
 
             <div className="flex flex-wrap justify-between mt-6 gap-3">
-                <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow">
-                    <div className="text-xs text-gray-500 mb-1">Total XP</div>
+                <div className="flex-1 min-w-[90px] bg-(--bg-color) rounded-xl text-center py-4 shadow">
+                    <div className="text-xs text-(--p-color) mb-1">Total XP</div>
                     <div className="font-bold text-2xl text-(--second-color)">{user.xp || 0}</div>
                 </div>
 
-                <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow flex flex-col items-center justify-center">
-                    <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+                <div className="flex-1 min-w-[90px] bg-(--bg-color) rounded-xl text-center py-4 shadow flex flex-col items-center justify-center">
+                    <div className="text-xs text-(--p-color) mb-1 flex items-center gap-1">
                         Current Streak 🔥
                     </div>
                     <div className="font-bold text-2xl text-orange-500">{user.streak?.current || 0} Days</div>
                 </div>
 
-                <div className="flex-1 min-w-[90px] bg-[#F5F5FB] rounded-xl text-center py-4 shadow">
-                    <div className="text-xs text-gray-500 mb-1">Total Progress</div>
+                <div className="flex-1 min-w-[90px] bg-(--bg-color) rounded-xl text-center py-4 shadow">
+                    <div className="text-xs text-(--p-color) mb-1">Total Progress</div>
                     <div className="font-bold text-2xl text-(--second-color)">{averageScore}%</div>
                 </div>
             </div>

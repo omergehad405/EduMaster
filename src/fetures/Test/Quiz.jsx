@@ -82,12 +82,12 @@ const Quiz = () => {
 
   const getOptionClass = (idx) => {
     if (!submitted) {
-      return answers[current] === idx ? "bg-blue-500 text-white" : "bg-white hover:bg-gray-100";
+      return answers[current] === idx ? "bg-(--main-color) text-(--p-color) border border-blue-500" : "bg-(--bg-color) hover:bg-gray-700";
     }
 
     const correctIdx = questions[current]?.options.indexOf(questions[current]?.correctAnswer);
-    if (idx === correctIdx) return "bg-green-500 text-white";
-    if (answers[current] === idx && idx !== correctIdx) return "bg-red-500 text-white";
+    if (idx === correctIdx) return "bg-green-500 text-(--text-color)";
+    if (answers[current] === idx && idx !== correctIdx) return "bg-red-500 text-(--text-color)";
     return "bg-white";
   };
 
@@ -102,13 +102,13 @@ const Quiz = () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto">
+    <div className="flex flex-col gap-6 p-5 w-full max-w-2xl mx-auto bg-(--main-color)">
       {/* Header */}
       <div className="text-center">
-        <div className="text-sm text-gray-500 mb-1">{getProgress()}</div>
+        <div className="text-sm text-(--p-color) mb-1">{getProgress()}</div>
         <div className="flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-(--text-color)">
             Question {current + 1} of {questions.length}
           </h2>
         </div>
@@ -124,30 +124,25 @@ const Quiz = () => {
       {/* Question */}
       {!submitted && (
         <>
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-2xl border-l-4 border-blue-500">
-            <div className="text-lg font-semibold text-gray-800 leading-relaxed">
+          <div className="bg-(--bg-color) p-6 rounded-2xl border-2">
+            <div className="text-lg font-semibold text-(--text-color) leading-relaxed">
               {questions[current].question}
             </div>
-            {questions[current].explanation && (
-              <div className="mt-2 text-xs text-gray-500 italic">
-                Hint: {questions[current].explanation}
-              </div>
-            )}
           </div>
 
           {/* Options */}
-          <div className="space-y-2">
+          <div className="space-y-2 ">
             {questions[current].options.map((choice, idx) => (
               <button
                 key={idx}
-                className={`w-full p-4 rounded-xl border-2 font-medium transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md ${getOptionClass(idx)}`}
+                className={`w-full p-4 rounded-xl border-2 font-medium transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md  ${getOptionClass(idx)}`}
                 onClick={() => handleChoose(idx)}
                 disabled={submitted}
               >
                 <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
                   {String.fromCharCode(65 + idx)}
                 </span>
-                <span>{choice}</span>
+                <span className='text-(--p-color)'>{choice}</span>
               </button>
             ))}
           </div>
@@ -157,12 +152,12 @@ const Quiz = () => {
             <button
               onClick={prevQ}
               disabled={current === 0}
-              className="px-6 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 hover:bg-gray-300"
+              className="px-6 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed bg-(--bg-color) hover:bg-gray-600 cursor-pointer"
             >
               Previous
             </button>
 
-            <div className="flex-1 text-center text-sm text-gray-600">
+            <div className="flex-1 text-center text-sm text-(--p-color)">
               {current + 1 === questions.length ? "Review all answers" : "Answer to continue"}
             </div>
 
@@ -170,7 +165,7 @@ const Quiz = () => {
               <button
                 onClick={nextQ}
                 disabled={answers[current] == null}
-                className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-2 bg-(--second-color) text-(--text-color) rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Next
               </button>
@@ -200,7 +195,7 @@ const Quiz = () => {
               <p className="text-4xl font-black text-green-500 mb-4">
                 {Math.round((score / questions.length) * 100)}%
               </p>
-              <p className="text-gray-600">
+              <p className="text-(--p-color)">
                 You got <span className="font-semibold text-green-600">{score}</span> out of{' '}
                 <span className="font-semibold">{questions.length}</span> correct
               </p>
@@ -217,7 +212,7 @@ const Quiz = () => {
                 return (
                   <div key={idx} className={`p-4 rounded-xl border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                     <div className="font-medium mb-1">Q{idx + 1}: {q.question}</div>
-                    <div className="text-sm text-gray-600 mb-2">
+                    <div className="text-sm text-(--p-color) mb-2">
                       Your answer: <span className={`font-semibold ${isCorrect ? 'text-green-700' : 'text-red-700'}`}>
                         {userAns !== null ? q.options[userAns] : 'Not answered'}
                       </span>

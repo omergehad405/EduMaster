@@ -15,13 +15,15 @@
   --second-color: #796af7;
   --bg-color: #eeeeee;
   --text-color: #0F172A;
+  --p-color:#4a5565;
 }
 
 .dark {
-  --main-color: #0F172A;
-  --second-color: #796af7;
-  --bg-color: #0F172A;
-  --text-color: #ffffff;
+  --main-color: #0B0F1A;   /* background الأساسي */
+  --second-color: #8B7CFF; /* نفس البنفسجي لكن أفتح شوية عشان يظهر على الداكن */
+  --bg-color: #111827;     /* background ثانوي للكروت والسكاشن */
+  --text-color: #E5E7EB; 
+  --p-color:#ccd0d9;
 }
 
 body {
