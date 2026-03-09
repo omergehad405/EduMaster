@@ -2,256 +2,328 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useAuth from '../hooks/useAuth';
+import translations from '../utils/translations';
+
+function getCurrentLang() {
+    const stored = localStorage.getItem('lang');
+    if (stored && translations[stored]) return stored;
+    return 'en';
+}
+
+const API_URL = "https://edumaster-backend-6xy5.onrender.com";
 
 const QuizReviewPage = () => {
+    const lang = getCurrentLang();
+    const t = translations[lang] || translations.en;
     const { quizId } = useParams();
-    const { token } = useAuth();
     const navigate = useNavigate();
+    const { token } = useAuth();
 
-    const [quiz, setQuiz] = useState(null);
-    const [attempts, setAttempts] = useState([]);
+    const [currentQuiz, setCurrentQuiz] = useState(null);
+    const [quizQuestions, setQuizQuestions] = useState([]);
+    const [userAnswers, setUserAnswers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [selectedAttempt, setSelectedAttempt] = useState(0);
 
-    // Fetch quiz details + attempts
     useEffect(() => {
-        const fetchQuizData = async () => {
-            if (!token || !quizId) return;
+        const fetchQuizReview = async () => {
+            // ✅ FAILSAFE: Block undefined/empty quizId
+            if (!quizId || quizId === 'undefined') {
+                console.error('🚫 Invalid quizId:', quizId);
+                setError('Invalid quiz ID');
+                setLoading(false);
+                return;
+            }
+
+            console.log('🔄 Fetching quiz:', quizId);
+
+            if (!token) {
+                setError('Please login first');
+                setLoading(false);
+                return;
+            }
 
             setLoading(true);
             try {
-                // Get quiz details
-                const quizRes = await axios.get(`https://edumaster-backend-6xy5.onrender.com/api/quizzes/${quizId}`, {
+                const res = await axios.get(`${API_URL}/api/quizzes/completed/${quizId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                // Get attempts for this quiz
-                const attemptsRes = await axios.get(`https://edumaster-backend-6xy5.onrender.com/api/quizzes/${quizId}/attempts`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const quizData = res.data;
+                console.log('✅ Backend quiz data:', quizData);
+
+                setCurrentQuiz({
+                    fileName: quizData.fileName || quizData.title || 'Document Quiz',
+                    score: quizData.score || quizData.totalScore || 0,
+                    totalQuestions: quizData.questions?.length || quizData.totalQuestions || 0,
+                    percentage: quizData.percentage || quizData.accuracy || 0,
+                    description: quizData.description || `${quizData.score || 0}/${quizData.questions?.length || 0}`
                 });
 
-                setQuiz(quizRes.data.data);
-                setAttempts(attemptsRes.data.data || []);
-                setSelectedAttempt(attemptsRes.data.data.length - 1); // Latest attempt
+                setQuizQuestions(quizData.questions || []);
+
+                const transformedAnswers = (quizData.userAnswers || []).map(ans => ({
+                    questionIndex: ans.questionIndex || ans.index || 0,
+                    selectedAnswer: ans.selectedAnswer || ans.answer || null,
+                    isCorrect: ans.isCorrect !== undefined ? ans.isCorrect : null
+                }));
+                setUserAnswers(transformedAnswers);
+                setError('');
+
             } catch (err) {
-                setError(err.response?.data?.message || 'Failed to load quiz');
-                console.error('Quiz review error:', err);
+                console.error('❌ Backend failed:', err.response?.data || err.message);
+
+                // ✅ LocalStorage fallback
+                const fallbackData = getFallbackQuizData(quizId);
+                if (fallbackData) {
+                    setCurrentQuiz(fallbackData.quiz);
+                    setQuizQuestions(fallbackData.questions);
+                    setUserAnswers(fallbackData.answers);
+                    setError('Using cached data ⚠️');
+                } else {
+                    // ✅ Demo fallback
+                    setCurrentQuiz({
+                        fileName: 'Recent Quiz',
+                        score: 7,
+                        totalQuestions: 10,
+                        percentage: 70,
+                        description: '7/10 (70%)'
+                    });
+                    const demoQuestions = generateDemoQuestions(10);
+                    setQuizQuestions(demoQuestions);
+                    setUserAnswers(generateMockAnswers(demoQuestions, 7));
+                    setError('Showing demo - backend unavailable');
+                }
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchQuizData();
+        fetchQuizReview();
     }, [quizId, token]);
 
-    const getAttemptScore = (attempt) => {
-        const correct = attempt.answers.filter(ans => ans.isCorrect).length;
-        return `${correct}/${attempt.total}`;
+    const getFallbackQuizData = (quizId) => {
+        try {
+            const recentQuiz = localStorage.getItem(`quiz_${quizId}`);
+            if (recentQuiz) {
+                const parsed = JSON.parse(recentQuiz);
+                return {
+                    quiz: {
+                        fileName: parsed.fileName || 'Recent Quiz',
+                        score: parsed.score || 0,
+                        totalQuestions: parsed.questions?.length || 0,
+                        percentage: Math.round((parsed.score / parsed.questions?.length) * 100) || 0
+                    },
+                    questions: parsed.questions || [],
+                    answers: parsed.answers || []
+                };
+            }
+        } catch (e) {
+            console.log('No cached quiz data');
+        }
+        return null;
     };
 
-    const getPercentage = (attempt) => {
-        return Math.round((attempt.score / attempt.total) * 100);
+    const generateDemoQuestions = (count) => {
+        const subjects = ['React', 'JavaScript', 'Node.js', 'MongoDB', 'CSS', 'HTML'];
+        return Array.from({ length: count }, (_, i) => ({
+            question: `What is the ${['primary', 'main', 'best'][i % 3]} feature of ${subjects[i % subjects.length]}?`,
+            options: [
+                `Feature ${String.fromCharCode(65 + i)} - Incorrect`,
+                `Feature ${String.fromCharCode(66 + i)} - Correct`,
+                `Feature ${String.fromCharCode(67 + i)} - Incorrect`,
+                `Feature ${String.fromCharCode(68 + i)} - Incorrect`
+            ],
+            correctAnswer: `Feature ${String.fromCharCode(66 + i)} - Correct`,
+            explanation: `This feature provides the most value in ${subjects[i % subjects.length]} development.`
+        }));
+    };
+
+    const generateMockAnswers = (questions, correctCount) => {
+        return questions.map((q, i) => {
+            const isCorrect = i < correctCount;
+            const correctIdx = q.options.indexOf(q.correctAnswer);
+            return {
+                questionIndex: i,
+                selectedAnswer: isCorrect ? q.correctAnswer : q.options[0],
+                isCorrect: isCorrect
+            };
+        });
     };
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-(--p-color)">Loading quiz review...</p>
+            <div className="quizreview-bg min-h-screen flex items-center justify-center">
+                <div className="quizreview-box text-center p-8 bg-bgcard rounded border max-w-md mx-4 w-full">
+                    <div className="w-20 h-20 border-4 border-primary border-t-primary-content rounded-full animate-spin mx-auto mb-8" />
+                    <p className="font-bold text-xl text-txt mb-2">Loading quiz results...</p>
+                    <p className="text-sm text-txtmuted">Quiz ID: {quizId?.slice(-6) || '----'}</p>
                 </div>
             </div>
         );
     }
 
-    if (error) {
+    if (error && !currentQuiz) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center p-8 max-w-md">
-                    <div className="text-red-500 text-4xl mb-4">⚠️</div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Error</h2>
-                    <p className="text-(--p-color) mb-6">{error}</p>
-                    <button
-                        onClick={() => navigate('/my-quizzes')}
-                        className="px-6 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
-                    >
-                        Back to My Quizzes
-                    </button>
+            <div className="quizreview-bg min-h-screen flex flex-col items-center justify-center py-12 px-4">
+                <div className="quizreview-box text-center p-12 border-8 border-error/20 max-w-md w-full">
+                    <div className="text-error text-7xl mb-8">⚠️</div>
+                    <h2 className="text-3xl font-bold text-txt mb-6">Quiz Not Found</h2>
+                    <p className="text-txtmuted mb-8 text-lg">{error}</p>
+                    <div className="space-y-4">
+                        <button
+                            onClick={() => navigate('/my-quizzes')}
+                            className="w-full py-4 px-6 bg-primary text-bgcard rounded-xl font-bold text-lg hover:bg-primary-dark transition shadow-lg flex items-center justify-center gap-2"
+                        >
+                            📋 Go to My Quizzes
+                        </button>
+                        <button
+                            onClick={() => navigate('/test')}
+                            className="w-full py-4 px-6 bg-accent text-bgcard rounded-xl font-bold text-lg hover:bg-accent-dark transition shadow-lg flex items-center justify-center gap-2"
+                        >
+                            🎯 Take New Quiz
+                        </button>
+                    </div>
                 </div>
             </div>
         );
     }
-
-    if (!quiz) {
-        return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h2 className="text-2xl font-bold mb-4">Quiz not found</h2>
-                    <button
-                        onClick={() => navigate('/my-quizzes')}
-                        className="px-6 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600"
-                    >
-                        Go to My Quizzes
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    const currentAttempt = attempts[selectedAttempt];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-100 py-12 px-4">
-            <div className="max-w-6xl mx-auto">
+        <div className="quizreview-bg min-h-screen py-8 px-4">
+            <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
                     <button
                         onClick={() => navigate('/my-quizzes')}
-                        className="inline-flex items-center gap-2 text-(--p-color) hover:text-gray-900 mb-6 font-medium"
+                        className="inline-flex items-center gap-3 bg-bgcard shadow-lg px-8 py-4 rounded-xl font-bold text-lg text-txt hover:shadow-xl hover:-translate-y-1 transition-all mb-10 border border-line"
                     >
-                        ← Back to My Quizzes
+                        <span className="text-2xl">←</span>
+                        Back to My Quizzes
                     </button>
-                    <div className="bg-white rounded-3xl shadow-2xl p-8">
-                        <h1 className="text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-                            {quiz.fileName}
+
+                    <div className="bg-bgcard p-8 border border-line rounded-xl">
+                        <h1 className="text-4xl font-bold text-txt mb-6">
+                            {currentQuiz?.fileName || 'Quiz Review'}
                         </h1>
-                        <p className="text-(--p-color) text-lg">Review your performance</p>
-                        <div className="grid md:grid-cols-3 gap-4 mt-6">
-                            <div className="text-center p-4 bg-blue-50 rounded-2xl">
-                                <div className="text-3xl font-bold text-blue-600">{quiz.questions.length}</div>
-                                <div className="text-sm text-(--p-color)">Questions</div>
+                        <div className="flex flex-wrap justify-center gap-6 md:gap-8">
+                            <div className="text-center min-w-[120px]">
+                                <div className="text-3xl font-bold text-primary mb-2">{quizQuestions.length}</div>
+                                <div className="text-xs text-txtmuted uppercase tracking-wide">Questions</div>
                             </div>
-                            <div className="text-center p-4 bg-green-50 rounded-2xl">
-                                <div className="text-3xl font-bold text-green-600">
-                                    {attempts.length > 0 ? `${attempts[0].score}/${attempts[0].total}` : '0'}
+                            <div className="text-center min-w-[120px]">
+                                <div className="text-3xl font-bold text-success mb-2">
+                                    {currentQuiz?.score}/{quizQuestions.length}
                                 </div>
-                                <div className="text-sm text-(--p-color)">Best Score</div>
+                                <div className="text-xs text-txtmuted uppercase tracking-wide">Your Score</div>
                             </div>
-                            <div className="text-center p-4 bg-purple-50 rounded-2xl">
-                                <div className="text-3xl font-bold text-purple-600">{attempts.length}</div>
-                                <div className="text-sm text-(--p-color)">Attempts</div>
+                            <div className="text-center min-w-[120px]">
+                                <div className="text-3xl font-bold text-accent mb-2">{currentQuiz?.percentage}%</div>
+                                <div className="text-xs text-txtmuted uppercase tracking-wide">Accuracy</div>
                             </div>
                         </div>
+                        {error && (
+                            <div className="mt-6 p-4 bg-accent/20 border border-accent/50 rounded-xl text-accent-content text-sm">
+                                ⚠️ {error}
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Attempts Selector */}
-                {attempts.length > 1 && (
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                        <h3 className="text-xl font-semibold mb-4">Select Attempt to Review:</h3>
-                        <div className="flex flex-wrap gap-3">
-                            {attempts.map((attempt, idx) => (
-                                <button
-                                    key={attempt._id}
-                                    onClick={() => setSelectedAttempt(idx)}
-                                    className={`px-6 py-3 rounded-xl font-medium transition-all ${selectedAttempt === idx
-                                        ? 'bg-blue-500 text-white shadow-lg scale-105'
-                                        : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                                        }`}
-                                >
-                                    Attempt {idx + 1} - {getAttemptScore(attempt)} ({getPercentage(attempt)}%)
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {/* Questions Review */}
+                <div className="grid gap-6">
+                    {quizQuestions.map((question, qIdx) => {
+                        const userAnswer = userAnswers.find(a => a.questionIndex === qIdx);
+                        const correctIdx = question.options.indexOf(question.correctAnswer);
+                        const isCorrect = userAnswer?.isCorrect || (userAnswer?.selectedAnswer === question.correctAnswer);
 
-                {/* Current Attempt Review */}
-                {currentAttempt ? (
-                    <div className="bg-white rounded-3xl shadow-2xl p-8">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-bold text-gray-800">
-                                Attempt {selectedAttempt + 1} Review
-                            </h2>
-                            <div className="text-right">
-                                <div className="text-4xl font-black text-green-500">{currentAttempt.score}</div>
-                                <div className="text-lg text-(--p-color)">{currentAttempt.total} questions</div>
-                                <div className="text-2xl font-bold text-blue-600">
-                                    {getPercentage(currentAttempt)}%
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Questions Review */}
-                        <div className="space-y-4 max-h-[70vh] overflow-y-auto">
-                            {quiz.questions.map((question, qIdx) => {
-                                const userAnswer = currentAttempt.answers.find(a => a.questionIndex === qIdx);
-                                const correctIdx = question.options.indexOf(question.correctAnswer);
-                                const isCorrect = userAnswer?.isCorrect || false;
-
-                                return (
-                                    <div key={qIdx} className={`p-6 rounded-2xl border-4 transition-all ${isCorrect
-                                        ? 'bg-green-50 border-green-200 shadow-green-100'
-                                        : 'bg-red-50 border-red-200 shadow-red-100'
+                        return (
+                            <div key={qIdx} className={`bg-bgcard border border-line rounded-xl p-8 hover:shadow-lg transition-all group ${isCorrect ? 'border-success/50 bg-success/5' : 'border-error/50 bg-error/5'
+                                }`}>
+                                {/* Question Header */}
+                                <div className="flex items-start gap-4 mb-6">
+                                    <div className={`flex-shrink-0 w-14 h-14 rounded-xl font-bold text-2xl flex items-center justify-center shadow-lg ${isCorrect
+                                        ? 'bg-success text-success-content'
+                                        : 'bg-error text-error-content'
                                         }`}>
-                                        <div className="flex items-start gap-4 mb-4">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white font-bold text-lg flex items-center justify-center mt-1">
-                                                Q{qIdx + 1}
-                                            </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-semibold text-gray-800 mb-2">{question.question}</h4>
+                                        Q{qIdx + 1}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-bold text-txt leading-relaxed mb-2">
+                                            {question.question}
+                                        </h3>
+                                    </div>
+                                </div>
 
-                                                {/* Options with feedback */}
-                                                <div className="space-y-2">
-                                                    {question.options.map((option, optIdx) => {
-                                                        const isUserSelected = userAnswer?.selectedAnswer === option;
-                                                        const isCorrectAnswer = optIdx === correctIdx;
-                                                        let statusClass = '';
+                                {/* Options */}
+                                <div className="grid gap-3 mb-6">
+                                    {question.options.map((option, optIdx) => {
+                                        const isUserSelected = userAnswer?.selectedAnswer === option;
+                                        const isCorrectAnswer = optIdx === correctIdx;
+                                        let status = '';
 
-                                                        if (isUserSelected && isCorrectAnswer) {
-                                                            statusClass = 'bg-green-500 text-white';
-                                                        } else if (isUserSelected && !isCorrectAnswer) {
-                                                            statusClass = 'bg-red-500 text-white';
-                                                        } else if (isCorrectAnswer) {
-                                                            statusClass = 'bg-green-100 border-2 border-green-300';
-                                                        }
+                                        if (isUserSelected && isCorrectAnswer) {
+                                            status = '✅ YOURS ✓ CORRECT';
+                                        } else if (isUserSelected && !isCorrectAnswer) {
+                                            status = '❌ YOURS ✗ WRONG';
+                                        } else if (!isUserSelected && isCorrectAnswer) {
+                                            status = '✅ CORRECT ANSWER';
+                                        }
 
-                                                        return (
-                                                            <div key={optIdx} className={`p-3 rounded-xl border flex items-center gap-3 ${statusClass}`}>
-                                                                <span className="w-6 h-6 rounded-full border-2 font-bold flex items-center justify-center flex-shrink-0">
-                                                                    {String.fromCharCode(65 + optIdx)}
-                                                                </span>
-                                                                <span className={`font-medium ${isUserSelected ? 'font-bold' : ''}`}>
-                                                                    {option}
-                                                                </span>
-                                                                {isUserSelected && (
-                                                                    <span className="ml-auto text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                                                                        Your Answer
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </div>
-
-                                                {/* Explanation */}
-                                                {question.explanation && (
-                                                    <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 rounded-r-xl">
-                                                        <p className="text-sm text-blue-900 font-medium">💡 Explanation:</p>
-                                                        <p className="text-sm text-blue-800 mt-1">{question.explanation}</p>
-                                                    </div>
+                                        return (
+                                            <div key={optIdx} className={`p-4 rounded-xl border-2 flex items-center gap-4 group transition-all ${isUserSelected && isCorrectAnswer
+                                                ? 'bg-success/20 border-success shadow-success/20 shadow-lg'
+                                                : isUserSelected && !isCorrectAnswer
+                                                    ? 'bg-error/20 border-error shadow-error/20 shadow-lg'
+                                                    : isCorrectAnswer
+                                                        ? 'bg-success/10 border-success/50 hover:bg-success/20'
+                                                        : 'border-line hover:border-primary/50 hover:bg-primary/5'
+                                                }`}>
+                                                <span className="w-10 h-10 rounded-xl bg-card text-txt font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                                    {String.fromCharCode(65 + optIdx)}
+                                                </span>
+                                                <span className={`flex-1 font-medium ${isUserSelected ? 'font-bold' : ''}`}>
+                                                    {option}
+                                                </span>
+                                                {status && (
+                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${isCorrectAnswer ? 'bg-success text-success-content' : 'bg-error text-error-content'
+                                                        }`}>
+                                                        {status}
+                                                    </span>
                                                 )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Explanation */}
+                                {question.explanation && (
+                                    <div className="p-6 bg-primary/10 border-l-8 border-primary rounded-xl">
+                                        <div className="flex items-start gap-3">
+                                            <div className="text-2xl mt-1">💡</div>
+                                            <div>
+                                                <div className="text-sm font-bold text-primary uppercase tracking-wide mb-2">
+                                                    Explanation
+                                                </div>
+                                                <p className="text-primary-content/90 leading-relaxed">{question.explanation}</p>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="text-center py-20">
-                        <div className="text-6xl mb-4">📝</div>
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4">No attempts yet</h3>
-                        <p className="text-(--p-color) mb-8">Take the quiz first to see your results here!</p>
-                        <button
-                            onClick={() => navigate('/test')}
-                            className="px-8 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 shadow-lg"
-                        >
-                            Take Quiz Now
-                        </button>
-                    </div>
-                )}
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* Back Button */}
+                <div className="text-center mt-20">
+                    <button
+                        onClick={() => navigate('/my-quizzes')}
+                        className="px-12 py-5 bg-primary text-bgcard text-xl font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 mx-auto"
+                    >
+                        ← Back to My Quizzes
+                    </button>
+                </div>
             </div>
         </div>
     );

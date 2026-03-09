@@ -6,6 +6,8 @@ import LessonsSidebar from './LessonsSidebar';
 import LessonQuiz from './LessonQuiz';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import translations from '../../utils/translations';
+import { useLanguage } from '../../hooks/useLanguage';
 
 function Lesson() {
   const { trackId, lessonId } = useParams();
@@ -16,6 +18,10 @@ function Lesson() {
   const [progress, setProgress] = useState(0);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [unlockNextLessonId, setUnlockNextLessonId] = useState(null);
+
+  const { language } = useLanguage();
+  const t = translations[language] || {};
+  const dir = language === "ar" ? "rtl" : "ltr";
 
   const handleScroll = () => {
     const scrollTop = window.scrollY;
@@ -35,7 +41,6 @@ function Lesson() {
     }
   }, [trackId, fetchTrackById]);
 
-  // Call enter-lesson API to award 5 XP
   useEffect(() => {
     const markLessonEntered = async () => {
       if (!lessonId || !token) return;
@@ -45,14 +50,12 @@ function Lesson() {
           { lessonId },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-      } catch (err) {
-        // silently ignore if user already entered
+      } catch {
       }
     };
     markLessonEntered();
   }, [lessonId, token]);
 
-  // Deliberately reset quizCompleted on lesson change (ignore lint for demo case)
   useEffect(() => {
     setQuizCompleted(false);
     // eslint-disable-next-line
@@ -67,12 +70,12 @@ function Lesson() {
       : null;
 
   if (!lesson) {
-    return <div className="text-white p-10">Loading lesson...</div>;
+    return <div className="text-white p-10">{t.lessonLoading || "Loading lesson..."}</div>;
   }
 
   const goToLesson = (lesson) => {
     if (!lesson) return;
-    toast.info('Opening lesson...', { autoClose: 1200 });
+    toast.info(t.lessonOpening || 'Opening lesson...', { autoClose: 1200 });
     navigate(`/tracks/${trackId}/lesson/${lesson._id}`);
   };
 
@@ -86,15 +89,16 @@ function Lesson() {
 
       if (res.data.nextLessonId) {
         setUnlockNextLessonId(res.data.nextLessonId);
-        toast.success("Great job! A new lesson is unlocked 🎉", {
-          autoClose: 2500,
-        });
+        toast.success(
+          t.lessonQuizUnlocked || "Great job! A new lesson is unlocked 🎉",
+          { autoClose: 2500 }
+        );
       }
 
       setQuizCompleted(true);
       fetchTrackById(trackId);
-    } catch (err) {
-      console.error(err);
+    } catch {
+      toast.error(t.lessonQuizCompleteError || "An error occurred. Please try again.");
     }
   };
 
@@ -106,88 +110,77 @@ function Lesson() {
             {block.value}
           </h2>
         );
-
       case "text":
         return (
           <p key={index} className="mb-4 leading-7 text-gray-300">
             {block.value}
           </p>
         );
-
       case "image":
         return (
           <img
             key={index}
             src={block.value}
-            alt=""
+            alt={t.lessonImageAlt || ""}
             className="my-4 rounded-lg"
           />
         );
-
       case "code":
         return (
           <pre key={index} className="bg-gray-800 p-4 rounded-lg overflow-x-auto my-4">
             <code>{block.value}</code>
           </pre>
         );
-
       default:
         return null;
     }
   };
 
   return (
-    <div className="flex lg:flex-row flex-col gap-8 bg-gray-900 min-h-screen">
+    <div className="flex lg:flex-row flex-col gap-8 bg-gray-900 min-h-screen" dir={dir}>
       <LessonsSidebar trackId={trackId} unlockedLessonId={unlockNextLessonId} />
-
       <div className="flex-1 px-8 py-10 text-gray-200 relative">
-        {/* Sticky Full-Width Progress Bar */}
         <div className="fixed left-0 top-0 w-full z-30">
           <div className="h-2 bg-gray-700 w-full">
-            <div className="h-2 bg-indigo-500 transition-all duration-200" style={{ width: `${progress}%` }} />
+            <div
+              className="h-2 bg-indigo-500 transition-all duration-200"
+              style={{ width: `${progress}%` }}
+            />
           </div>
         </div>
-
-        {/* To make sure content is not hidden by progress bar */}
         <div className="h-2 mb-5" />
-
         <div className="flex justify-between mb-5">
           <button
             disabled={!prevLesson}
             onClick={() => goToLesson(prevLesson)}
             className={`px-4 py-2 rounded ${prevLesson ? 'bg-indigo-500' : 'bg-gray-700 cursor-not-allowed'}`}
           >
-            Previous
+            {t.lessonPagePrevLesson || "Previous Lesson"}
           </button>
-
           <button
             disabled={!quizCompleted || !nextLesson}
             onClick={() => goToLesson(nextLesson)}
             className={`px-4 py-2 rounded ${quizCompleted && nextLesson ? 'bg-indigo-500' : 'bg-gray-700 cursor-not-allowed'}`}
           >
-            Next
+            {t.lessonPageNextLesson || "Next Lesson"}
           </button>
         </div>
-
         <h1 className="text-3xl font-bold mb-6">{lesson.title}</h1>
-
         {lesson.videoUrl && (
           <video controls className="w-full max-h-[500px] mb-6 rounded-lg">
             <source src={lesson.videoUrl} type="video/mp4" />
           </video>
         )}
-
-        {/* Structured Content Rendering */}
         <div>
           {lesson.content.map((block, index) => renderBlock(block, index))}
         </div>
-
         {lesson.quiz && lesson.quiz.length > 0 && (
           <LessonQuiz
             lessonId={lesson._id}
             questions={lesson.quiz}
             onComplete={handleQuizComplete}
             completed={quizCompleted}
+            t={t}
           />
         )}
       </div>

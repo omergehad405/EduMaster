@@ -4,6 +4,11 @@ import useAuth from "../hooks/useAuth";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Import i18n translation context and hook
+import { useTranslation } from "react-i18next";
+import translations from "../utils/translations";
+import { useLanguage } from "../hooks/useLanguage";
+
 const StatisticsPage = () => {
     const { user, token, loading } = useAuth();
     const [averageScore, setAverageScore] = useState(0);
@@ -13,6 +18,11 @@ const StatisticsPage = () => {
         enrolledTracks: 0,
         completedTracks: 0,
     });
+    const { language } = useLanguage();
+    // Fix: `t` should be a function, not an object
+    // We'll supply our own `t` helper
+    const rawTrans = translations[language] || {};
+    const t = (key) => rawTrans[key] || key;
     const [trackStats, setTrackStats] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
@@ -100,7 +110,7 @@ const StatisticsPage = () => {
 
             } catch (err) {
                 console.error("Error fetching user progress:", err);
-                toast.error("Failed to load statistics.");
+                toast.error(t("statisticsFailedToLoad"));
             } finally {
                 setIsLoading(false);
             }
@@ -128,18 +138,18 @@ const StatisticsPage = () => {
                             onClick={() => navigate('/dashboard')}
                             className="text-(--p-color) hover:text-(--second-color) transition flex items-center gap-2 mb-2 text-sm font-medium"
                         >
-                            &larr; Back to Dashboard
+                            &larr; {t("statisticsBackToDashboard")}
                         </button>
                         <h1 className="text-3xl md:text-4xl font-bold text-(--text-color)">
-                            Your Performance
+                            {t("statisticsYourPerformance")}
                         </h1>
                         <p className="text-(--p-color) mt-2">
-                            Dive deep into your learning journey and track your milestones.
+                            {t("statisticsLearningJourneyDesc")}
                         </p>
                     </div>
                     {user.avatar ? (
                         <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-white shadow-md">
-                            <img src={`https://edumaster-backend-6xy5.onrender.com${user.avatar}`} alt="Avatar" className="w-full h-full object-cover" />
+                            <img src={`https://edumaster-backend-6xy5.onrender.com${user.avatar}`} alt={user.username} className="w-full h-full object-cover" />
                         </div>
                     ) : (
                         <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-white shadow-md bg-[#e5e7eb] flex items-center justify-center">
@@ -152,7 +162,7 @@ const StatisticsPage = () => {
                     {/* Main Average Card */}
                     <div className="lg:col-span-1 bg-(--main-color) rounded-2xl shadow-sm border border-gray-100 p-8 flex flex-col items-center justify-center relative overflow-hidden group hover:shadow-lg transition-shadow duration-300">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-gray-600 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-                        <h2 className="text-lg font-bold text-(--p-color) w-full text-center mb-6 z-10">Overall Progress</h2>
+                        <h2 className="text-lg font-bold text-(--p-color) w-full text-center mb-6 z-10">{t("statisticsOverallProgress")}</h2>
                         <div className="w-[200px] h-[200px] mx-auto rounded-full flex items-center justify-center relative mb-6 z-10">
                             <svg className="absolute top-0 left-0" width="200" height="200" viewBox="0 0 200 200">
                                 <circle cx="100" cy="100" r="90" fill="none" stroke="#F3F4F6" strokeWidth="14" />
@@ -171,7 +181,7 @@ const StatisticsPage = () => {
                             </svg>
                             <div className="absolute flex flex-col items-center justify-center">
                                 <span className="text-4xl font-extrabold text-(--text-color)">{averageScore}%</span>
-                                <span className="text-xs text-(--p-color) font-medium uppercase tracking-widest mt-1">Completed</span>
+                                <span className="text-xs text-(--p-color) font-medium uppercase tracking-widest mt-1">{t("statisticsCompleted")}</span>
                             </div>
                         </div>
                         <div className="flex flex-col items-center z-10">
@@ -180,10 +190,10 @@ const StatisticsPage = () => {
                             </h3>
                             <div className="flex gap-2 mt-2">
                                 <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Active
+                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> {t("statisticsActive")}
                                 </span>
                                 <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide flex items-center gap-1 shadow-sm">
-                                    🔥 {user.streak?.current || 0} Day Streak
+                                    🔥 {user.streak?.current || 0} {t("statisticsDayStreak")}
                                 </span>
                             </div>
                         </div>
@@ -197,7 +207,7 @@ const StatisticsPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                 </svg>
                             </div>
-                            <h4 className="text-(--p-color) text-sm font-medium">Tracks Enrolled</h4>
+                            <h4 className="text-(--p-color) text-sm font-medium">{t("statisticsTracksEnrolled")}</h4>
                             <div className="text-3xl font-extrabold text-(--p-color) mt-1">{stats.enrolledTracks}</div>
                         </div>
 
@@ -207,7 +217,7 @@ const StatisticsPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                             </div>
-                            <h4 className="text-(--p-color) text-sm font-medium">Tracks Completed</h4>
+                            <h4 className="text-(--p-color) text-sm font-medium">{t("statisticsTracksCompleted")}</h4>
                             <div className="text-3xl font-extrabold text-(--p-color) mt-1">{stats.completedTracks}</div>
                         </div>
 
@@ -217,10 +227,10 @@ const StatisticsPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                             </div>
-                            <h4 className="text-(--p-color) text-sm font-medium">Lessons Completed</h4>
+                            <h4 className="text-(--p-color) text-sm font-medium">{t("statisticsLessonsCompleted")}</h4>
                             <div className="flex items-baseline gap-2 mt-1">
                                 <div className="text-3xl font-extrabold text-(--p-color)">{stats.completedLessons}</div>
-                                <div className="text-sm font-medium text-gray-400">/ {stats.totalLessons}</div>
+                                <div className="text-sm font-medium text-gray-400">{t("statisticsOf")} {stats.totalLessons}</div>
                             </div>
                         </div>
 
@@ -235,10 +245,10 @@ const StatisticsPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
                             </div>
-                            <h4 className="text-(--p-color) text-sm font-medium relative z-10">Total Experience</h4>
+                            <h4 className="text-(--p-color) text-sm font-medium relative z-10">{t("statisticsTotalExperience")}</h4>
                             <div className="text-3xl font-extrabold text-(--p-color) mt-1 relative z-10 flex items-baseline gap-1">
                                 {user.xp || 0}
-                                <span className="text-sm font-normal text-gray-400">XP</span>
+                                <span className="text-sm font-normal text-gray-400">{t("statisticsXP")}</span>
                             </div>
                         </div>
                     </div>
@@ -247,8 +257,8 @@ const StatisticsPage = () => {
                 {/* Track Details */}
                 <div className="mt-12">
                     <h2 className="text-2xl font-bold text-(--text-color) mb-6 flex items-center gap-3">
-                        Track Progress Details
-                        <span className="bg-gray-600 text-(--text-color) text-xs px-2.5 py-1 rounded-full">{trackStats.length} Tracks</span>
+                        {t("statisticsTrackProgressDetails")}
+                        <span className="bg-gray-600 text-(--text-color) text-xs px-2.5 py-1 rounded-full">{trackStats.length} {t("statisticsTracks")}</span>
                     </h2>
 
                     {trackStats.length === 0 ? (
@@ -258,10 +268,10 @@ const StatisticsPage = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-(--p-color) mb-2">No active tracks</h3>
-                            <p className="text-(--p-color) mb-8 max-w-sm">Enroll in some tracks to see your detailed progress breakdown here. Learning is better when you have a path.</p>
+                            <h3 className="text-xl font-bold text-(--p-color) mb-2">{t("statisticsNoActiveTracks")}</h3>
+                            <p className="text-(--p-color) mb-8 max-w-sm">{t("statisticsEnrollTracksDesc")}</p>
                             <Link to="/learn" className="bg-(--second-color) text-white font-semibold flex items-center gap-2 py-3 px-8 rounded-full hover:shadow-lg hover:-translate-y-1 transition duration-300">
-                                <span>Browse Tracks</span>
+                                <span>{t("statisticsBrowseTracks")}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                                 </svg>
@@ -274,7 +284,7 @@ const StatisticsPage = () => {
                                     <div className="flex justify-between items-start mb-5">
                                         <div className="pr-4">
                                             <span className="text-[10px] uppercase tracking-wider font-bold text-gray-400 mb-1.5 block">
-                                                {track.level || "Beginner"}
+                                                {track.level || t("statisticsBeginner")}
                                             </span>
                                             <h3 className="text-[17px] font-bold text-(--p-color) leading-tight">{track.title}</h3>
                                         </div>
@@ -302,12 +312,17 @@ const StatisticsPage = () => {
                                     </div>
 
                                     <div className="flex justify-between items-center text-sm font-medium">
-                                        <span className="text-(--p-color)">{track.completedLessons} / {track.totalLessons} Lessons Done</span>
+                                        <span className="text-(--p-color)">{track.completedLessons} / {track.totalLessons} {t("statisticsLessonsDone")}</span>
                                         <Link
                                             to={`/tracks/${track.id}`}
                                             className={`flex items-center gap-1 ${track.isComplete ? "text-(--second-color) hover:text-emerald-700" : "text-(--second-color) hover:opacity-80"} transition`}
                                         >
-                                            {track.isComplete ? 'Review' : track.percent > 0 ? 'Continue' : 'Start'} &rarr;
+                                            {track.isComplete
+                                                ? t("statisticsReview")
+                                                : track.percent > 0
+                                                    ? t("statisticsContinue")
+                                                    : t("statisticsStart")}
+                                            &rarr;
                                         </Link>
                                     </div>
                                 </div>

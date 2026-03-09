@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useState, useContext } from 'react';
 import AuthContext from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { useLanguage } from '../../hooks/useLanguage';
+import translations from '../../utils/translations';
 
 function TrackFinalQuiz({ track, lessons = [], canShow }) {
   const { token, setUser } = useContext(AuthContext);
@@ -9,6 +11,10 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const { language } = useLanguage();
+  const t = translations[language] || {};
+  const dir = language === "ar" ? "rtl" : "ltr";
 
   // Build the quiz: prefer explicit track finalQuiz, otherwise collect all lesson quizzes
   const questions = useMemo(() => {
@@ -43,7 +49,7 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
 
     // Check if all questions answered
     if (Object.keys(answers).length !== questions.length) {
-      toast.info('Please answer all questions before submitting.');
+      toast.info(t.trackFinalQuizPleaseAnswerAll || 'Please answer all questions before submitting.');
       return;
     }
 
@@ -79,17 +85,17 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
           );
         }
 
-        toast.success('🎉 Congratulations! Track marked as completed.', {
+        toast.success(t.trackFinalQuizCongrats || '🎉 Congratulations! Track marked as completed.', {
           autoClose: 3000,
         });
       } catch (err) {
         console.error('Final quiz API error:', err?.response?.data || err.message);
-        toast.error('Error while marking track as completed.');
+        toast.error(t.trackFinalQuizError || 'Error while marking track as completed.');
       } finally {
         setLoading(false);
       }
     } else if (correct < questions.length) {
-      toast.info('Some answers are incorrect. Review and try again.');
+      toast.info(t.trackFinalQuizIncompleteInfo || 'Some answers are incorrect. Review and try again.');
     }
   };
 
@@ -101,16 +107,16 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
   };
 
   return (
-    <div className="mt-10 w-full bg-gray-900/90 border border-indigo-500/40 rounded-2xl shadow-xl">
+    <div className="mt-10 w-full bg-gray-900/90 border border-indigo-500/40 rounded-2xl shadow-xl" dir={dir}>
       <div className="px-6 py-4 border-b border-gray-800 flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Final Track Quiz</h2>
+          <h2 className="text-xl font-semibold text-white">{t.trackFinalQuizTitle || "Final Track Quiz"}</h2>
           <p className="text-xs text-gray-300">
-            Test your knowledge on all lessons in this track.
+            {t.trackFinalQuizDesc || "Test your knowledge on all lessons in this track."}
           </p>
         </div>
         <span className="text-xs px-2 py-1 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40">
-          Track quiz
+          {t.trackFinalQuizBadge || "Track quiz"}
         </span>
       </div>
 
@@ -154,7 +160,7 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
               </div>
               {!isAnswered && submitted && (
                 <p className="mt-1 text-xs text-red-300">
-                  You did not answer this question.
+                  {t.trackFinalQuizNotAnswered || "You did not answer this question."}
                 </p>
               )}
             </div>
@@ -169,22 +175,22 @@ function TrackFinalQuiz({ track, lessons = [], canShow }) {
               disabled={loading}
               className="bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium py-2 px-5 rounded-md transition-colors disabled:opacity-70"
             >
-              {loading ? 'Submitting...' : 'Submit final quiz'}
+              {loading ? (t.trackFinalQuizSubmitting || 'Submitting...') : (t.trackFinalQuizSubmitBtn || 'Submit final quiz')}
             </button>
           ) : (
             <>
               <p className="text-xs text-gray-200">
-                You answered <span className="font-semibold">{correctCount}</span> out of <span className="font-semibold">{questions.length}</span> questions correctly.
+                {t.lessonQuizAnswered || "You answered"} <span className="font-semibold">{correctCount}</span> {t.lessonQuizOutOf || "out of"} <span className="font-semibold">{questions.length}</span> {t.lessonQuizCorrectly || "questions correctly."}
               </p>
               {correctCount === questions.length ? (
-                <p className="text-xs text-green-400 font-semibold">Excellent! Track marked as completed.</p>
+                <p className="text-xs text-green-400 font-semibold">{t.trackFinalQuizExcellent || "Excellent! Track marked as completed."}</p>
               ) : (
                 <button
                   type="button"
                   onClick={handleRetry}
                   className="text-xs px-3 py-1.5 rounded-md bg-gray-800 border border-gray-600 text-gray-100 hover:bg-gray-700 transition-colors"
                 >
-                  Try final quiz again
+                  {t.trackFinalQuizTryAgain || "Try final quiz again"}
                 </button>
               )}
             </>

@@ -2,6 +2,9 @@ import { createContext, useContext, useState, useCallback } from "react";
 import axios from "axios";
 import AuthContext from "./AuthContext";
 
+// const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/tracks";
+const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/tracks";
+
 const LearnContext = createContext();
 
 export const LearnProvider = ({ children }) => {
@@ -15,7 +18,7 @@ export const LearnProvider = ({ children }) => {
   const fetchTracks = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await axios.get("https://edumaster-backend-6xy5.onrender.com/api/tracks");
+      const res = await axios.get(API_URL);
       setTracks(res.data.data.tracks);
     } catch (err) {
       console.error(err);
@@ -29,7 +32,7 @@ export const LearnProvider = ({ children }) => {
       if (!trackId) return;
       setLoading(true);
       try {
-        const res = await axios.get(`https://edumaster-backend-6xy5.onrender.com/api/tracks/${trackId}`, {
+        const res = await axios.get(`${API_URL}/${trackId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCurrentTrack(res.data.data.track);

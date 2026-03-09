@@ -1,4 +1,5 @@
 import { AuthProvider } from "./AuthContext";
+import { LangProvider } from "./LangContext";
 import { LearnProvider } from "./LearnContext";
 import { QuizProvider } from "./QuizContext";
 
@@ -7,7 +8,7 @@ function Provider({ children }) {
         <AuthProvider>
             <QuizProvider >
                 <LearnProvider>
-                    {children}
+                    <LangProvider>{children}</LangProvider>
                 </LearnProvider>
             </QuizProvider>
         </AuthProvider >

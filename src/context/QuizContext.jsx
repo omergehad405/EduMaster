@@ -3,6 +3,9 @@ import AuthContext from './AuthContext';
 
 export const QuizContext = createContext();
 
+// const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/quizzes";
+const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/quizzes";
+
 export const QuizProvider = ({ children }) => {
     const { token } = useContext(AuthContext);
 
@@ -14,17 +17,42 @@ export const QuizProvider = ({ children }) => {
     const [quizId, setQuizId] = useState(null);
     const [myQuizzes, setMyQuizzes] = useState([]);
 
+    // In QuizContext.jsx - Add loaded state
+    const [quizzesLoaded, setQuizzesLoaded] = useState(false);
+
     const fetchMyQuizzes = async () => {
-        if (!token) return;
+        if (!token || quizzesLoaded) return;  // ✅ Prevent duplicates
+
         try {
-            const res = await fetch('https://edumaster-backend-6xy5.onrender.com/api/quizzes/my', {
-                headers: { Authorization: `Bearer ${token}` },
+            const res = await fetch(`${API_URL}/my`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
             });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
             const data = await res.json();
-            if (data.status === 'success') setMyQuizzes(data.quizzes);
+            console.log('📋 Raw quizzes data:', data);
+
+            if (data.status === 'success' && Array.isArray(data.quizzes)) {
+                setMyQuizzes(data.quizzes);
+            } else {
+                setMyQuizzes([]);
+            }
         } catch (err) {
-            console.error('Failed to fetch user quizzes', err);
+            console.error('❌ Failed to fetch user quizzes:', err);
+            setMyQuizzes([]);
+        } finally {
+            setQuizzesLoaded(true);  // ✅ Prevent future calls
         }
+    };
+
+    // Helper function
+    const extractScore = (description) => {
+        const match = description.match(/(\d+)\/(\d+)/);
+        return match ? parseInt(match[1]) : 0;
     };
 
     const clearFile = () => {
@@ -43,6 +71,7 @@ export const QuizProvider = ({ children }) => {
             generatedQuiz, setGeneratedQuiz,
             quizId, setQuizId,
             myQuizzes, fetchMyQuizzes,
+            extractScore,
             clearFile
         }}>
             {children}

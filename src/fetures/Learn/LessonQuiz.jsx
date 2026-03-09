@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-function LessonQuiz({ lessonId, questions, onComplete, completed = false }) {
+function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
@@ -44,15 +44,15 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false }) {
     >
       <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-white">
-          Lesson Quiz
+          {t.lessonQuizTitle || "Lesson Quiz"}
         </h2>
         <span
           className={`text-xs px-2 py-1 rounded-full ${completed
-              ? 'bg-green-500/10 text-green-400 border border-green-500/40'
-              : 'bg-blue-500/10 text-blue-400 border border-blue-500/40'
+            ? 'bg-green-500/10 text-green-400 border border-green-500/40'
+            : 'bg-blue-500/10 text-blue-400 border border-blue-500/40'
             }`}
         >
-          {completed ? 'Completed' : 'In progress'}
+          {completed ? (t.quizCompleted || 'Completed') : (t.lessonQuizInProgress || 'In progress')}
         </span>
       </div>
 
@@ -110,24 +110,24 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false }) {
             onClick={handleSubmit}
             className="mt-2 w-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium py-2 rounded-md transition-colors"
           >
-            Submit quiz
+            {t.lessonQuizSubmit || "Submit quiz"}
           </button>
         )}
 
         {(submitted || completed) && (
           <div className="mt-3 text-xs text-gray-200 space-y-2">
             <p>
-              You answered <span className="font-semibold">{correctCount}</span> out of{' '}
-              <span className="font-semibold">{questions.length}</span> questions correctly.
+              {t.lessonQuizAnswered || "You answered"} <span className="font-semibold">{correctCount}</span> {t.lessonQuizOutOf || "out of"}{' '}
+              <span className="font-semibold">{questions.length}</span> {t.lessonQuizCorrectly || "questions correctly."}
             </p>
             {correctCount === questions.length ? (
               <p className="text-green-400 font-semibold">
-                All answers are correct. Next lesson is unlocked ✔
+                {t.lessonQuizAllCorrect || "All answers are correct. Next lesson is unlocked \u2714"}
               </p>
             ) : (
               <>
                 <p className="text-red-400 font-semibold">
-                  Correct answers are highlighted in green. Review them and try again.
+                  {t.lessonQuizReviewTryAgain || "Correct answers are highlighted in green. Review them and try again."}
                 </p>
                 {!completed && (
                   <button
@@ -135,7 +135,7 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false }) {
                     onClick={handleRetry}
                     className="inline-flex items-center px-3 py-1.5 rounded-md bg-gray-800 border border-gray-600 text-gray-100 text-xs font-medium hover:bg-gray-700 transition-colors"
                   >
-                    Try again
+                    {t.lessonQuizTryAgain || "Try again"}
                   </button>
                 )}
               </>

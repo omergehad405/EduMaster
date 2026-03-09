@@ -1,35 +1,54 @@
 import React from 'react'
 import { FaPlusCircle, FaFlask, FaBookOpen, FaChartBar } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import t from '../../utils/translations'
+import { useLanguage } from '../../hooks/useLanguage'
+import translations from '../../utils/translations'
 
-const actions = [
-    {
-        icon: <FaPlusCircle className=" text-xl" />,
-        label: "Upload File",
-        to: "/upload",
-    },
-    {
-        icon: <FaFlask className=" text-xl" />,
-        label: "Generate Quiz",
-        to: "/quiz/generate",
-    },
-    {
-        icon: <FaBookOpen className=" text-xl" />,
-        label: "Resume Course",
-        to: "/courses",
-    },
-    {
-        icon: <FaChartBar className=" text-xl" />,
-        label: "View Detailed Statistics",
-        to: "/statistic",
-    },
-]
 
+
+// Quick Actions // إجراءات سريعة
 function QuickActions() {
+    const { language } = useLanguage();
+    const t = translations[language] || {};
+
+    const actions = [
+        {
+            icon: <FaPlusCircle className=" text-xl" />,
+            // Upload File // رفع ملف
+            label: t.quickActionsUploadNotes || "Upload File",
+            to: {
+                pathname: "/test",
+                state: { infoText: "upload" }
+            },
+        },
+        {
+            icon: <FaFlask className=" text-xl" />,
+            // Generate Quiz // إنشاء اختبار
+            label: t.quickActionsCreateQuiz || "Generate Quiz",
+            to: {
+                pathname: "/test",
+                state: { infoText: "quiz" }
+            },
+        },
+        {
+            icon: <FaBookOpen className=" text-xl" />,
+            // Resume Course // استكمال الدورة
+            label: t.quickActionsStartLearning || "Resume Course",
+            to: "/courses",
+        },
+        {
+            icon: <FaChartBar className=" text-xl" />,
+            // View Detailed Statistics // عرض الإحصائيات التفصيلية
+            label: t.quickActionsViewDashboard || "View Detailed Statistics",
+            to: "/statistic",
+        },
+    ]
     return (
         <section className='bg-(--main-color) rounded-xl p-5 shadow'>
             <div className='flex items-center justify-between mb-5'>
-                <h1 className='capitalize font-semibold text-lg text(--text-color)'>Quick Actions</h1>
+                {/* Quick Actions // إجراءات سريعة */}
+                <h1 className='capitalize font-semibold text-lg text(--text-color)'>{t.quickActions || "Quick Actions"}</h1>
             </div>
             <div className="flex flex-col gap-3">
                 {actions.map((action, idx) => (

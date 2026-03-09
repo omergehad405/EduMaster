@@ -2,6 +2,8 @@ import React, { useRef, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { QuizContext } from '../../context/QuizContext';
 import useAuth from '../../hooks/useAuth';
+import { useLanguage } from '../../hooks/useLanguage';
+import translations from "../../utils/translations";
 
 function FileUpload() {
   const [file, setFile] = useState(null);
@@ -9,7 +11,11 @@ function FileUpload() {
   const { setFileUrl, setFileContent, setFileName, setSourceFile, clearFile } = useContext(QuizContext);
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { language } = useLanguage();
+  const t = translations[language] || {};
+  const dir = language === "ar" ? "rtl" : "ltr";
 
+  // const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
   const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
 
   const handleUpload = async (e) => {
@@ -37,7 +43,7 @@ function FileUpload() {
       alert(`✅ ${selectedFile.name} uploaded successfully!`);
     } catch (err) {
       console.error("❌ UPLOAD ERROR:", err.response?.data || err.message);
-      alert("Upload failed: " + (err.response?.data?.message || err.message));
+      alert((t.fileUploadFailed || "Upload failed: ") + (err.response?.data?.message || err.message));
     } finally {
       setLoading(false);
     }
@@ -52,15 +58,15 @@ function FileUpload() {
         className="border p-2 rounded w-full max-w-sm"
         accept=".pdf,.docx,.txt"
       />
-      {loading && <div>⏳ Uploading...</div>}
+      {loading && <div>⏳ {t.fileUploadUploading || "Uploading..."}</div>}
       {file && (
-        <div className="text-green-600 font-medium p-3 bg-green-50 rounded-xl">
-          ✅ {file.name} ready for quiz generation
+        <div className="text-green-600 font-medium p-3 bg-green-50 rounded-xl" dir={dir}>
+          ✅ {file.name} {t.fileUploadReady || "ready for quiz generation"}
           <button
             onClick={clearFile}
             className="ml-4 text-sm text-red-500 hover:underline"
           >
-            Clear
+            {t.fileUploadClear || "Clear"}
           </button>
         </div>
       )}

@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth.js";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import translations from "../../utils/translations";
+import { useLanguage } from "../../hooks/useLanguage";
 
 const Login = () => {
     const { login } = useAuth();
@@ -9,6 +11,10 @@ const Login = () => {
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const location = useLocation();
+
+    // Get language and translations
+    const { language } = useLanguage ? useLanguage() : { language: "en" };
+    const t = translations[language] || {};
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -35,7 +41,7 @@ const Login = () => {
     };
 
     return (
-        <div className=" w-full flex items-center justify-center bg-(--bg-color)">
+        <div className="py-10 w-full flex items-center justify-center bg-(--main-color)">
             <div className="flex w-full max-w-4xl bg-(--bg-color) shadow-lg rounded-lg overflow-hidden">
                 {/* Left image (on desktop, hidden on mobile) - matches Register.jsx */}
                 <div className="hidden lg:block md:w-1/2 relative">
@@ -52,18 +58,18 @@ const Login = () => {
                 </div>
                 {/* Form section */}
                 <div className="w-full lg:w-1/2 p-10">
-                    <h2 className="text-3xl font-bold mb-8 text-(--text-color)">Log In</h2>
+                    <h2 className="text-3xl font-bold mb-8 text-(--text-color)">{t.loginTitle || "Log In"}</h2>
                     <form
                         className="space-y-5"
                         onSubmit={handleSubmit}
                         autoComplete="off"
                     >
                         <div>
-                            <label className="text-xs text-(--p-color)">Email</label>
+                            <label className="text-xs text-(--p-color)">{t.loginEmailLabel || "Email"}</label>
                             <input
                                 type="email"
                                 name="email"
-                                placeholder="Email address..."
+                                placeholder={t.loginEmailPlaceholder || "Email address..."}
                                 className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm bg-transparent text-(--text-color)"
                                 value={form.email}
                                 onChange={handleChange}
@@ -72,11 +78,11 @@ const Login = () => {
                             />
                         </div>
                         <div>
-                            <label className="text-xs text-(--p-color)">Password</label>
+                            <label className="text-xs text-(--p-color)">{t.loginPasswordLabel || "Password"}</label>
                             <input
                                 type="password"
                                 name="password"
-                                placeholder="Password..."
+                                placeholder={t.loginPasswordPlaceholder || "Password..."}
                                 className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm bg-transparent text-(--text-color)"
                                 value={form.password}
                                 onChange={handleChange}
@@ -85,20 +91,22 @@ const Login = () => {
                             />
                         </div>
                         {error && (
-                            <div className="text-sm text-red-500 mt-2">{error}</div>
+                            <div className="text-sm text-red-500 mt-2">
+                                {t.loginError || error}
+                            </div>
                         )}
                         <div className="flex items-center justify-between mt-6">
                             <button
                                 type="submit"
                                 className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"
                             >
-                                Login
+                                {t.loginButton || t.startLearning || "Start Learning"}
                             </button>
                             <Link
                                 to="/register"
                                 className="text-(--p-color) font-semibold text-sm hover:underline"
                             >
-                                Sign up →
+                                {t.loginSignUp || "Sign up →"}
                             </Link>
                         </div>
                     </form>

@@ -3,6 +3,7 @@ import { useState, useEffect, createContext } from "react";
 
 const AuthContext = createContext();
 
+// const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/users";
 const API_URL = "https://edumaster-backend-6xy5.onrender.com/api/users";
 
 export const AuthProvider = ({ children }) => {

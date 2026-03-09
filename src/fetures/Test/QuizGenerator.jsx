@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { QuizContext } from '../../context/QuizContext';
 import useAuth from '../../hooks/useAuth';
+import { useLanguage } from '../../hooks/useLanguage';
+import translations from "../../utils/translations";
 
 const QuizGenerator = () => {
     const { setGeneratedQuiz, setQuizId, sourceFile, fileName } = useContext(QuizContext);
@@ -14,13 +16,18 @@ const QuizGenerator = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
 
+    const { language } = useLanguage();
+    const t = translations[language] || {};
+    const dir = language === "ar" ? "rtl" : "ltr";
+
+    // const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
     const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
 
     const handleGenerate = async (e) => {
         e.preventDefault();
 
         if (!sourceFile) {
-            setError('Please upload a file first using the sidebar');
+            setError(t.quizGenPleaseUpload || 'Please upload a file first using the sidebar');
             return;
         }
 
@@ -55,11 +62,11 @@ const QuizGenerator = () => {
 
             // Visual feedback
             setTimeout(() => {
-                alert(`✅ Success! ${response.data.questions.length} ${type.toUpperCase()} questions generated!\n\nGo to "Take Quiz" tab to start!`);
+                alert(`✅ ${t.quizGenSuccess || "Success!"} ${response.data.questions.length} ${type.toUpperCase()} ${t.quizGenQuestionsGenerated || "questions generated!"}\n\n${t.quizGenGoToTakeQuiz || "Go to \"Take Quiz\" tab to start!"}`);
             }, 500);
 
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to generate quiz. Try again.');
+            setError(err.response?.data?.message || (t.quizGenFailed || 'Failed to generate quiz. Try again.'));
             console.error('Quiz generation failed:', err);
         } finally {
             setLoading(false);
@@ -67,13 +74,13 @@ const QuizGenerator = () => {
     };
 
     return (
-        <div className="w-full p-8 bg-(--main-color) rounded-3xl border border-(--text-color) shadow-(--text-color)">
+        <div className="w-full p-8 bg-(--main-color) rounded-3xl border border-(--text-color) shadow-(--text-color)" dir={dir}>
             <div className="text-center mb-8">
                 <div className="text-4xl mb-3">🎯</div>
                 <h2 className="text-3xl font-black text-(--text-color)">
-                    Quiz Generator
+                    {t.quizGenTitle || "Quiz Generator"}
                 </h2>
-                <p className="text-(--p-color) mt-2">Create quizzes from your uploaded document</p>
+                <p className="text-(--p-color) mt-2">{t.quizGenDesc || "Create quizzes from your uploaded document"}</p>
             </div>
 
             {/* File Status */}
@@ -81,16 +88,16 @@ const QuizGenerator = () => {
                 <div className="p-8 bg-yellow-50 border-2 border-yellow-200 rounded-2xl text-center">
                     <div className="text-2xl mb-3">📤</div>
                     <p className="text-lg font-semibold text-yellow-800 mb-2">
-                        No file uploaded
+                        {t.quizGenNoFile || "No file uploaded"}
                     </p>
                     <p className="text-yellow-700">
-                        Upload a PDF using the sidebar first
+                        {t.quizGenUploadPDF || "Upload a PDF using the sidebar first"}
                     </p>
                 </div>
             ) : (
                 <div className="p-6 bg-green-50 border-2 border-green-200 rounded-2xl mb-6 text-center">
-                    <div className="text-xl mb-2">✅ Ready!</div>
-                    <p className="font-semibold text-green-800">{fileName || 'Document'}</p>
+                    <div className="text-xl mb-2">✅ {t.quizGenReady || "Ready!"}</div>
+                    <p className="font-semibold text-green-800">{fileName || (t.quizGenDocument || 'Document')}</p>
                 </div>
             )}
 
@@ -102,12 +109,12 @@ const QuizGenerator = () => {
 
             {success && (
                 <div className="p-6 bg-emerald-50 border-2 border-emerald-200 rounded-3xl mb-6 text-center">
-                    <div className="text-2xl mb-3">✨ Quiz Generated!</div>
+                    <div className="text-2xl mb-3">✨ {t.quizGenQuizGenerated || "Quiz Generated!"}</div>
                     <p className="text-emerald-800 font-bold text-lg mb-4">
-                        {count} {type.toUpperCase()} questions ready
+                        {count} {type.toUpperCase()} {t.quizGenQuestionsReady || "questions ready"}
                     </p>
                     <p className="text-emerald-700">
-                        Switch to <strong>"Take Quiz"</strong> tab now!
+                        {t.quizGenSwitchTo || "Switch to"} <strong>{t.quizGenTakeQuizTab || "\"Take Quiz\""}</strong> {t.quizGenTabNow || "tab now!"}
                     </p>
                 </div>
             )}
@@ -118,7 +125,7 @@ const QuizGenerator = () => {
                     {/* Quiz Type */}
                     <div>
                         <label className="block text-sm font-semibold text-(--p-color) mb-3">
-                            📋 Question Type
+                            📋 {t.quizGenQuestionType || "Question Type"}
                         </label>
                         <select
                             value={type}
@@ -126,16 +133,16 @@ const QuizGenerator = () => {
                             disabled={loading}
                             className="w-full p-4 border-2 border-gray-200 rounded-2xl bg-(--bg-color) shadow-sm focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-all disabled:opacity-50"
                         >
-                            <option value="mcq">Multiple Choice (4 options)</option>
-                            <option value="tf">True/False (2 options)</option>
-                            <option value="mixed">Mixed MCQ + T/F</option>
+                            <option value="mcq">{t.quizGenMCQ || "Multiple Choice (4 options)"}</option>
+                            <option value="tf">{t.quizGenTF || "True/False (2 options)"}</option>
+                            <option value="mixed">{t.quizGenMixed || "Mixed MCQ + T/F"}</option>
                         </select>
                     </div>
 
                     {/* Number of Questions */}
                     <div>
                         <label className="block text-sm font-semibold text-(--p-color) mb-3">
-                            🔢 Questions (1-20)
+                            🔢 {t.quizGenQuestionsNum || "Questions (1-20)"}
                         </label>
                         <input
                             type="number"
@@ -152,7 +159,7 @@ const QuizGenerator = () => {
                 {/* Time Limit */}
                 <div>
                     <label className="block text-sm font-semibold text-(--p-color) mb-3">
-                        ⏱️ Time Limit (minutes)
+                        ⏱️ {t.quizGenTimeLimit || "Time Limit (minutes)"}
                     </label>
                     <input
                         type="number"
@@ -174,10 +181,10 @@ const QuizGenerator = () => {
                     {loading ? (
                         <>
                             <span className="animate-spin inline-block mr-3">⚡</span>
-                            Generating {count} {type.toUpperCase()} Questions...
+                            {t.quizGenGenerating || "Generating"} {count} {type.toUpperCase()} {t.quizGenQuestions || "Questions"}...
                         </>
                     ) : (
-                        `✨ Generate ${count} ${type.toUpperCase()} Questions`
+                        `✨ ${t.quizGenGenerateBtn || "Generate"} ${count} ${type.toUpperCase()} ${t.quizGenQuestions || "Questions"}`
                     )}
                 </button>
             </form>

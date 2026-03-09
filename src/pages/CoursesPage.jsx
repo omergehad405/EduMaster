@@ -3,11 +3,22 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
+import translations from "../utils/translations";
+
+function getLang() {
+    if (typeof window === "undefined") return "en";
+    const lang =
+        (localStorage.getItem("lang") ||
+            navigator.language?.split('-')[0] ||
+            "en");
+    return ["ar", "en"].includes(lang) ? lang : "en";
+}
+const lang = getLang();
+const t = translations[lang] || translations.en;
 
 function CoursesPage() {
     const { user, token, loading } = useAuth();
     const [courses, setCourses] = useState([]);
-    const [completedTracks, setCompletedTracks] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -28,7 +39,6 @@ function CoursesPage() {
                 const enrolledTracks = userData.enrolledTracks || [];
                 const userProgress = userData.progress || [];
                 const userCompletedTracks = (userData.completedTracks || []).map(String);
-                setCompletedTracks(userCompletedTracks);
 
                 if (enrolledTracks.length === 0) {
                     setCourses([]);
@@ -65,7 +75,7 @@ function CoursesPage() {
                         currentLessonId = firstIncomplete ? firstIncomplete._id : lessons[lessons.length - 1]._id;
                     }
 
-                    const totalLessons = lessons.length; // <-- use real lessons length
+                    const totalLessons = lessons.length;
                     const progressPercent = totalLessons
                         ? Math.round((completedLessonsCount / totalLessons) * 100)
                         : 0;
@@ -86,14 +96,11 @@ function CoursesPage() {
                     };
                 });
 
-                // optionally filter only unfinished tracks
-                setCourses(coursesData.filter(course => course.completedLessons < course.totalLessons || !course.isTrackCompleted));
-
                 setCourses(coursesData);
             } catch (err) {
                 console.error(
                     "Error fetching courses:",
-                    err.response?.data || err.message
+                    err?.response?.data || err.message
                 );
             }
         };
@@ -104,7 +111,9 @@ function CoursesPage() {
     if (loading) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center bg-(--bg-color)">
-                <p className="text-gray-300 text-lg">Loading your courses...</p>
+                <p className="text-gray-300 text-lg">
+                    {t.coursesLoading || "Loading your courses..."}
+                </p>
             </div>
         );
     }
@@ -113,16 +122,16 @@ function CoursesPage() {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center bg-(--dark-color) text-(--main-color)">
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                    You have no courses yet
+                    {t.coursesNoCourses || "You have no courses yet"}
                 </h1>
                 <p className="text-gray-300 mb-6 text-center max-w-md">
-                    Explore tracks and start your first learning journey now.
+                    {t.coursesDescription || "Explore tracks and start your first learning journey now."}
                 </p>
                 <Link
                     to="/learn"
                     className="bg-(--second-color) text-(--main-color) font-semibold py-2 px-8 rounded-full hover:opacity-90 transition"
                 >
-                    Browse Tracks
+                    {t.coursesBrowse || "Browse Tracks"}
                 </Link>
             </div>
         );
@@ -133,11 +142,11 @@ function CoursesPage() {
             <div className="max-w-6xl mx-auto">
                 <div className="mb-10">
                     <h1 className="text-3xl md:text-4xl font-bold text-(--text-color) mb-3">
-                        Your Courses
+                        {t.coursesMyCourses || "Your Courses"}
                     </h1>
                     <p className="text-(--p-color) max-w-2xl">
-                        Continue where you left off, or review completed lessons to
-                        strengthen your knowledge.
+                        {t.coursesContinueDesc ||
+                            "Continue where you left off, or review completed lessons to strengthen your knowledge."}
                     </p>
                 </div>
 
@@ -150,17 +159,17 @@ function CoursesPage() {
                             <div className="relative p-6 flex flex-col flex-1">
                                 <div className="flex items-center justify-between mb-3">
                                     <span className="text-xs uppercase tracking-wide bg-gray-600 px-3 py-1 rounded-full">
-                                        {course.level}
+                                        {t[`coursesLevel_${(course.level || '').toLowerCase()}`] || course.level}
                                     </span>
                                     <span className="text-sm font-semibold">
-                                        {course.completedLessons}/{course.totalLessons} lessons
+                                        {course.completedLessons}/{course.totalLessons} {t.coursesLessons || "lessons"}
                                     </span>
                                 </div>
 
                                 <h2 className="text-xl font-bold mb-2">{course.name}</h2>
                                 <p className="text-sm text-blue-100 mb-4">
-                                    Keep your momentum and move step by step towards completing
-                                    this track.
+                                    {t.coursesMomentumText ||
+                                        "Keep your momentum and move step by step towards completing this track."}
                                 </p>
 
                                 <div className="mt-auto">
@@ -171,55 +180,57 @@ function CoursesPage() {
                                         />
                                     </div>
                                     <div className="flex items-center justify-between text-xs text-(--p-color) mb-4">
-                                        <span>{course.progressPercent}% completed</span>
+                                        <span>
+                                            {course.progressPercent}% {t.coursesProgress || "completed"}
+                                        </span>
                                         <span>
                                             {course.completedLessons === course.totalLessons
-                                                ? (course.isTrackCompleted ? "Track completed" : "Final quiz required")
-                                                : "In progress"}
+                                                ? (
+                                                    course.isTrackCompleted
+                                                        ? (t.coursesCompletedCourse || "Track completed")
+                                                        : (t.coursesFinalQuizRequired || "Final quiz required")
+                                                )
+                                                : (t.coursesInProgress || "In progress")}
                                         </span>
                                     </div>
 
-                                    {/* --- Main Button Logic --- */}
                                     {!course.isTrackCompleted && course.allLessonsDone ? (
-                                        // The user isn't done with the final quiz yet, but has finished all lessons
                                         <button
                                             className="w-full bg-yellow-300 text-black font-semibold py-2.5 rounded-full hover:bg-yellow-200 transition"
                                             onClick={() => {
-                                                toast.info("Go to final quiz...", { autoClose: 1200 });
+                                                toast.info(t.coursesGoToFinalQuizToast || "Go to final quiz...", { autoClose: 1200 });
                                                 navigate(`/tracks/${course.id}`);
                                             }}
                                         >
-                                            Take Final Quiz
+                                            {t.coursesTakeFinalQuiz || "Take Final Quiz"}
                                         </button>
                                     ) : course.currentLessonId && !course.allLessonsDone ? (
-                                        // Not finished all lessons, can continue learning
                                         <button
                                             className="w-full bg-(--second-color) text-(--p-color) font-semibold py-2.5 rounded-full hover:text-(--text-color) transition cursor-pointer"
                                             onClick={() => {
-                                                toast.info("Opening lesson...", { autoClose: 1200 });
+                                                toast.info(t.coursesOpenLessonToast || "Opening lesson...", { autoClose: 1200 });
                                                 navigate(
                                                     `/tracks/${course.id}/lesson/${course.currentLessonId}`
                                                 );
                                             }}
                                         >
-                                            Continue Learning
+                                            {t.coursesContinueCourse || t.startLearning || "Continue Learning"}
                                         </button>
                                     ) : course.isTrackCompleted ? (
                                         <button
                                             className="w-full bg-emerald-700 text-white font-semibold py-2.5 rounded-full cursor-not-allowed"
                                             disabled
                                         >
-                                            Track Completed
+                                            {t.coursesCompletedCourse || "Track Completed"}
                                         </button>
                                     ) : (
                                         <button
                                             className="w-full bg-white/40 text-white font-semibold py-2.5 rounded-full cursor-not-allowed"
                                             disabled
                                         >
-                                            No lessons available
+                                            {t.coursesNoLessonsAvailable || "No lessons available"}
                                         </button>
                                     )}
-                                    {/* --- End Main Button Logic --- */}
                                 </div>
                             </div>
                         </div>
@@ -231,4 +242,3 @@ function CoursesPage() {
 }
 
 export default CoursesPage;
-

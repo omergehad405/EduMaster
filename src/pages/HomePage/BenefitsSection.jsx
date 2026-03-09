@@ -1,41 +1,57 @@
 import React from 'react'
+import { useLanguage } from '../../hooks/useLanguage'
+import translations from "../../utils/translations";
 
-const benefits = [
+// Use the text in the translation component that relates to this component in this formula: {t.startLearning || "Start Learning"}
+
+const benefitKeys = [
     {
-        title: "Learn faster",
-        description: "Accelerate your learning journey with interactive experiences designed for your pace.",
+        title: 'benefitsLearnFaster',
+        description: 'benefitsLearnFasterDesc',
         emoji: "🚀"
     },
     {
-        title: "Remember more",
-        description: "Turn knowledge into lasting memories with engaging, brain-friendly quizzes.",
+        title: 'benefitsRememberMore',
+        description: 'benefitsRememberMoreDesc',
         emoji: "🧠"
     },
     {
-        title: "Practice smarter",
-        description: "Spend less time guessing and more time mastering what truly matters.",
+        title: 'benefitsPracticeSmarter',
+        description: 'benefitsPracticeSmarterDesc',
         emoji: "🎯"
     },
     {
-        title: "No boring exams",
-        description: "Goodbye to stress. Hello to fun and inspiring challenges that excite you to keep going.",
+        title: 'benefitsNoBoringExams',
+        description: 'benefitsNoBoringExamsDesc',
         emoji: "😄"
     },
     {
-        title: "Personalized quizzes",
-        description: "Experience quizzes crafted just for you — because your journey is unique.",
+        title: 'benefitsPersonalizedQuizzes',
+        description: 'benefitsPersonalizedQuizzesDesc',
         emoji: "✨"
     },
 ];
 
 function BenefitsSection() {
+    const { language } = useLanguage();
+    const t = translations[language] || {};
+    const dir = language === "ar" ? "rtl" : "ltr";
+
     return (
-        <section className="px-4 sm:px-16 md:px-20 py-16 bg-(--main-color)">
+        <section
+            className="px-4 sm:px-16 md:px-20 py-16 bg-(--main-color)"
+            dir={dir}
+        >
             <h1 className="font-bold text-3xl md:text-4xl uppercase text-center border-b-2 border-(--second-color) w-fit mx-auto mb-8 tracking-wide">
-                why <span className="text-(--second-color)">you'll love it</span>
+                {t.benefitsTitle
+                    ? t.benefitsTitle
+                    : <>
+                        why <span className="text-(--second-color)">you'll love it</span>
+                      </>
+                }
             </h1>
             <div className="flex flex-wrap justify-center gap-8 md:gap-12 mt-12">
-                {benefits.map((benefit, idx) => (
+                {benefitKeys.map((benefit, idx) => (
                     <div
                         key={benefit.title}
                         className={`
@@ -56,15 +72,15 @@ function BenefitsSection() {
                     >
                         <span
                             className="text-4xl md:text-5xl mb-4 drop-shadow font-bold "
-                            aria-label={benefit.title}
+                            aria-label={t[benefit.title] || benefit.title}
                         >
                             {benefit.emoji}
                         </span>
                         <h2 className="text-xl md:text-2xl font-extrabold text-(--text-color) text-center mb-2 tracking-tight drop-shadow">
-                            {benefit.title}
+                            {t[benefit.title] || benefit.title}
                         </h2>
                         <p className="text-center text-(--p-color) font-medium text-base md:text-lg">
-                            {benefit.description}
+                            {t[benefit.description] || benefit.description}
                         </p>
                         {/* sparkles */}
                         <span className="absolute -top-3 -right-3 text-yellow-300 text-lg animate-bounce select-none pointer-events-none">★</span>

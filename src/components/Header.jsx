@@ -9,58 +9,73 @@ import { MdDashboardCustomize } from "react-icons/md";
 import { GiNotebook } from "react-icons/gi";
 import useAuth from '../hooks/useAuth';
 import ThemeBtn from './ThemeBtn';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '../hooks/useLanguage';
+import translations from '../utils/translations';
 
 function Header() {
-    const { user, logout } = useAuth()
-    const [lang, setLang] = useState("ar")
-    const [sidebarOpen, setSidebarOpen] = useState(false)
-    const navigate = useNavigate()
+    const { user, logout } = useAuth();
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const navigate = useNavigate();
 
-
-    const handleLang = () => {
-        setLang(lang === "ar" ? "en" : "ar");
-    }
+    // Always call hooks unconditionally:
+    const { language } = useLanguage();
+    const t = translations[language] || {};
+    const dir = language === "ar" ? "rtl" : "ltr";
 
     // Close sidebar when logging out
     const handleLogOut = () => {
         setSidebarOpen(false);
         logout();
         navigate("/");
-    }
+    };
 
-    // Links for the sidebar (besides 'Home', all need authentication)
+    // Sidebar links with translation keys:
     const sidebarLinks = [
         {
-            label: 'Home',
+            // Home
+            label: t.menuHome || 'Home',
             to: '/',
             icon: <FaHome />,
             exact: true,
             public: true
         },
         {
-            label: 'Dashboard',
+            // Dashboard
+            label: t.menuDashboard || 'Dashboard',
             to: '/dashboard',
             icon: <MdDashboardCustomize />,
             exact: false,
             public: false
         },
         {
-            label: 'View tracks',
+            // View tracks (uses ctaExploreTracks)
+            label: t.ctaExploreTracks || "View tracks",
             to: '/learn',
             icon: <GiBookshelf />,
             exact: false,
             public: false
         },
         {
-            label: 'My Courses',
+            // My Courses (fallback)
+            label: t.menuMyTracks || t.menuMyCourses || 'My Courses',
             to: '/courses',
             icon: <GiNotebook />,
             exact: false,
             public: false
         },
         {
-            label: 'Test your self',
+            // Test your self
+            label: t.testYourself || t.menuMyQuizzes || 'Test your self',
             to: '/test',
+            icon: <MdQuiz />,
+            exact: false,
+            public: false
+        },
+        {
+            // My Quizzes (NEW LINK)
+            label: t.menuMyQuizzes || t.myQuizzes || 'My Quizzes',
+            to: '/my-quizzes',
             icon: <MdQuiz />,
             exact: false,
             public: false
@@ -72,11 +87,9 @@ function Header() {
         if (link.exact)
             return location.pathname === link.to;
         return location.pathname.startsWith(link.to);
-    }
+    };
 
-    // Handler for sidebar link clicks: 
-    // If user is not logged in and link is not public, redirect to /register
-    // Otherwise proceed as normal navigation
+    // Handler for sidebar link clicks
     const handleSidebarLinkClick = (link) => (e) => {
         setSidebarOpen(false);
         if (!user && !link.public && link.to !== "/") {
@@ -84,10 +97,13 @@ function Header() {
             navigate("/register");
         }
         // Otherwise, normal navigation
-    }
+    };
 
     return (
-        <header className={`py-5 bg-(--main-color) relative transition-all duration-500 ${sidebarOpen ? 'md:pl-[250px] pl-0' : ''} px-20`}>
+        <header
+            className={`py-5 bg-(--main-color) relative transition-all duration-500 ${sidebarOpen ? 'md:pl-[250px] pl-0' : ''} px-20`}
+            dir={dir}
+        >
             {/* Opaque overlay when sidebar is open */}
             {sidebarOpen && (
                 <div
@@ -100,26 +116,25 @@ function Header() {
             {/* Desktop Header */}
             <div className='hidden md:flex items-center justify-between w-full'>
                 <div className='flex items-center gap-3 '>
-                    <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
+                    <Link to="/" className='capitalize font-bold text-2xl'>
+                        edu<span className='text-(--second-color)'>Master</span>
+                    </Link>
                     <div className='flex items-center gap-3'>
                         <ThemeBtn />
-                        <button onClick={handleLang} className='cursor-pointer bg-gray-200 dark:bg-gray-800 py-1 px-2 rounded-md font-semibold capitalize'>
-                            {lang === "ar" ? "ar" : "en"}
-                        </button>
+                        <LanguageSwitcher />
                     </div>
                 </div>
                 <div className='flex items-center gap-5'>
                     {!user && (
                         <Link to="/register" className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50">
-                            signUp
+                            {t.menuSignUp || t.signUp || "Sign Up"}
                         </Link>
                     )}
                     <button className='cursor-pointer' onClick={() => setSidebarOpen(true)}>
                         <IoMenu className='text-2xl' />
                     </button>
                 </div>
-
-                {/* sidebar  */}
+                {/* sidebar */}
                 <div className={`bg-(--main-color) fixed top-0 right-0 h-screen z-40 flex flex-col justify-between shadow-lg transition-all duration-500 ${sidebarOpen ? "translate-x-0" : "translate-x-full"} w-[250px]`}>
                     <div className='p-5 relative h-full flex flex-col justify-between'>
                         <button className='absolute right-5 text-xl cursor-pointer top-0 z-50' onClick={() => setSidebarOpen(false)}><FaXmark /></button>
@@ -154,7 +169,7 @@ function Header() {
                                 onClick={handleLogOut}
                                 className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize"
                             >
-                                Logout
+                                {t.menuLogout || t.logout || "Logout"}
                             </button>
                         </div>
                     </div>
@@ -167,9 +182,7 @@ function Header() {
                     <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
                     <div className='flex items-center gap-3'>
                         <ThemeBtn />
-                        <button onClick={handleLang} className='cursor-pointer bg-[#eee] py-1 px-2 rounded-md font-semibold capitalize'>
-                            {lang === "ar" ? "ar" : "en"}
-                        </button>
+                        <LanguageSwitcher />
                         <button className='cursor-pointer' onClick={() => setSidebarOpen(true)}>
                             <IoMenu className='text-2xl' />
                         </button>
@@ -207,8 +220,9 @@ function Header() {
                         <div className="w-full mt-auto">
                             <button
                                 onClick={handleLogOut}
-                                className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize">
-                                Logout
+                                className="w-full bg-red-600 hover:bg-red-700 text-(--main-color) font-bold py-2 px-4 rounded transition-all duration-300 capitalize"
+                            >
+                                {t.menuLogout || t.logout || "Logout"}
                             </button>
                         </div>
                     </div>
@@ -223,7 +237,7 @@ function Header() {
                 )}
             </div>
         </header>
-    )
+    );
 }
 
 export default Header

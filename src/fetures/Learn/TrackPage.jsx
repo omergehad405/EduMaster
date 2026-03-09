@@ -6,12 +6,18 @@ import AuthContext from '../../context/AuthContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import TrackFinalQuiz from './TrackFinalQuiz';
+import { useLanguage } from '../../hooks/useLanguage';
+import translations from "../../utils/translations";
 
 function TrackPage() {
   const { trackId } = useParams();
   const { currentTrack, lessons, fetchTrackById } = useLearn();
   const { user, token, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const { language } = useLanguage();
+  const t = translations[language] || {};
+  const dir = language === "ar" ? "rtl" : "ltr";
 
   useEffect(() => {
     if (trackId) {
@@ -45,7 +51,7 @@ function TrackPage() {
           progress: res.data.progress,
         } : prev);
       }
-      toast.success('You have enrolled in this track!', { autoClose: 2500 });
+      toast.success(t.trackEnrolledSuccess || 'You have enrolled in this track!', { autoClose: 2500 });
       // Redirect to first lesson automatically
       if (lessons.length > 0) {
         navigate(`/tracks/${trackId}/lesson/${lessons[0]._id}`);
@@ -94,7 +100,7 @@ function TrackPage() {
   return (
     <>
       <TracksSidebar />
-      <div className="px-5 py-10 flex flex-col gap-8 bg-(--bg-color) min-h-screen min-w-[340px]">
+      <div className="px-5 py-10 flex flex-col gap-8 bg-(--bg-color) min-h-screen min-w-[340px]" dir={dir}>
         <div className="bg-(--main-color) p-8 rounded-2xl shadow-2xl border border-blue-100/20 mb-8">
           <h1 className="text-4xl font-bold text-(--text-color) tracking-tight drop-shadow-lg mb-4">
             {currentTrack?.title}
@@ -107,7 +113,7 @@ function TrackPage() {
           {currentTrack?.prefInfo?.text?.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold text-(--text-color) mb-2 tracking-tight">
-                About this Track
+                {t.trackAboutTrack || "About this Track"}
               </h2>
               {renderPrefText(currentTrack.prefInfo.text)}
             </div>
@@ -115,7 +121,7 @@ function TrackPage() {
           {currentTrack?.prefInfo?.images?.length > 0 && (
             <div>
               <h2 className="text-2xl font-semibold text-(--text-color) mb-2 tracking-tight">
-                Visual Highlights
+                {t.trackVisualHighlights || "Visual Highlights"}
               </h2>
               {renderPrefImages(currentTrack.prefInfo.images)}
             </div>
@@ -127,7 +133,7 @@ function TrackPage() {
               <button
                 onClick={handleEnroll}
                 className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"    >
-                Enroll Now
+                {t.trackEnrollNow || "Enroll Now"}
               </button>
             </div>
           ) : (
@@ -135,7 +141,7 @@ function TrackPage() {
               <button
                 onClick={handleContinueLearning}
                 className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50"  >
-                Continue Learning
+                {t.dashboardContinueLearning || "Continue Learning"}
               </button>
             </div>
           )}

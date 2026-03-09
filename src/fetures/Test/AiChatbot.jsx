@@ -3,6 +3,8 @@ import axios from 'axios';
 import useAuth from '../../hooks/useAuth';
 import { QuizContext } from '../../context/QuizContext';
 import { useContext } from 'react';
+import { useLanguage } from '../../hooks/useLanguage';
+import translations from "../../utils/translations";
 
 function TypingAnimation() {
   return (
@@ -23,11 +25,16 @@ function TypingAnimation() {
 function AiChatbot() {
   const { token } = useAuth();
   const { fileUrl, fileContent, fileName, sourceFile } = useContext(QuizContext);
-  const [messages, setMessages] = useState([{ sender: 'ai', text: "Hello! How can I assist you with your code today?" }]);
+  const { language } = useLanguage();
+  const t = translations[language] || {};
+  const dir = language === "ar" ? "rtl" : "ltr";
+
+  const [messages, setMessages] = useState([{ sender: 'ai', text: t.aiChatbotWelcome || "Hello! How can I assist you with your code today?" }]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatRef = useRef(null);
 
+  // const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
   const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
   const SITE_KEY = import.meta.env.VITE_SITE_KEY;
 
@@ -99,16 +106,16 @@ function AiChatbot() {
           </div>
         )}
       </div>
-      <form onSubmit={handleSend} className="flex gap-2 p-3 border-t bg-(--bg-color)">
+      <form onSubmit={handleSend} className="flex gap-2 p-3 border-t bg-(--bg-color)" dir={dir}>
         <input
           type="text"
           value={input}
           onChange={e => setInput(e.target.value)}
-          placeholder="Send a message..."
+          placeholder={t.aiChatbotPlaceholder || "Send a message..."}
           className="flex-1 px-4 py-2 rounded border border-gray-300"
         />
         <button type="submit" disabled={isTyping || !input.trim()} className="px-4 py-2 bg-(--second-color) text-(--text-color) rounded">
-          Send
+          {t.aiChatbotSend || "Send"}
         </button>
       </form>
     </div>
