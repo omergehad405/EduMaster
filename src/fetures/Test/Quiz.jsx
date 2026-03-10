@@ -9,7 +9,16 @@ import translations from '../../utils/translations';
 const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
 
 const Quiz = () => {
-  const { generatedQuiz, fileUrl, quizId, fileName, clearFile, setGeneratedQuiz, setQuizId } = useContext(QuizContext);
+  const {
+    generatedQuiz,
+    fileUrl,
+    quizId,
+    fileName,
+    sourceFile,
+    clearFile,
+    setGeneratedQuiz,
+    setQuizId
+  } = useContext(QuizContext);
   const { token } = useAuth();
   const navigate = useNavigate();
   const questions = generatedQuiz;
@@ -25,6 +34,9 @@ const Quiz = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [saved, setSaved] = useState(false);
+  // ✅ NEW: Separate loading states for different actions
+  const [regenerating, setRegenerating] = useState(false);
+  const [newQuizLoading, setNewQuizLoading] = useState(false);
 
   // Reset quiz when new questions loaded
   useEffect(() => {
@@ -61,7 +73,6 @@ const Quiz = () => {
         selectedAnswer: ans !== null ? questions[idx].options[ans] : null
       }));
 
-      // ✅ SEND QUESTIONS + FILENAME FOR BACKEND SCORING/SAVING
       const response = await axios.post(`${API_URL}/api/quizzes/submit`, {
         quizId,
         answers: formattedAnswers,
@@ -74,7 +85,7 @@ const Quiz = () => {
       setScore(response.data.score);
       setSaved(true);
 
-      // ✅ SAVE TO LOCALSTORAGE FOR REVIEW FALLBACK
+      // SAVE TO LOCALSTORAGE FOR REVIEW FALLBACK
       try {
         localStorage.setItem(`quiz_${quizId}`, JSON.stringify({
           fileName: fileName || 'Document Quiz',
@@ -105,11 +116,20 @@ const Quiz = () => {
     }
   };
 
-  const handleNewQuiz = () => {
-    clearFile();
-    setGeneratedQuiz([]);
-    setQuizId(null);
-    navigate('/quiz-generator'); // Or your quiz generator route
+  const handleNewQuiz = async () => {
+    // ✅ LOADER FOR NEW QUIZ
+    setNewQuizLoading(true);
+
+    try {
+      clearFile();
+      setGeneratedQuiz([]);
+      setQuizId(null);
+      navigate('/test');
+    } catch (error) {
+      console.error('Error starting new quiz:', error);
+    } finally {
+      setNewQuizLoading(false);
+    }
   };
 
   const prevQ = () => setCurrent(c => Math.max(0, c - 1));
@@ -122,37 +142,72 @@ const Quiz = () => {
 
   const getOptionClass = (idx) => {
     if (!submitted) {
-      return answers[current] === idx ? 'bg-blue-500 text-white border-blue-500' : 'bg-white hover:bg-gray-100';
+      return answers[current] === idx ? 'bg-(--second-color) text-(--text-color) border-(--second-color)' : 'bg-(--bg-color) hover:bg-gray-800';
     }
 
     const correctIdx = questions[current]?.options.indexOf(questions[current]?.correctAnswer);
     if (idx === correctIdx) {
-      return 'bg-green-500 text-white';
+      return 'bg-green-500 text-(--text-color)';
     }
     if (answers[current] === idx && idx !== correctIdx) {
-      return 'bg-red-500 text-white';
+      return 'bg-red-500 text-(--text-color)';
     }
-    return 'bg-white';
+    return 'bg-(--text-color)';
   };
 
   if (questions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-12 text-center" dir={dir}>
-        <div className="text-gray-500 mb-4">📄</div>
+        <div className="text-(--p-color) mb-4">📄</div>
         <h3 className="text-xl font-semibold text-gray-700 mb-2">{t.quizNoQuizLoaded || 'No Quiz Loaded'}</h3>
-        <p className="text-gray-500">{t.quizUploadFileFirst || 'Upload a file first to generate questions'}</p>
+        <p className="text-(--p-color)">{t.quizUploadFileFirst || 'Upload a file first to generate questions'}</p>
       </div>
     );
   }
 
+  const regenerateQuiz = async () => {
+    if (!fileUrl || !token) return;
+
+    // ✅ LOADER FOR REGENERATE
+    setRegenerating(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", sourceFile);
+      formData.append("type", "mcq");
+      formData.append("time", 30);
+      formData.append("count", questions.length);
+
+      const res = await axios.post(`${API_URL}/api/quizzes/generate`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      setGeneratedQuiz(res.data.questions);
+      setQuizId(res.data.quizId);
+
+      setAnswers(Array(res.data.questions.length).fill(null));
+      setCurrent(0);
+      setSubmitted(false);
+      setSaved(false);
+
+    } catch (err) {
+      console.error("Failed to regenerate quiz", err);
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6 p-5 w-full max-w-2xl mx-auto bg-white rounded-3xl shadow-2xl" dir={dir}>
+    <div className="flex flex-col gap-6 p-5 w-full max-w-2xl mx-auto bg-(--main-color) rounded-3xl shadow-2xl" dir={dir}>
       {/* Header */}
       <div className="text-center">
-        <div className="text-sm text-gray-500 mb-1">{getProgress()}</div>
+        <div className="text-sm text-(--p-color) mb-1">{getProgress()}</div>
         <div className="flex items-center justify-center gap-2">
           <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-(--text-color)">
             {t.quizQuestion || 'Question'} {current + 1} {t.quizOf || 'of'} {questions.length}
           </h2>
         </div>
@@ -167,31 +222,31 @@ const Quiz = () => {
 
       {/* Question */}
       {!submitted ? (
-        <div className="bg-gray-50 p-6 rounded-2xl border-2">
-          <div className="text-lg font-semibold text-gray-800 leading-relaxed">
+        <div className="bg-(--bg-color) p-6 rounded-2xl border-2">
+          <div className="text-lg font-semibold text-(--text-color) leading-relaxed">
             {questions[current].question}
           </div>
         </div>
       ) : (
         <div className="bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-3xl shadow-2xl border">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">Quiz Completed!</h3>
+          <h3 className="text-2xl font-bold text-(--text-color) mb-4">Quiz Completed!</h3>
           <p className="text-4xl font-black text-green-600 mb-6">{score}/{questions.length}</p>
         </div>
       )}
 
       {/* Options */}
-      <div className="space-y-2" dir={dir}>
+      <div className="space-y-2 " dir={dir}>
         {questions[current].options.map((choice, idx) => (
           <button
             key={idx}
-            className={`w-full p-4 rounded-xl border-2 font-medium transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md ${getOptionClass(idx)}`}
+            className={`cursor-pointer w-full p-4 rounded-xl border-2 font-medium transition-all duration-200 flex items-center gap-3 shadow-sm hover:shadow-md ${getOptionClass(idx)}`}
             onClick={() => handleChoose(idx)}
             disabled={submitted}
           >
             <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold">
               {String.fromCharCode(65 + idx)}
             </span>
-            <span className="text-left">{choice}</span>
+            <span className="text-left text-(--text-color)">{choice}</span>
           </button>
         ))}
       </div>
@@ -202,12 +257,12 @@ const Quiz = () => {
           <button
             onClick={prevQ}
             disabled={current === 0}
-            className="px-6 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed bg-gray-100 hover:bg-gray-200 cursor-pointer"
+            className="px-6 py-2 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:text-(--p-color) text-(--text-color) disabled:bg-gray-600 bg-(--second-color) cursor-pointer"
           >
             {t.quizPrevious || 'Previous'}
           </button>
 
-          <div className="flex-1 text-center text-sm text-gray-500">
+          <div className="flex-1 text-center text-sm text-(--p-color)">
             {current + 1 < questions.length ? t.quizAnswerToContinue || 'Answer to continue' : t.quizReviewAll || 'Review all answers'}
           </div>
 
@@ -215,7 +270,7 @@ const Quiz = () => {
             <button
               onClick={nextQ}
               disabled={answers[current] === null}
-              className="px-6 py-2 bg-blue-500 text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer hover:bg-blue-600"
+              className="px-6 py-2 disabled:bg-gray-600 bg-(--second-color) text-(--text-color) rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer "
             >
               {t.quizNext || 'Next'}
             </button>
@@ -239,20 +294,13 @@ const Quiz = () => {
       ) : (
         /* Results */
         <div className="text-center animate-fadeIn">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-50 to-blue-50 p-8 rounded-3xl shadow-2xl border">
-            <div className="w-20 h-20 rounded-2xl bg-green-500 flex flex-col items-center justify-center text-white shadow-lg">
-              <div className="text-3xl font-bold">{score}</div>
-              <div className="text-sm">{questions.length}</div>
-            </div>
-          </div>
-
-          <h3 className="text-2xl font-bold text-gray-800 mb-2">{t.quizCompleted || 'Quiz Completed!'}</h3>
-          <p className="text-4xl font-black text-green-500 mb-4">
+          <h3 className="text-2xl font-bold text-(--text-color) mb-2">{t.quizCompleted || 'Quiz Completed!'}</h3>
+          <p className="text-4xl font-black text-(--second-color) mb-4">
             {Math.round((score / questions.length) * 100)}%
           </p>
-          <p className="text-gray-600">
-            {t.quizYouGot || 'You got'} <span className="font-semibold text-green-600">{score}</span>{' '}
-            {t.quizOutOf || 'out of'} <span className="font-semibold">{questions.length}</span>{' '}
+          <p className="text-(--p-color)">
+            {t.quizYouGot || 'You got'} <span className="font-semibold text-(--text-color)">{score}</span>{' '}
+            {t.quizOutOf || 'out of'} <span className="font-semibold text-(--text-color)">{questions.length}</span>{' '}
             {t.quizCorrect || 'correct'}
           </p>
 
@@ -263,8 +311,8 @@ const Quiz = () => {
           )}
 
           {/* Review Answers */}
-          <div className="mt-8 p-6 bg-white rounded-2xl shadow-lg">
-            <h4 className="text-lg font-semibold mb-4">{t.quizReviewAnswers || 'Review your answers'}</h4>
+          <div className="mt-8 p-6 bg-(--bg-color) rounded-2xl shadow-lg">
+            <h4 className="text-lg font-semibold mb-4 text-(--text-color)">{t.quizReviewAnswers || 'Review your answers'}</h4>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {questions.map((q, idx) => {
                 const userAns = answers[idx];
@@ -272,16 +320,16 @@ const Quiz = () => {
                 const isCorrect = userAns === correctIdx;
                 return (
                   <div key={idx} className={`p-4 rounded-xl border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                    <div className="font-medium mb-1">
+                    <div className="font-medium mb-1 text-gray-500">
                       Q{idx + 1}: {q.question}
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
-                      {t.quizYourAnswer || 'Your answer'}: <span className={isCorrect ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'}>
+                      {t.quizYourAnswer || 'Your answer'} <span className={isCorrect ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'}>
                         {userAns !== null ? q.options[userAns] : t.quizNotAnswered || 'Not answered'}
                       </span>
                     </div>
-                    <div className="text-sm">
-                      {t.quizCorrectAnswer || 'Correct'}: <strong>{q.correctAnswer}</strong>
+                    <div className="text-sm text-green-700">
+                      {t.quizCorrectAnswer || 'Correct'} <strong>{q.correctAnswer}</strong>
                     </div>
                     {q.explanation && (
                       <div className="text-xs bg-blue-50 p-2 rounded mt-2 text-blue-800">
@@ -294,23 +342,35 @@ const Quiz = () => {
             </div>
           </div>
 
-          {/* NEW BUTTONS */}
+          {/* ✅ UPDATED BUTTONS WITH LOADERS */}
           <div className="flex gap-4 mt-8" dir={dir}>
             <button
-              onClick={() => {
-                setSubmitted(false);
-                setCurrent(0);
-                setSaved(false);
-              }}
-              className="flex-1 px-8 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600"
+              onClick={regenerateQuiz}
+              disabled={regenerating}
+              className="flex-1 px-8 py-3 bg-blue-500 text-white rounded-xl font-semibold hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
             >
-              {t.quizTakeAgain || 'Take Quiz Again'}
+              {regenerating ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  {t.quizGenerating || 'Generating...'}
+                </>
+              ) : (
+                t.quizTakeAgain || 'Take Quiz Again'
+              )}
             </button>
             <button
               onClick={handleNewQuiz}
-              className="flex-1 px-8 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600"
+              disabled={newQuizLoading}
+              className="flex-1 px-8 py-3 bg-green-500 text-white rounded-xl font-semibold hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2"
             >
-              {t.quizNewQuiz || 'New Quiz'}
+              {newQuizLoading ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  {t.quizLoading || 'Loading...'}
+                </>
+              ) : (
+                t.quizNewQuiz || 'New Quiz'
+              )}
             </button>
           </div>
         </div>

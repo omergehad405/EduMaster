@@ -27,7 +27,6 @@ const QuizReviewPage = () => {
 
     useEffect(() => {
         const fetchQuizReview = async () => {
-            // ✅ FAILSAFE: Block undefined/empty quizId
             if (!quizId || quizId === 'undefined') {
                 console.error('🚫 Invalid quizId:', quizId);
                 setError('Invalid quiz ID');
@@ -69,7 +68,6 @@ const QuizReviewPage = () => {
                 }));
                 setUserAnswers(transformedAnswers);
                 setError('');
-
             } catch (err) {
                 console.error('❌ Backend failed:', err.response?.data || err.message);
 
@@ -81,7 +79,6 @@ const QuizReviewPage = () => {
                     setUserAnswers(fallbackData.answers);
                     setError('Using cached data ⚠️');
                 } else {
-                    // ✅ Demo fallback
                     setCurrentQuiz({
                         fileName: 'Recent Quiz',
                         score: 7,
@@ -142,7 +139,6 @@ const QuizReviewPage = () => {
     const generateMockAnswers = (questions, correctCount) => {
         return questions.map((q, i) => {
             const isCorrect = i < correctCount;
-            const correctIdx = q.options.indexOf(q.correctAnswer);
             return {
                 questionIndex: i,
                 selectedAnswer: isCorrect ? q.correctAnswer : q.options[0],
@@ -153,8 +149,8 @@ const QuizReviewPage = () => {
 
     if (loading) {
         return (
-            <div className="quizreview-bg min-h-screen flex items-center justify-center">
-                <div className="quizreview-box text-center p-8 bg-bgcard rounded border max-w-md mx-4 w-full">
+            <div className="bg-(--bg-color) min-h-screen flex items-center justify-center">
+                <div className="quizreview-box text-center p-8 bg-(--main-color) rounded border max-w-md mx-4 w-full">
                     <div className="w-20 h-20 border-4 border-primary border-t-primary-content rounded-full animate-spin mx-auto mb-8" />
                     <p className="font-bold text-xl text-txt mb-2">Loading quiz results...</p>
                     <p className="text-sm text-txtmuted">Quiz ID: {quizId?.slice(-6) || '----'}</p>
@@ -165,7 +161,7 @@ const QuizReviewPage = () => {
 
     if (error && !currentQuiz) {
         return (
-            <div className="quizreview-bg min-h-screen flex flex-col items-center justify-center py-12 px-4">
+            <div className="bg-(--bg-color) min-h-screen flex flex-col items-center justify-center py-12 px-4">
                 <div className="quizreview-box text-center p-12 border-8 border-error/20 max-w-md w-full">
                     <div className="text-error text-7xl mb-8">⚠️</div>
                     <h2 className="text-3xl font-bold text-txt mb-6">Quiz Not Found</h2>
@@ -190,36 +186,28 @@ const QuizReviewPage = () => {
     }
 
     return (
-        <div className="quizreview-bg min-h-screen py-8 px-4">
+        <div className="bg-(--bg-color) min-h-screen py-8 px-4">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <button
-                        onClick={() => navigate('/my-quizzes')}
-                        className="inline-flex items-center gap-3 bg-bgcard shadow-lg px-8 py-4 rounded-xl font-bold text-lg text-txt hover:shadow-xl hover:-translate-y-1 transition-all mb-10 border border-line"
-                    >
-                        <span className="text-2xl">←</span>
-                        Back to My Quizzes
-                    </button>
-
-                    <div className="bg-bgcard p-8 border border-line rounded-xl">
-                        <h1 className="text-4xl font-bold text-txt mb-6">
+                    <div className="bg-(--main-color) p-8 border border-line rounded-xl">
+                        <h1 className="text-4xl font-bold text-(--text-color) mb-6">
                             {currentQuiz?.fileName || 'Quiz Review'}
                         </h1>
                         <div className="flex flex-wrap justify-center gap-6 md:gap-8">
                             <div className="text-center min-w-[120px]">
-                                <div className="text-3xl font-bold text-primary mb-2">{quizQuestions.length}</div>
-                                <div className="text-xs text-txtmuted uppercase tracking-wide">Questions</div>
+                                <div className="text-3xl font-bold text-(--text-color) mb-2">{quizQuestions.length}</div>
+                                <div className="text-xs text-(--p-color) uppercase tracking-wide">Questions</div>
                             </div>
                             <div className="text-center min-w-[120px]">
-                                <div className="text-3xl font-bold text-success mb-2">
+                                <div className="text-3xl font-bold text-(--text-color) mb-2">
                                     {currentQuiz?.score}/{quizQuestions.length}
                                 </div>
-                                <div className="text-xs text-txtmuted uppercase tracking-wide">Your Score</div>
+                                <div className="text-xs text-(--p-color) uppercase tracking-wide">Your Score</div>
                             </div>
                             <div className="text-center min-w-[120px]">
-                                <div className="text-3xl font-bold text-accent mb-2">{currentQuiz?.percentage}%</div>
-                                <div className="text-xs text-txtmuted uppercase tracking-wide">Accuracy</div>
+                                <div className="text-3xl font-bold text-(--text-color) mb-2">{currentQuiz?.percentage}%</div>
+                                <div className="text-xs text-(--p-color) uppercase tracking-wide">Accuracy</div>
                             </div>
                         </div>
                         {error && (
@@ -235,62 +223,91 @@ const QuizReviewPage = () => {
                     {quizQuestions.map((question, qIdx) => {
                         const userAnswer = userAnswers.find(a => a.questionIndex === qIdx);
                         const correctIdx = question.options.indexOf(question.correctAnswer);
-                        const isCorrect = userAnswer?.isCorrect || (userAnswer?.selectedAnswer === question.correctAnswer);
+                        const isCorrect = userAnswer?.isCorrect ?? (userAnswer?.selectedAnswer === question.correctAnswer);
+
+                        // Find user's selected option index
+                        const userSelectedIdx = userAnswer?.selectedAnswer ?
+                            question.options.findIndex(option => option === userAnswer.selectedAnswer) : -1;
 
                         return (
-                            <div key={qIdx} className={`bg-bgcard border border-line rounded-xl p-8 hover:shadow-lg transition-all group ${isCorrect ? 'border-success/50 bg-success/5' : 'border-error/50 bg-error/5'
-                                }`}>
+                            <div
+                                key={qIdx}
+                                className={`bg-(--main-color) border rounded-xl p-8 hover:shadow-lg transition-all group ${isCorrect ? 'border-success/50 bg-success/5 ring-2 ring-success/20' : 'border-error/50 bg-error/5 ring-2 ring-error/20'
+                                    }`}
+                            >
                                 {/* Question Header */}
-                                <div className="flex items-start gap-4 mb-6">
-                                    <div className={`flex-shrink-0 w-14 h-14 rounded-xl font-bold text-2xl flex items-center justify-center shadow-lg ${isCorrect
-                                        ? 'bg-success text-success-content'
-                                        : 'bg-error text-error-content'
-                                        }`}>
+                                <div className="flex items-center gap-4 mb-6 pb-6 border-b border-line">
+                                    <div
+                                        className={`flex-shrink-0 w-12 h-12 rounded-2xl font-bold text-xl flex items-center justify-center shadow-lg ${isCorrect
+                                                ? 'bg-success text-success-content'
+                                                : 'bg-error text-error-content'
+                                            }`}
+                                    >
                                         Q{qIdx + 1}
                                     </div>
                                     <div className="flex-1">
-                                        <h3 className="text-xl font-bold text-txt leading-relaxed mb-2">
+                                        <h3 className="text-xl font-bold text-(--text-color) leading-relaxed">
                                             {question.question}
                                         </h3>
                                     </div>
                                 </div>
 
-                                {/* Options */}
-                                <div className="grid gap-3 mb-6">
+                                {/* Options - PERFECT MARKING LOGIC */}
+                                <div className="grid gap-4 mb-8">
                                     {question.options.map((option, optIdx) => {
-                                        const isUserSelected = userAnswer?.selectedAnswer === option;
+                                        const isUserSelected = userSelectedIdx === optIdx;
                                         const isCorrectAnswer = optIdx === correctIdx;
-                                        let status = '';
+
+                                        // ✅ PERFECT VISUAL MARKING LOGIC
+                                        let optionClass = '';
+                                        let statusBadge = null;
+                                        let statusText = '';
 
                                         if (isUserSelected && isCorrectAnswer) {
-                                            status = '✅ YOURS ✓ CORRECT';
+                                            // ✅ GREEN: User selected CORRECT answer
+                                            optionClass = 'bg-success/20 border-4 border-success shadow-lg shadow-success/25 ring-4 ring-success/30';
+                                            statusBadge = 'bg-success text-success-content';
+                                            statusText = '✅ YOURS ✓ CORRECT';
                                         } else if (isUserSelected && !isCorrectAnswer) {
-                                            status = '❌ YOURS ✗ WRONG';
+                                            // ❌ RED: User selected WRONG answer  
+                                            optionClass = 'bg-error/20 border-4 border-error shadow-lg shadow-error/25 ring-4 ring-error/30';
+                                            statusBadge = 'bg-error text-error-content';
+                                            statusText = '❌ YOURS ✗ WRONG';
                                         } else if (!isUserSelected && isCorrectAnswer) {
-                                            status = '✅ CORRECT ANSWER';
+                                            // 🟢 LIGHT GREEN: Correct answer (not selected by user)
+                                            optionClass = 'bg-success/10 border-2 border-success/60 hover:bg-success/20';
+                                            statusBadge = 'bg-success/80 text-success-content/90';
+                                            statusText = '✅ CORRECT ANSWER';
+                                        } else {
+                                            // Neutral: Wrong answer, not selected
+                                            optionClass = 'border-line hover:border-primary/50 hover:bg-primary/5';
                                         }
 
                                         return (
-                                            <div key={optIdx} className={`p-4 rounded-xl border-2 flex items-center gap-4 group transition-all ${isUserSelected && isCorrectAnswer
-                                                ? 'bg-success/20 border-success shadow-success/20 shadow-lg'
-                                                : isUserSelected && !isCorrectAnswer
-                                                    ? 'bg-error/20 border-error shadow-error/20 shadow-lg'
-                                                    : isCorrectAnswer
-                                                        ? 'bg-success/10 border-success/50 hover:bg-success/20'
-                                                        : 'border-line hover:border-primary/50 hover:bg-primary/5'
-                                                }`}>
-                                                <span className="w-10 h-10 rounded-xl bg-card text-txt font-bold text-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                                                    {String.fromCharCode(65 + optIdx)}
-                                                </span>
-                                                <span className={`flex-1 font-medium ${isUserSelected ? 'font-bold' : ''}`}>
-                                                    {option}
-                                                </span>
-                                                {status && (
-                                                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${isCorrectAnswer ? 'bg-success text-success-content' : 'bg-error text-error-content'
-                                                        }`}>
-                                                        {status}
-                                                    </span>
-                                                )}
+                                            <div
+                                                key={optIdx}
+                                                className={`p-5 rounded-2xl border-2 transition-all duration-300 group hover:shadow-md ${optionClass}`}
+                                            >
+                                                <div className="flex items-start gap-4">
+                                                    {/* Option Letter */}
+                                                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-card/50 backdrop-blur-sm shadow-md flex items-center justify-center font-bold text-lg border border-line/50 group-hover:border-primary/50">
+                                                        {String.fromCharCode(65 + optIdx)}
+                                                    </div>
+
+                                                    {/* Option Text */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className={`font-semibold text-(--text-color) leading-relaxed pr-4 ${isUserSelected ? 'font-black' : ''}`}>
+                                                            {option}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Status Badge - Only for special cases */}
+                                                    {(isUserSelected || isCorrectAnswer) && (
+                                                        <div className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-lg ${statusBadge}`}>
+                                                            {statusText}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         );
                                     })}
@@ -298,14 +315,14 @@ const QuizReviewPage = () => {
 
                                 {/* Explanation */}
                                 {question.explanation && (
-                                    <div className="p-6 bg-primary/10 border-l-8 border-primary rounded-xl">
+                                    <div className="p-6 bg-primary/10 border-l-8 border-primary rounded-xl mt-6">
                                         <div className="flex items-start gap-3">
-                                            <div className="text-2xl mt-1">💡</div>
-                                            <div>
-                                                <div className="text-sm font-bold text-primary uppercase tracking-wide mb-2">
+                                            <div className="text-2xl mt-1 flex-shrink-0">💡</div>
+                                            <div className="flex-1">
+                                                <div className="text-sm font-bold text-primary uppercase tracking-wide mb-3">
                                                     Explanation
                                                 </div>
-                                                <p className="text-primary-content/90 leading-relaxed">{question.explanation}</p>
+                                                <p className="text-primary-content/90 leading-relaxed text-sm">{question.explanation}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -319,9 +336,10 @@ const QuizReviewPage = () => {
                 <div className="text-center mt-20">
                     <button
                         onClick={() => navigate('/my-quizzes')}
-                        className="px-12 py-5 bg-primary text-bgcard text-xl font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2 mx-auto"
+                        className="inline-flex items-center gap-3 bg-(--main-color) shadow-xl px-10 py-5 rounded-2xl font-bold text-lg text-(--text-color) hover:shadow-2xl hover:bg-(--second-color) cursor-pointer transition-all border-2 border-line hover:border-primary duration-300"
                     >
-                        ← Back to My Quizzes
+                        <span className="text-2xl">←</span>
+                        Back to My Quizzes
                     </button>
                 </div>
             </div>
