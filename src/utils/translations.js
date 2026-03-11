@@ -31,7 +31,7 @@ const translations = {
     learnPageWelcome: "Welcome to your learning dashboard!",
     learnPageActiveTracks: "Active Tracks",
     learnPageFinishedTracks: "Finished Tracks",
-    learnPageNoTracks: "You have no active learning tracks yet.",
+    learnPageNoTracks: "there is no tracks yet.",
     learnPageStartTrack: "Start a New Track",
     learnPageBrowseTracks: "Browse All Tracks",
 
@@ -491,7 +491,7 @@ const translations = {
     learnPageWelcome: "مرحبًا بك في لوحة التعلم الخاصة بك!",
     learnPageActiveTracks: "المسارات النشطة",
     learnPageFinishedTracks: "المسارات المنتهية",
-    learnPageNoTracks: "ليس لديك أي مسارات تعلم نشطة بعد.",
+    learnPageNoTracks: "ليس هناك أي مسارات تعلم نشطة بعد.",
     learnPageStartTrack: "ابدأ مسارًا جديدًا",
     learnPageBrowseTracks: "تصفح كل المسارات",
 

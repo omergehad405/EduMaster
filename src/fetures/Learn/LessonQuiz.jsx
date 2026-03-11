@@ -1,65 +1,85 @@
 import React, { useEffect, useState } from 'react';
 
+function getRandomQuestions(questions, num = 4) {
+  const arr = [...questions];
+  // Fisher-Yates shuffle
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, num);
+}
+
 function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
+  const numQuestions = Math.min(4, questions.length);
+  const [selectedQuestions, setSelectedQuestions] = useState(() =>
+    getRandomQuestions(questions, numQuestions)
+  );
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
-  // Reset quiz state when lesson changes (or when reopened for a new user)
+  // When lesson changes, select new questions and reset state
   useEffect(() => {
+    setSelectedQuestions(getRandomQuestions(questions, numQuestions));
     setAnswers({});
     setSubmitted(false);
     setCorrectCount(0);
-  }, [lessonId]);
+  }, [lessonId, questions]);
 
   const handleSelect = (qIndex, option) => {
     if (completed) return;
-    setAnswers(prev => ({ ...prev, [qIndex]: option }));
+    setAnswers((prev) => ({ ...prev, [qIndex]: option }));
   };
 
   const handleSubmit = () => {
     if (completed || submitted) return;
     let correct = 0;
-    questions.forEach((q, idx) => {
+    selectedQuestions.forEach((q, idx) => {
       if (answers[idx] === q.answer) correct++;
     });
     setCorrectCount(correct);
     setSubmitted(true);
-    if (correct === questions.length) {
+    if (correct === selectedQuestions.length) {
       onComplete(); // unlock lesson
     }
   };
 
   const handleRetry = () => {
     if (completed) return;
+    setSelectedQuestions(getRandomQuestions(questions, numQuestions));
     setAnswers({});
     setSubmitted(false);
     setCorrectCount(0);
   };
 
+  // Determine if all questions have an answer
+  const allAnswered = Object.keys(answers).length === selectedQuestions.length && selectedQuestions.length > 0;
+
   return (
     <div
-      className={`w-full bg-gray-900/80 backdrop-blur-sm border rounded-xl mb-8 shadow-lg ${completed ? 'border-green-500' : 'border-gray-700'
-        }`}
+      className={`w-full bg-(--main-color) rounded-xl mb-8 shadow-lg`}
     >
-      <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-white">
-          {t.lessonQuizTitle || "Lesson Quiz"}
+      <div className="px-5 py-4 border-b bg-(--bg-color) flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-(--text-color)">
+          {t.lessonQuizTitle || 'Lesson Quiz'}
         </h2>
         <span
           className={`text-xs px-2 py-1 rounded-full ${completed
-            ? 'bg-green-500/10 text-green-400 border border-green-500/40'
-            : 'bg-blue-500/10 text-blue-400 border border-blue-500/40'
+            ? 'bg-(--bg-color) text-(--p-color) border border-(--p-color)'
+            : 'bg-(--bg-color) text-(--p-color) border border-(--p-color)'
             }`}
         >
-          {completed ? (t.quizCompleted || 'Completed') : (t.lessonQuizInProgress || 'In progress')}
+          {completed
+            ? t.quizCompleted || 'Completed'
+            : t.lessonQuizInProgress || 'In progress'}
         </span>
       </div>
 
       <div className="px-5 py-4">
-        {questions.map((q, idx) => (
+        {selectedQuestions.map((q, idx) => (
           <div key={idx} className="mb-4">
-            <p className="text-sm font-medium text-gray-100 mb-2">
+            <p className="text-sm font-medium text-(--text-color) mb-2">
               Q{idx + 1}. {q.question}
             </p>
             <div className="flex flex-col gap-2">
@@ -70,18 +90,19 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
 
                 let baseClasses =
                   'w-full text-left text-sm px-3 py-2 rounded-md border transition-colors';
-                let stateClasses = 'bg-gray-800/80 border-gray-700 text-gray-200 hover:bg-gray-700';
+                let stateClasses =
+                  'bg-gray-800/80 border-gray-700 text-gray-200 hover:bg-gray-700';
 
                 if (showResult) {
                   if (isCorrect) {
                     stateClasses =
-                      'bg-green-900/40 border-green-500 text-green-200';
+                      'bg-green-700 border-green-500 text-green-200';
                   } else if (isSelected && !isCorrect) {
                     stateClasses =
-                      'bg-red-900/40 border-red-500 text-red-200';
+                      'bg-red-700 border-red-500 text-red-200';
                   } else {
                     stateClasses =
-                      'bg-gray-800/60 border-gray-700 text-gray-400';
+                      'bg-(--bg-color) border-gray-700 text-gray-400';
                   }
                 } else if (isSelected) {
                   stateClasses =
@@ -94,7 +115,9 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
                     type="button"
                     disabled={completed || submitted}
                     onClick={() => handleSelect(idx, opt)}
-                    className={`${baseClasses} ${stateClasses} ${completed || submitted ? 'cursor-default' : 'cursor-pointer'
+                    className={`${baseClasses} ${stateClasses} ${completed || submitted
+                      ? 'cursor-default'
+                      : 'cursor-pointer'
                       }`}
                   >
                     {opt}
@@ -108,26 +131,32 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
         {!submitted && !completed && (
           <button
             onClick={handleSubmit}
-            className="mt-2 w-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium py-2 rounded-md transition-colors"
+            className={`mt-2 w-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium py-2 rounded-md transition-colors ${!allAnswered ? 'opacity-60 cursor-not-allowed' : ''}`}
+            disabled={!allAnswered}
           >
-            {t.lessonQuizSubmit || "Submit quiz"}
+            {t.lessonQuizSubmit || 'Submit quiz'}
           </button>
         )}
 
         {(submitted || completed) && (
           <div className="mt-3 text-xs text-gray-200 space-y-2">
             <p>
-              {t.lessonQuizAnswered || "You answered"} <span className="font-semibold">{correctCount}</span> {t.lessonQuizOutOf || "out of"}{' '}
-              <span className="font-semibold">{questions.length}</span> {t.lessonQuizCorrectly || "questions correctly."}
+              {t.lessonQuizAnswered || 'You answered'}{' '}
+              <span className="font-semibold">{correctCount}</span>{' '}
+              {t.lessonQuizOutOf || 'out of'}{' '}
+              <span className="font-semibold">{selectedQuestions.length}</span>{' '}
+              {t.lessonQuizCorrectly || 'questions correctly.'}
             </p>
-            {correctCount === questions.length ? (
+            {correctCount === selectedQuestions.length ? (
               <p className="text-green-400 font-semibold">
-                {t.lessonQuizAllCorrect || "All answers are correct. Next lesson is unlocked \u2714"}
+                {t.lessonQuizAllCorrect ||
+                  'All answers are correct. Next lesson is unlocked \u2714'}
               </p>
             ) : (
               <>
                 <p className="text-red-400 font-semibold">
-                  {t.lessonQuizReviewTryAgain || "Correct answers are highlighted in green. Review them and try again."}
+                  {t.lessonQuizReviewTryAgain ||
+                    'Correct answers are highlighted in green. Review them and try again.'}
                 </p>
                 {!completed && (
                   <button
@@ -135,7 +164,7 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
                     onClick={handleRetry}
                     className="inline-flex items-center px-3 py-1.5 rounded-md bg-gray-800 border border-gray-600 text-gray-100 text-xs font-medium hover:bg-gray-700 transition-colors"
                   >
-                    {t.lessonQuizTryAgain || "Try again"}
+                    {t.lessonQuizTryAgain || 'Try again'}
                   </button>
                 )}
               </>

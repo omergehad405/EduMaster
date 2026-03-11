@@ -14,7 +14,7 @@ function FAQsection() {
 
     return (
         <section
-            className="py-16 px-4 md:px-0 bg-(--main-color) lg:rounded-xl shadow-[0_6px_40px_0_rgba(0,0,0,0.10)]"
+            className="py-16 px-4 md:px-0 bg-(--main-color)  shadow-[0_6px_40px_0_rgba(0,0,0,0.10)]"
             dir={dir}
         >
             <h2 className="text-3xl md:text-4xl font-extrabold text-center text-(--second-color) mb-10">

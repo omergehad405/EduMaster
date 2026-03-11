@@ -5,6 +5,8 @@ import useAuth from "../hooks/useAuth";
 import { toast } from "react-toastify";
 import translations from "../utils/translations";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
+
 function getLang() {
     if (typeof window === "undefined") return "en";
     const lang =
@@ -19,6 +21,7 @@ const t = translations[lang] || translations.en;
 function CoursesPage() {
     const { user, token, loading } = useAuth();
     const [courses, setCourses] = useState([]);
+    const [fetching, setFetching] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -29,9 +32,9 @@ function CoursesPage() {
     useEffect(() => {
         const fetchCourses = async () => {
             if (!user || !token) return;
-
+            setFetching(true);
             try {
-                const res = await axios.get("https://edumaster-backend-6xy5.onrender.com/api/users/me", {
+                const res = await axios.get(`${API_URL}/api/users/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -42,20 +45,23 @@ function CoursesPage() {
 
                 if (enrolledTracks.length === 0) {
                     setCourses([]);
+                    setFetching(false);
                     return;
                 }
 
-                const tracksData = await Promise.all(
-                    enrolledTracks.map(async (trackId) => {
-                        const trackRes = await axios.get(
-                            `https://edumaster-backend-6xy5.onrender.com/api/tracks/${trackId}`,
-                            {
-                                headers: { Authorization: `Bearer ${token}` },
-                            }
-                        );
-                        return trackRes.data.data;
-                    })
-                );
+                const tracksData = (
+                    await Promise.allSettled(
+                        enrolledTracks.map(async (trackId) => {
+                            const trackRes = await axios.get(
+                                `${API_URL}/api/tracks/${trackId}`,
+                                { headers: { Authorization: `Bearer ${token}` } }
+                            );
+                            return trackRes.data.data;
+                        })
+                    )
+                )
+                    .filter((result) => result.status === "fulfilled")
+                    .map((result) => result.value);
 
                 const coursesData = tracksData.map((trackData) => {
                     const track = trackData.track;
@@ -97,23 +103,43 @@ function CoursesPage() {
                 });
 
                 setCourses(coursesData);
+                setFetching(false);
             } catch (err) {
                 console.error(
                     "Error fetching courses:",
                     err?.response?.data || err.message
                 );
+                setFetching(false);
             }
         };
 
         fetchCourses();
     }, [user, token]);
 
-    if (loading) {
+    // Show loader during fetching user or fetching courses
+    if (loading || fetching) {
         return (
             <div className="min-h-[60vh] flex items-center justify-center bg-(--bg-color)">
-                <p className="text-gray-300 text-lg">
-                    {t.coursesLoading || "Loading your courses..."}
-                </p>
+                <div className="flex flex-col items-center gap-3">
+                    <svg className="animate-spin h-10 w-10 text-(--second-color)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        />
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        />
+                    </svg>
+                    <p className="text-gray-300 text-lg font-medium">
+                        {t.coursesLoading || "Loading your courses..."}
+                    </p>
+                </div>
             </div>
         );
     }
@@ -121,10 +147,10 @@ function CoursesPage() {
     if (courses.length === 0) {
         return (
             <div className="min-h-[60vh] flex flex-col items-center justify-center bg-(--dark-color) text-(--main-color)">
-                <h1 className="text-3xl md:text-4xl font-bold mb-4">
+                <h1 className="text-3xl md:text-4xl font-bold mb-4 text-(--text-color)">
                     {t.coursesNoCourses || "You have no courses yet"}
                 </h1>
-                <p className="text-gray-300 mb-6 text-center max-w-md">
+                <p className="text-(--p-color) mb-6 text-center max-w-md">
                     {t.coursesDescription || "Explore tracks and start your first learning journey now."}
                 </p>
                 <Link

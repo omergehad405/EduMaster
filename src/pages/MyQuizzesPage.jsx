@@ -12,6 +12,18 @@ function getCurrentLang() {
 
 const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
 
+const Loader = ({ text = "Loading..." }) => (
+    <div className="min-h-screen flex items-center justify-center bg-(--bg-color)">
+        <div className="flex flex-col items-center gap-3">
+            <svg className="animate-spin h-10 w-10 text-(--second-color)" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+            </svg>
+            <p className="text-gray-300 text-lg font-medium">{text}</p>
+        </div>
+    </div>
+);
+
 const MyQuizzesPage = () => {
     const lang = getCurrentLang();
     const t = translations[lang] || translations.en;
@@ -36,10 +48,8 @@ const MyQuizzesPage = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
-                console.log('📋 Raw quizzes:', res.data.quizzes); // DEBUG
                 setQuizzes(res.data.quizzes || []);
             } catch (err) {
-                console.error('Failed to fetch quizzes:', err);
                 setError('Failed to load quizzes');
                 setQuizzes([]);
             } finally {
@@ -50,40 +60,27 @@ const MyQuizzesPage = () => {
         fetchMyQuizzes();
     }, [token]);
 
-    // ✅ FIXED: Convert ObjectId to string + Debug logging
+    // Function to review quiz
     const handleReviewQuiz = (quiz) => {
-        console.log('🔍 CLICKED QUIZ:', quiz); // DEBUG
-
-        // ✅ PRIORITY 1: quizId from Quiz.jsx submit
         if (quiz.quizId) {
-            console.log('✅ Using quizId:', quiz.quizId);
             return navigate(`/quiz-review/${quiz.quizId}`);
         }
-
-        // ✅ PRIORITY 2: Convert MongoDB ObjectId to string
         const quizStringId = quiz._id?.toString();
         if (quizStringId) {
-            console.log('✅ Using _id:', quizStringId);
             return navigate(`/quiz-review/${quizStringId}`);
         }
-
-        console.error('❌ NO VALID ID FOUND:', quiz);
         alert('Cannot review - missing quiz ID');
     };
 
+    // Function to retake quiz
     const handleRetakeQuiz = (quiz) => {
         navigate(`/test?file=${encodeURIComponent(quiz.fileName || 'Document Quiz')}`);
     };
 
+    // Loader while fetching data
     if (loading) {
         return (
-            <div className="quizreview-bg min-h-screen flex items-center justify-center">
-                <div className="quizreview-box text-center p-8 bg-bgcard rounded border max-w-md mx-4 w-full">
-                    <div className="loader mx-auto mb-4" />
-                    <p className="font-medium mb-1">Loading your quizzes...</p>
-                    <p className="text-xs text-(--p-color)">Fetching completed quizzes</p>
-                </div>
-            </div>
+            <Loader text="Loading your quizzes..." />
         );
     }
 
@@ -186,7 +183,7 @@ const MyQuizzesPage = () => {
                                         {/* Actions */}
                                         <div className="flex flex-col sm:flex-row gap-2 mt-2 md:mt-0">
                                             <button
-                                                onClick={() => handleReviewQuiz(quiz)}  // ✅ PASS FULL QUIZ OBJECT
+                                                onClick={() => handleReviewQuiz(quiz)}
                                                 className="flex-1 px-4 py-2 cursor-pointer bg-(--bg-color) text-(--text-color) rounded font-medium text-sm hover:bg-primary-dark transition flex items-center justify-center gap-2"
                                                 title="Review your answers"
                                             >
