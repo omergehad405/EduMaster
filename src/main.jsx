@@ -7,7 +7,7 @@ import Provider from './context/provider.jsx'
 import RootLayout from './utils/RootLayout.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter basename="/EduMaster/">
+  <BrowserRouter>
     <StrictMode>
       <Provider >
         <RootLayout>
