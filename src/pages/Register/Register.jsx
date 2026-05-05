@@ -13,6 +13,11 @@ const Register = () => {
         repassword: "",
         agree: false,
         avatar: null,
+        firstName: "",
+        lastName: "",
+        phone: "",
+        birthDate: "",
+        country: "",
     });
     const [error, setError] = useState("");
     const [preview, setPreview] = useState(null);
@@ -50,11 +55,10 @@ const Register = () => {
         if (!form.agree) return setError("You must agree to the Terms of Use.");
         if (form.password !== form.repassword) return setError("Passwords do not match.");
 
-        // Pass plain values, NOT a FormData object
-        const result = await register(form.username, form.password, form.email, form.avatar);
+        const result = await register(form);
 
         if (result.success) {
-            navigate("/");
+            navigate("/profile");
         } else {
             setError(result.message);
         }
@@ -136,6 +140,30 @@ const Register = () => {
                                 required
                                 autoComplete="off"
                             />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-xs text-(--p-color)">Phone Number <span className="text-gray-400 font-normal">(opt)</span></label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    placeholder="Phone..."
+                                    className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm"
+                                    value={form.phone}
+                                    onChange={handleChange}
+                                    autoComplete="off"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-xs text-(--p-color)">Birth Date <span className="text-gray-400 font-normal">(opt)</span></label>
+                                <input
+                                    type="date"
+                                    name="birthDate"
+                                    className="w-full mt-1 px-0 py-3 border-b focus:outline-none text-sm"
+                                    value={form.birthDate}
+                                    onChange={handleChange}
+                                />
+                            </div>
                         </div>
                         {/* Avatar upload field with style */}
                         <div>

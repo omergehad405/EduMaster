@@ -72,11 +72,6 @@ const MyQuizzesPage = () => {
         alert('Cannot review - missing quiz ID');
     };
 
-    // Function to retake quiz
-    const handleRetakeQuiz = (quiz) => {
-        navigate(`/test?file=${encodeURIComponent(quiz.fileName || 'Document Quiz')}`);
-    };
-
     // Loader while fetching data
     if (loading) {
         return (
@@ -91,7 +86,7 @@ const MyQuizzesPage = () => {
                 <div className="text-center mb-12">
                     <h1 className="text-3xl font-bold text-txt mb-4 text-(--text-color)">📚 My Quizzes</h1>
                     <p className="text-(--p-color) text-lg max-w-2xl mx-auto">
-                        Review your past performance and retake quizzes
+                        Review your past performance
                     </p>
                 </div>
 
@@ -188,13 +183,6 @@ const MyQuizzesPage = () => {
                                                 title="Review your answers"
                                             >
                                                 👁️ Review
-                                            </button>
-                                            <button
-                                                onClick={() => handleRetakeQuiz(quiz)}
-                                                className="flex-1 px-4 py-2 cursor-pointer bg-(--bg-color) text-(--text-color) rounded font-medium text-sm hover:bg-accent-dark transition flex items-center justify-center gap-2"
-                                                title="Take this quiz again"
-                                            >
-                                                🔄 Retake
                                             </button>
                                         </div>
                                     </div>

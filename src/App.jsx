@@ -16,6 +16,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import MyQuizzesPage from './pages/MyQuizzesPage'
 import QuizReviewPage from './pages/QuizReviewPage'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -38,6 +39,8 @@ function App() {
           <Route path="/statistcs" element={<StatisticsPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
+          {/* user profile  */}
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>
       <Footer />

@@ -1,16 +1,11 @@
 import React from 'react'
 import { FaPlusCircle, FaFlask, FaBookOpen, FaChartBar } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import t from '../../utils/translations'
-import { useLanguage } from '../../hooks/useLanguage'
-import translations from '../../utils/translations'
 
 
 
 // Quick Actions // إجراءات سريعة
-function QuickActions() {
-    const { language } = useLanguage();
-    const t = translations[language] || {};
+function QuickActions({ t }) {
 
     const actions = [
         {
@@ -19,7 +14,7 @@ function QuickActions() {
             label: t.quickActionsUploadNotes || "Upload File",
             to: {
                 pathname: "/test",
-                state: { infoText: "upload" }
+                state: { tab: "chat" }
             },
         },
         {
@@ -28,7 +23,7 @@ function QuickActions() {
             label: t.quickActionsCreateQuiz || "Generate Quiz",
             to: {
                 pathname: "/test",
-                state: { infoText: "quiz" }
+                state: { tab: "quiz" }
             },
         },
         {
@@ -41,20 +36,20 @@ function QuickActions() {
             icon: <FaChartBar className=" text-xl" />,
             // View Detailed Statistics // عرض الإحصائيات التفصيلية
             label: t.quickActionsViewDashboard || "View Detailed Statistics",
-            to: "/statistic",
+            to: "/statistcs",
         },
     ]
     return (
         <section className='bg-(--main-color) rounded-xl p-5 shadow'>
             <div className='flex items-center justify-between mb-5'>
-                {/* Quick Actions // إجراءات سريعة */}
-                <h1 className='capitalize font-semibold text-lg text(--text-color)'>{t.quickActions || "Quick Actions"}</h1>
+                <h1 className='capitalize font-semibold text-lg text-(--text-color)'>{t.quickActionsTitle || "Quick Actions"}</h1>
             </div>
             <div className="flex flex-col gap-3">
                 {actions.map((action, idx) => (
                     <Link
                         key={idx}
-                        to={action.to}
+                        to={typeof action.to === 'string' ? action.to : action.to.pathname}
+                        state={typeof action.to === 'object' ? action.to.state : undefined}
                         className="flex items-center gap-4 bg-(--bg-color) hover:bg-(--main-color) transition-colors p-3 rounded-lg shadow-sm border border-gray-100 cursor-pointer"
                     >
                         <div className='text-(--second-color) '>{action.icon}</div>

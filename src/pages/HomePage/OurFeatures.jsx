@@ -1,91 +1,89 @@
 import React from 'react'
+import { motion } from 'framer-motion'
+import { FaBook, FaBrain, FaChartLine, FaCloudUploadAlt, FaMobileAlt, FaUserGraduate } from 'react-icons/fa'
 import { useLanguage } from '../../hooks/useLanguage';
 import translations from "../../utils/translations"
 
 function OurFeatures() {
     const { language } = useLanguage();
     const t = translations[language] || {};
+    const dir = language === "ar" ? "rtl" : "ltr";
+
+    const features = [
+        {
+            icon: <FaBook className="text-blue-500" />,
+            title: t.featureTracksTitle || "Learning Tracks",
+            desc: t.featureTracksDesc || "Expertly curated paths to guide your learning journey from beginner to pro."
+        },
+        {
+            icon: <FaBrain className="text-purple-500" />,
+            title: t.featureAIQuizTitle || "AI Quiz Engine",
+            desc: t.featureAIQuizDesc || "Generate custom quizzes instantly from your own PDFs, Word docs, or notes."
+        },
+        {
+            icon: <FaChartLine className="text-green-500" />,
+            title: t.featureAnalyticsTitle || "Smart Analytics",
+            desc: t.featureAnalyticsDesc || "Track your progress with detailed insights and performance breakdown."
+        },
+        {
+            icon: <FaCloudUploadAlt className="text-orange-500" />,
+            title: t.featureUploadTitle || "Any File Type",
+            desc: t.featureUploadDesc || "Upload PDF, Word, slides, or just paste text to create your study material."
+        },
+        {
+            icon: <FaMobileAlt className="text-pink-500" />,
+            title: t.featureMobileTitle || "Learn Anywhere",
+            desc: t.featureMobileDesc || "Fully responsive design allows you to study and test yourself on any device."
+        },
+        {
+            icon: <FaUserGraduate className="text-indigo-500" />,
+            title: t.featurePersonalizedTitle || "Personalized",
+            desc: t.featurePersonalizedDesc || "AI adapts to your level to provide the most effective learning experience."
+        }
+    ];
 
     return (
-        <section className='px-20 py-10 bg-(--bg-color)'>
-            <h1 className='font-bold uppercase mx-auto text-center text-3xl border-b-2 w-fit'>
-                {t.ourFeaturesTitle
-                    ? t.ourFeaturesTitle.split(' ').map((word, i) =>
-                        i === 1
-                            ? <span key={i} className='text-(--second-color) pl-1'>{word}</span>
-                            : <span key={i}>{word} </span>
-                      )
-                    : <>our<span className='text-(--second-color) pl-1'>Features</span></>
-                }
-            </h1>
-            <div className="flex flex-wrap flex-row gap-8 mt-10 justify-center w-full">
-                {/* Box 1 */}
-                <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--text-color) font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
-                        <span>01</span>
-                    </div>
-                    <div className='border border-gray-300 w-full h-full p-5 pt-20'>
-                        <h1 className='text-(--second-color) font-bold text-2xl text-center'>
-                            {t.featuresStructuredLearningTracks || "Structured Learning Tracks"}
-                        </h1>
-                        <ul className='flex flex-col gap-2 mt-5 font-semibold ml-7 text-sm'>
-                            <li className='list-disc'>{t.featuresBeginner || "Beginner"}</li>
-                            <li className='list-disc'>{t.featuresIntermediate || "Intermediate"}</li>
-                            <li className='list-disc'>{t.featuresAdvanced || "Advanced"}</li>
-                        </ul>
-                    </div>
-                </div>
-                {/* Box 2 */}
-                <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--text-color) font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
-                        <span>02</span>
-                    </div>
-                    <div className='border border-gray-300 w-full h-full p-5 pt-20'>
-                        <h1 className='text-(--second-color) font-bold text-2xl text-center'>
-                            {t.featuresUploadAnyFile || "Upload Any File"}
-                        </h1>
-                        <ul className='flex flex-col gap-2 mt-5 font-semibold ml-7 text-sm'>
-                            <li className='list-disc'>{t.featuresInstantQuiz || "Instant Quiz"}</li>
-                            <li className='list-disc'>{t.featuresUploadFormats || "Upload PDF, DOCX, TXT"}</li>
-                            <li className='list-disc'>{t.featuresAIGeneratedQuestions || "AI generates MCQs, True/False, Short answers."}</li>
-                        </ul>
-                    </div>
-                </div>
-                {/* Box 3 */}
-                <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--text-color) font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
-                        <span>03</span>
-                    </div>
-                    <div className='border border-gray-300 w-full h-full p-5 pt-20'>
-                        <h1 className='text-(--second-color) font-bold text-2xl text-center'>
-                            {t.featuresSmartFeedback || "Smart Feedback"}
-                        </h1>
-                        <ul className='flex flex-col gap-2 mt-5 font-semibold ml-7 text-sm'>
-                            <li className='list-disc'>{t.featuresSeeScore || "See score"}</li>
-                            <li className='list-disc'>{t.featuresSeeCorrectAnswers || "See correct answers"}</li>
-                            <li className='list-disc'>{t.featuresTrackWeakTopics || "Track weak topics"}</li>
-                        </ul>
-                    </div>
-                </div>
-                {/* Box 4 */}
-                <div className='bg-(--main-color) relative p-5 w-[280px] min-h-[400px] shadow-xl'>
-                    <div className="absolute top-0 right-10 w-[50px] h-[80px] text-2xl bg-(--second-color) text-(--text-color) font-bold flex items-center justify-center
-                        before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:bottom-0 before:border-x-25 before:border-x-transparent before:border-b-20 before:border-b-(--main-color) before:w-0 before:h-0">
-                        <span>04</span>
-                    </div>
-                    <div className='border border-gray-300 w-full h-full p-5 pt-20'>
-                        <h1 className='text-(--second-color) font-bold text-2xl text-center'>
-                            {t.featuresProgressDashboard || "Progress Dashboard"}
-                        </h1>
-                        <ul className='flex flex-col gap-2 mt-5 font-semibold ml-7 text-sm'>
-                            <li className='list-disc'>{t.featuresCoursesCompleted || "Courses completed"}</li>
-                            <li className='list-disc'>{t.featuresQuizScores || "Quiz scores"}</li>
-                            <li className='list-disc'>{t.featuresLearningStreak || "Learning streak"}</li>
-                        </ul>
-                    </div>
+        <section dir={dir} className="py-24 bg-(--bg-color) relative overflow-hidden">
+            <div className="container mx-auto px-6">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center max-w-3xl mx-auto mb-16"
+                >
+                    <h2 className="text-(--second-color) font-bold uppercase tracking-widest text-sm mb-3">
+                        {t.featuresSubtitle || "Premium Features"}
+                    </h2>
+                    <h1 className="text-4xl md:text-5xl font-bold text-(--text-color) mb-6">
+                        {t.featuresTitle || "Master Any Subject with Ease"}
+                    </h1>
+                    <p className="text-gray-500 text-lg">
+                        {t.featuresDescription || "Our platform combines the power of AI with structured learning to give you the ultimate study companion."}
+                    </p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {features.map((feature, idx) => (
+                        <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: idx * 0.1 }}
+                            whileHover={{ y: -10 }}
+                            className="bg-(--main-color) p-8 rounded-3xl border border-white/5 shadow-xl hover:shadow-(--second-color)/10 transition-all duration-300 group"
+                        >
+                            <div className="w-14 h-14 rounded-2xl bg-(--bg-color) flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                                {feature.icon}
+                            </div>
+                            <h3 className="text-xl font-bold text-(--text-color) mb-4">
+                                {feature.title}
+                            </h3>
+                            <p className="text-gray-500 leading-relaxed">
+                                {feature.desc}
+                            </p>
+                        </motion.div>
+                    ))}
                 </div>
             </div>
         </section>

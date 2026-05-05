@@ -8,7 +8,7 @@ import translations from "../../utils/translations";
 function FileUpload() {
   const [file, setFile] = useState(null);
   const fileInput = useRef();
-  const { setFileUrl, setFileContent, setFileName, setSourceFile, clearFile } = useContext(QuizContext);
+  const { setFileUrl, setFileContent, setFileName, setSourceFile, clearFile, setShowAssessment, setUserLevel } = useContext(QuizContext);
   const { token } = useAuth();
   const [loading, setLoading] = useState(false);
   const { language } = useLanguage();
@@ -31,16 +31,17 @@ function FileUpload() {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" }
       });
 
-      console.log("✅ UPLOAD RESPONSE:", res.data); // DEBUG
 
-      // ✅ ALL THREE SETTERS CALLED
       setFile(selectedFile);
       setSourceFile(selectedFile);
       setFileUrl(res.data.file.url);
       setFileContent(null);
       setFileName(selectedFile.name);
+      
+      // ✅ Trigger Adaptive Assessment
+      setUserLevel(null);
+      setShowAssessment(true);
 
-      alert(`✅ ${selectedFile.name} uploaded successfully!`);
     } catch (err) {
       console.error("❌ UPLOAD ERROR:", err.response?.data || err.message);
       alert((t.fileUploadFailed || "Upload failed: ") + (err.response?.data?.message || err.message));

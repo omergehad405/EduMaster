@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import useAuth from '../../hooks/useAuth';
 import { formatDistanceToNow } from 'date-fns';
-import { useTranslation } from 'react-i18next';
-
-function RecentActivity() {
-    const { t } = useTranslation();
+function RecentActivity({ t }) {
     const { user, token } = useAuth();
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -38,26 +35,26 @@ function RecentActivity() {
         fetchRecentActivity();
     }, [user, token]);
 
-    if (loading) return <p>{t.loadingRecentActivity || "Loading recent activity..."}</p>;
+    if (loading) return <p>{t.learnLoading || "Loading recent activity..."}</p>;
 
     return (
         <section className='bg-(--main-color) rounded-xl p-5 shadow'>
             <div className='flex items-center justify-between mb-5'>
                 <h1 className='capitalize font-semibold text-lg text-(--text-color)'>
-                    {t.recentActivity || "Recent Activity"}
+                    {t.recentActivityTitle || "Recent Activity"}
                 </h1>
                 <Link
                     to="/statistic"
                     className='bg-(--bg-color) hover:bg-(--second-color) text-(--text-color) hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer'
                 >
-                    {t.viewAll || "View All"}
+                    {t.recentActivityViewAll || "View All"}
                 </Link>
             </div>
 
             <div className="flex flex-col gap-3">
                 {activities.length === 0 ? (
                     <p className="text-(--p-color) text-sm">
-                        {t.noRecentActivity || "No recent activity yet."}
+                        {t.recentActivityNoActivity || "No recent activity yet."}
                     </p>
                 ) : (
                     activities.map((activity, idx) => (

@@ -184,7 +184,7 @@ function CoursesPage() {
                         >
                             <div className="relative p-6 flex flex-col flex-1">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-xs uppercase tracking-wide bg-gray-600 px-3 py-1 rounded-full">
+                                    <span className="text-xs uppercase tracking-wide bg-(--second-color) text-(--main-color) px-3 py-1 rounded-full">
                                         {t[`coursesLevel_${(course.level || '').toLowerCase()}`] || course.level}
                                     </span>
                                     <span className="text-sm font-semibold">
@@ -193,7 +193,7 @@ function CoursesPage() {
                                 </div>
 
                                 <h2 className="text-xl font-bold mb-2">{course.name}</h2>
-                                <p className="text-sm text-blue-100 mb-4">
+                                <p className="text-sm text-(--text-color) mb-4">
                                     {t.coursesMomentumText ||
                                         "Keep your momentum and move step by step towards completing this track."}
                                 </p>
@@ -232,7 +232,7 @@ function CoursesPage() {
                                         </button>
                                     ) : course.currentLessonId && !course.allLessonsDone ? (
                                         <button
-                                            className="w-full bg-(--second-color) text-(--p-color) font-semibold py-2.5 rounded-full hover:text-(--text-color) transition cursor-pointer"
+                                            className="w-full bg-(--second-color) text-(--main-color) font-semibold py-2.5 rounded-full hover:text-(--text-color) transition cursor-pointer"
                                             onClick={() => {
                                                 toast.info(t.coursesOpenLessonToast || "Opening lesson...", { autoClose: 1200 });
                                                 navigate(

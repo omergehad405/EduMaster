@@ -3,14 +3,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
-
-function UserCourses() {
+function UserCourses({ t }) {
     const { user, token, loading } = useAuth();
     const [courses, setCourses] = useState([]);
     const navigate = useNavigate();
     const location = useLocation();
-    const { t } = useTranslation();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -95,7 +92,7 @@ function UserCourses() {
     // Use translations from translations.js for all user-visible text.
     if (loading) return (
         <p className="text-(--p-color)">
-            {t("userCoursesLoading") || t("learnLoading") || "Loading courses..."}
+            {t.userCoursesLoading || t.learnLoading || "Loading courses..."}
         </p>
     );
 
@@ -103,13 +100,13 @@ function UserCourses() {
         return (
             <div className="flex flex-col items-center justify-center p-10 bg-(--main-color) rounded-xl">
                 <p className="text-gray-500 mb-3">
-                    {t("userCoursesNoTrack") /* You have not started any learning tracks yet. */}
+                    {t.userCoursesNoTrack /* You have not started any learning tracks yet. */}
                 </p>
                 <Link
                     to="/learn"
                     className="bg-green-600 text-white py-2 px-6 rounded-full hover:bg-green-500"
                 >
-                    {t("startLearning")}
+                    {t.startLearning}
                 </Link>
             </div>
         );
@@ -119,13 +116,13 @@ function UserCourses() {
         <section className="bg-(--main-color) rounded-xl p-5 shadow">
             <div className='flex items-center justify-between mb-5'>
                 <h1 className='capitalize font-semibold text-lg text-(--text-color)'>
-                    {t("userCoursesMyTracks") /* My Tracks */}
+                    {t.userCoursesMyTracks /* My Tracks */}
                 </h1>
                 <Link
                     to="/courses"
                     className='bg-(--bg-color) text-(--text-color) rounded-full py-1 px-5 text-sm capitalize cursor-pointer'
                 >
-                    {t("userCoursesViewAll") /* View All */}
+                    {t.userCoursesViewAll /* View All */}
                 </Link>
             </div>
             <div className="flex flex-wrap gap-5 ">
@@ -139,25 +136,25 @@ function UserCourses() {
                     if (course.currentLessonId && !course.allLessonsDone) {
                         actionButton = (
                             <button
-                                className="mt-4 bg-(--second-color) text-(--p-color) cursor-pointer py-2 px-4 rounded-full"
+                                className="mt-4 bg-(--second-color) text-(--main-color) cursor-pointer py-2 px-4 rounded-full"
                                 onClick={() => {
-                                    toast.info(t("lessonOpening") || "Opening lesson...", { autoClose: 1200 });
+                                    toast.info(t.lessonOpening || "Opening lesson...", { autoClose: 1200 });
                                     navigate(`/tracks/${course.id}/lesson/${course.currentLessonId}`);
                                 }}
                             >
-                                {t("userCoursesContinue")}
+                                {t.userCoursesContinue}
                             </button>
                         );
                     } else if (course.allLessonsDone && !course.isTrackCompleted) {
                         actionButton = (
                             <button
-                                className="mt-4 bg-(--second-color) text-(--p-color) py-2 px-4 rounded-full transition"
+                                className="mt-4 bg-(--second-color) text-(--main-color) py-2 px-4 rounded-full transition"
                                 onClick={() => {
-                                    toast.info(t("userCoursesTakeFinalQuizNotice") || t("trackFinalQuizDesc"), { autoClose: 1800 });
+                                    toast.info(t.userCoursesTakeFinalQuizNotice || t.trackFinalQuizDesc, { autoClose: 1800 });
                                     navigate(`/tracks/${course.id}`);
                                 }}
                             >
-                                {t("userCoursesTakeFinalQuiz") || t("trackFinalQuizTitle") || "Take Final Quiz"}
+                                {t.userCoursesTakeFinalQuiz || t.trackFinalQuizTitle || "Take Final Quiz"}
                             </button>
                         );
                     } else {
@@ -166,7 +163,7 @@ function UserCourses() {
                                 className="mt-4 bg-gray-500 text-(--text-color) py-2 px-4 rounded-full cursor-not-allowed"
                                 disabled
                             >
-                                {t("lessonsNoAvailable")}
+                                {t.lessonsNoAvailable}
                             </button>
                         );
                     }
@@ -177,9 +174,9 @@ function UserCourses() {
                         >
                             <h2 className="text-2xl font-bold mb-2">{course.name}</h2>
                             <div className="flex gap-2 mb-3 ">
-                                <span className="bg-gray-600 text-(--p-color) px-2 py-1 rounded-full text-sm">{course.level}</span>
-                                <span className="bg-gray-600 text-(--p-color) px-2 py-1 rounded-full text-sm">
-                                    {course.completedLessons} / {course.totalLessons} {t("userCoursesClasses")}
+                                <span className="bg-(--second-color) text-(--main-color) px-2 py-1 rounded-full text-sm">{course.level}</span>
+                                <span className="bg-(--second-color) text-(--main-color) px-2 py-1 rounded-full text-sm">
+                                    {course.completedLessons} / {course.totalLessons} {t.userCoursesClasses}
                                 </span>
                             </div>
                             <div className="w-full bg-gray-600 h-3 rounded-full overflow-hidden">
@@ -189,7 +186,7 @@ function UserCourses() {
                                 ></div>
                             </div>
                             <p className="mt-2 text-sm">
-                                {progressPercent}% {t("userCoursesCompletedProgress") || t("statisticsCompleted")}
+                                {progressPercent}% {t.userCoursesCompletedProgress || t.statisticsCompleted}
                             </p>
                             {actionButton}
                         </div>

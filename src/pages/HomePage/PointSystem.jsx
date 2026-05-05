@@ -1,102 +1,120 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import translations from "../../utils/translations";
+import { FaBullseye, FaBrain, FaFire } from 'react-icons/fa';
 
 const PointSystem = () => {
     const { language } = useLanguage();
     const t = translations[language] || {};
     const dir = language === "ar" ? "rtl" : "ltr";
 
+    const pointCards = [
+        {
+            title: t.pointSystemLearningBasics || "Learning Basics",
+            icon: <FaBullseye />,
+            color: "blue",
+            items: [
+                { label: t.pointSystemEnterLesson || "Enter a Lesson", xp: "+5 XP" },
+                { label: t.pointSystemFinishLesson || "Finish a Lesson", xp: "+20 XP" },
+                { label: t.pointSystemCompleteTrack || "Complete Track", xp: "+100 XP", highlight: true }
+            ]
+        },
+        {
+            title: t.pointSystemTestingKnowledge || "Testing Knowledge",
+            icon: <FaBrain />,
+            color: "purple",
+            items: [
+                { label: t.pointSystemPassLessonQuiz || "Pass Lesson Quiz", xp: "+15 XP" },
+                { label: t.pointSystemPassFinalTrackQuiz || "Pass Final Track Quiz", xp: "+30 XP", highlight: true }
+            ]
+        },
+        {
+            title: t.pointSystemDailyStreaks || "Daily Streaks",
+            icon: <FaFire />,
+            color: "orange",
+            items: [
+                { label: t.pointSystemDailyLogin || "Daily Login", xp: "+5 XP" },
+                { label: t.pointSystem7DaysStreak || "7 Days Streak", xp: "+20 Bonus" },
+                { label: t.pointSystem30DaysStreak || "30 Days Streak", xp: "+100 Bonus", highlight: true }
+            ]
+        }
+    ];
+
+    const getColors = (color) => {
+        const colors = {
+            blue: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+            purple: "bg-purple-500/10 text-purple-500 border-purple-500/20",
+            orange: "bg-orange-500/10 text-orange-500 border-orange-500/20"
+        };
+        return colors[color];
+    };
+
     return (
-        <section className="py-20 bg-(--main-color) " dir={dir}>
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-(--text-color) mb-4">
-                        {t.pointSystemTitle || "Earn XP as You Learn! 🚀"}
+        <section dir={dir} className="py-24 bg-(--bg-color) relative overflow-hidden">
+            <div className="container mx-auto px-6">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="text-center max-w-3xl mx-auto mb-16"
+                >
+                    <h2 className="text-(--second-color) font-bold uppercase tracking-widest text-sm mb-3">
+                        {t.pointSystemGamification || "Gamified Learning"}
                     </h2>
-                    <p className="text-lg text-(--p-color) max-w-2xl mx-auto">
+                    <h1 className="text-4xl md:text-5xl font-bold text-(--text-color) mb-6">
+                        {t.pointSystemTitle || "Earn XP as You Learn!"}
+                    </h1>
+                    <p className="text-gray-500 text-lg">
                         {t.pointSystemSubtitle || "Our platform rewards your effort with points. Climb the ranks and build an unstoppable daily streak!"}
                     </p>
-                </div>
+                </motion.div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-                    <div className="bg-(--bg-color) rounded-2xl shadow-sm border border-gray-100 p-8 transform transition hover:-translate-y-2 hover:shadow-xl">
-                        <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 text-2xl">
-                            🎯
-                        </div>
-                        <h3 className="text-xl font-bold text-(--text-color) mb-4">
-                            {t.pointSystemLearningBasics || "Learning Basics"}
-                        </h3>
-                        <ul className="space-y-4">
-                            <li className="flex items-center justify-between border-b border-gray-50 pb-2">
-                                <span className="text-(--p-color)">{t.pointSystemEnterLesson || "Enter a Lesson"}</span>
-                                <span className="font-bold text-blue-600">+5 XP</span>
-                            </li>
-                            <li className="flex items-center justify-between border-b border-gray-50 pb-2">
-                                <span className="text-(--p-color)">{t.pointSystemFinishLesson || "Finish a Lesson"}</span>
-                                <span className="font-bold text-blue-600">+20 XP</span>
-                            </li>
-                            <li className="flex items-center justify-between">
-                                <span className="text-(--p-color) font-medium">{t.pointSystemCompleteTrack || "Complete Track"}</span>
-                                <span className="font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md">+100 XP</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div className="bg-(--bg-color) rounded-2xl shadow-sm border border-gray-100 p-8 transform transition hover:-translate-y-2 hover:shadow-xl">
-                        <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 text-2xl">
-                            🧠
-                        </div>
-                        <h3 className="text-xl font-bold text-(--text-color) mb-4">
-                            {t.pointSystemTestingKnowledge || "Testing Knowledge"}
-                        </h3>
-                        <ul className="space-y-4">
-                            <li className="flex items-center justify-between border-b border-gray-50 pb-2">
-                                <span className="text-(--p-color)">{t.pointSystemPassLessonQuiz || "Pass Lesson Quiz"}</span>
-                                <span className="font-bold text-purple-600">+15 XP</span>
-                            </li>
-                            <li className="flex items-center justify-between">
-                                <span className="text-(--p-color) font-medium">{t.pointSystemPassFinalTrackQuiz || "Pass Final Track Quiz"}</span>
-                                <span className="font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-md">+30 XP</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div className="bg-(--bg-color) rounded-2xl shadow-sm border border-orange-100 p-8 transform transition hover:-translate-y-2 hover:shadow-xl relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-50 rounded-full -mr-10 -mt-10 z-0"></div>
-                        <div className="w-14 h-14 bg-orange-100 text-orange-500 rounded-2xl flex items-center justify-center mb-6 text-2xl relative z-10">
-                            🔥
-                        </div>
-                        <h3 className="text-xl font-bold text-(--text-color) mb-4 relative z-10">
-                            {t.pointSystemDailyStreaks || "Daily Streaks"}
-                        </h3>
-                        <ul className="space-y-4 relative z-10">
-                            <li className="flex items-center justify-between border-b border-orange-50 pb-2">
-                                <span className="text-(--p-color)">{t.pointSystemDailyLogin || "Daily Login"}</span>
-                                <span className="font-bold text-orange-500">+5 XP</span>
-                            </li>
-                            <li className="flex items-center justify-between border-b border-orange-50 pb-2">
-                                <span className="text-(--p-color)">{t.pointSystem7DaysStreak || "7 Days Streak"}</span>
-                                <span className="font-bold text-orange-500">+20 Bonus</span>
-                            </li>
-                            <li className="flex items-center justify-between">
-                                <span className="text-(--p-color) font-bold">{t.pointSystem30DaysStreak || "30 Days Streak"}</span>
-                                <span className="font-bold text-white bg-gradient-to-r from-orange-400 to-red-500 px-3 py-1 rounded-full">+100 Bonus</span>
-                            </li>
-                        </ul>
-                    </div>
+                    {pointCards.map((card, idx) => (
+                        <motion.div
+                            key={idx}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="bg-(--main-color) rounded-[2.5rem] p-10 border border-white/5 shadow-xl hover:shadow-(--second-color)/5 transition-all duration-300"
+                        >
+                            <div className={`w-16 h-16 rounded-2xl ${getColors(card.color)} flex items-center justify-center text-3xl mb-8`}>
+                                {card.icon}
+                            </div>
+                            <h3 className="text-2xl font-bold text-(--text-color) mb-8">
+                                {card.title}
+                            </h3>
+                            <div className="space-y-6">
+                                {card.items.map((item, i) => (
+                                    <div key={i} className="flex items-center justify-between group">
+                                        <span className="text-gray-500 font-medium group-hover:text-(--text-color) transition-colors">
+                                            {item.label}
+                                        </span>
+                                        <span className={`font-bold px-3 py-1 rounded-full text-sm ${item.highlight ? 'bg-(--second-color) text-white' : 'text-(--second-color) bg-(--second-color)/10'}`}>
+                                            {item.xp}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
 
-                <div className="mt-12 text-center bg-blue-50 py-4 px-8 rounded-full inline-block mx-auto max-w-fit">
-                    <p className="text-blue-800 font-medium flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                        </svg>
-                        {t.pointSystemDailyCap || "Daily Cap: You can earn a maximum of 200 XP per day. Stay consistent!"}
-                    </p>
-                </div>
-
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                    className="mt-16 text-center"
+                >
+                    <div className="inline-flex items-center gap-3 bg-(--main-color) px-8 py-4 rounded-full border border-white/5 shadow-lg">
+                        <span className="w-2 h-2 rounded-full bg-(--second-color) animate-ping" />
+                        <p className="text-gray-500 font-medium">
+                            {t.pointSystemDailyCap || "Daily Cap: You can earn a maximum of 200 XP per day. Stay consistent!"}
+                        </p>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );

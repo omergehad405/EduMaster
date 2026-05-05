@@ -16,6 +16,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.5",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.38.0",
     "mammoth": "^1.11.0",
     "pdf-parse": "^2.4.5",
     "react": "^19.2.0",

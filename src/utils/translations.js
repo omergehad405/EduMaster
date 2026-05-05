@@ -53,7 +53,7 @@ const translations = {
     // Dashboard.jsx (40-43)
     dashboardWelcomeMessage: "Welcome back,",
     dashboardContinueLearning: "Continue Learning",
-    dashboardStatsTitle: "Your Stats",
+    userProfile: "user Profile",
     dashboardStartNewTrack: "Start a New Track",
 
     // --- Learn Feature Components ---
@@ -135,6 +135,30 @@ const translations = {
     signupVerificationSent: "Verification email sent. Please check your inbox!",
     signupPleaseVerify: "Please verify your email to complete registration.",
     signupCheckSpam: "If you don't see the email, check your spam/junk folder.",
+
+    // --- Profile.jsx ---
+    profileTitle: "My Profile",
+    profileSubtitle: "Manage your personal information and account settings",
+    profileFirstName: "First Name",
+    profileLastName: "Last Name",
+    profileBirthDate: "Birth Date",
+    profileGender: "Gender",
+    profilePhone: "Phone Number",
+    profileCountry: "Country",
+    profileUsername: "Username",
+    profileEmail: "Email",
+    profileSave: "Save Changes",
+    profileCancel: "Cancel",
+    profileEdit: "Edit",
+    profileChangeAvatar: "Change Avatar",
+    profileSuccessUpdate: "Profile updated successfully! 🎉",
+    profileErrorUpdate: "Failed to update profile. Please try again.",
+    profileMale: "Male",
+    profileFemale: "Female",
+    profileOther: "Other",
+    profileLanguage: "Language",
+    profileTheme: "Theme",
+    profileAppearance: "Appearance & Language",
 
     // Hero section
     heroTitle: 'Learn Smarter, Test Yourself, Master Any Topic.',
@@ -339,6 +363,14 @@ const translations = {
     coursesNoLessonsAvailable: "No lessons available",
 
     // @UserCourses.jsx (198-217)
+    userCoursesLoading: "Loading courses...",
+    userCoursesNoTrack: "You have not started any learning tracks yet.",
+    userCoursesMyTracks: "My Tracks",
+    userCoursesViewAll: "View All",
+    userCoursesTakeFinalQuiz: "Take Final Quiz",
+    userCoursesTakeFinalQuizNotice: "You must pass the final quiz to complete this track.",
+    userCoursesClasses: "Classes",
+    userCoursesCompletedProgress: "Completed",
     userCoursesViewTrack: "View Track",
     userCoursesViewCourse: "View Course",
     userCoursesResumeCourse: "Resume Course",
@@ -459,6 +491,19 @@ const translations = {
     testAIChatTitle: "AI Chat & Document Summary",
     testQuizGenTitle: "Quiz Generator",
     testTakeQuizTitle: "Take Your Quiz",
+
+    // Assessment
+    assessmentTitle: "Level Assessment",
+    assessmentDesc: "To adapt the platform to your skills, please take this 15-question mandatory test (5 Easy, 5 Medium, 5 Difficult).",
+    assessmentStart: "Start Test",
+    assessmentCancel: "Cancel",
+    assessmentComplete: "Assessment Complete!",
+    yourDeterminedLevel: "Your Determined Level:",
+    levelAdjustDesc: "All future quizzes and AI explanations for this session will be adapted to your level.",
+    assessmentContinue: "Continue to Dashboard",
+    levelEasy: "Easy",
+    levelMedium: "Medium",
+    levelHard: "Hard",
   },
 
   ar: {
@@ -513,7 +558,7 @@ const translations = {
     // Dashboard.jsx (40-43)
     dashboardWelcomeMessage: "مرحبًا بعودتك،",
     dashboardContinueLearning: "واصل التعلم",
-    dashboardStatsTitle: "إحصائياتك",
+    userProfile: "الملف الشخصي",  
     dashboardStartNewTrack: "ابدأ مسارًا جديدًا",
 
     // QuickActions.jsx (5-9)
@@ -561,6 +606,30 @@ const translations = {
     signupVerificationSent: "تم إرسال رسالة التفعيل. يرجى مراجعة البريد الوارد!",
     signupPleaseVerify: "يرجى تفعيل بريدك الإلكتروني لإكمال عملية التسجيل.",
     signupCheckSpam: "إذا لم تجد الرسالة، تحقق من مجلد الرسائل غير المرغوبة.",
+
+    // --- Profile.jsx ---
+    profileTitle: "ملفي الشخصي",
+    profileSubtitle: "إدارة معلوماتك الشخصية وإعدادات حسابك",
+    profileFirstName: "الاسم الأول",
+    profileLastName: "اسم العائلة",
+    profileBirthDate: "تاريخ الميلاد",
+    profileGender: "الجنس",
+    profilePhone: "رقم الهاتف",
+    profileCountry: "الدولة",
+    profileUsername: "اسم المستخدم",
+    profileEmail: "البريد الإلكتروني",
+    profileSave: "حفظ التغييرات",
+    profileCancel: "إلغاء",
+    profileEdit: "تعديل",
+    profileChangeAvatar: "تغيير الصورة",
+    profileSuccessUpdate: "تم تحديث الملف الشخصي بنجاح! 🎉",
+    profileErrorUpdate: "فشل في تحديث الملف الشخصي. يرجى المحاولة مرة أخرى.",
+    profileMale: "ذكر",
+    profileFemale: "أنثى",
+    profileOther: "أخرى",
+    profileLanguage: "اللغة",
+    profileTheme: "المظهر",
+    profileAppearance: "المظهر واللغة",
 
     // Hero section
     heroTitle: 'تعلم بذكاء، اختبر نفسك، أتقن أي موضوع.',
@@ -765,6 +834,14 @@ const translations = {
     coursesNoLessonsAvailable: "لا توجد دروس متاحة",
 
     // @UserCourses.jsx (198-217)
+    userCoursesLoading: "جاري تحميل الدورات...",
+    userCoursesNoTrack: "لم تبدأ أي مسارات تعليمية بعد.",
+    userCoursesMyTracks: "مساراتي",
+    userCoursesViewAll: "عرض الكل",
+    userCoursesTakeFinalQuiz: "حل الاختبار النهائي",
+    userCoursesTakeFinalQuizNotice: "يجب عليك اجتياز الاختبار النهائي لإكمال هذا المسار.",
+    userCoursesClasses: "دروس",
+    userCoursesCompletedProgress: "مكتمل",
     userCoursesViewTrack: "عرض المسار",
     userCoursesViewCourse: "عرض الدورة",
     userCoursesResumeCourse: "استكمال الدورة",
@@ -919,6 +996,19 @@ const translations = {
     trackVisualHighlights: "أبرز المعالم المرئية",
     trackEnrollNow: "سجل الآن",
     trackEnrolledSuccess: "لقد قمت بالتسجيل في هذا المسار!",
+
+    // Assessment
+    assessmentTitle: "تقييم المستوى",
+    assessmentDesc: "لتكييف المنصة مع مهاراتك، يرجى إجراء هذا الاختبار الإلزامي المكون من 15 سؤالًا (5 سهل، 5 متوسط، 5 صعب).",
+    assessmentStart: "ابدأ الاختبار",
+    assessmentCancel: "إلغاء",
+    assessmentComplete: "اكتمل التقييم!",
+    yourDeterminedLevel: "مستواك المحدد:",
+    levelAdjustDesc: "سيتم تكييف جميع الاختبارات المستقبلية وتفسيرات الذكاء الاصطناعي لهذه الجلسة مع مستواك.",
+    assessmentContinue: "المتابعة إلى لوحة التحكم",
+    levelEasy: "سهل",
+    levelMedium: "متوسط",
+    levelHard: "صعب",
   },
 };
 

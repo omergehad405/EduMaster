@@ -34,7 +34,6 @@ const QuizReviewPage = () => {
                 return;
             }
 
-            console.log('🔄 Fetching quiz:', quizId);
 
             if (!token) {
                 setError('Please login first');
@@ -49,7 +48,6 @@ const QuizReviewPage = () => {
                 });
 
                 const quizData = res.data;
-                console.log('✅ Backend quiz data:', quizData);
 
                 setCurrentQuiz({
                     fileName: quizData.fileName || quizData.title || 'Document Quiz',
@@ -116,7 +114,6 @@ const QuizReviewPage = () => {
                 };
             }
         } catch (e) {
-            console.log('No cached quiz data');
         }
         return null;
     };

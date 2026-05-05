@@ -56,12 +56,6 @@ const Quiz = () => {
   };
 
   const submitQuiz = async () => {
-    console.log('🚀 SUBMITTING QUIZ:', {
-      hasToken: !!token,
-      questionsCount: questions?.length,
-      quizId: quizId,
-      fileName
-    });
 
     if (!token || !questions || questions.length === 0 || !quizId) {
       setError(`Quiz not ready: ${!token ? 'No token' : !quizId ? 'No quizId' : 'No questions'}`);
@@ -106,10 +100,8 @@ const Quiz = () => {
           }))
         }));
       } catch (e) {
-        console.log('LocalStorage save failed');
       }
 
-      console.log('✅ Quiz submitted & SAVED:', response.data);
     } catch (err) {
       console.error('❌ Submit failed:', err);
 

@@ -19,6 +19,8 @@ export const QuizProvider = ({ children }) => {
 
     // In QuizContext.jsx - Add loaded state
     const [quizzesLoaded, setQuizzesLoaded] = useState(false);
+    const [userLevel, setUserLevel] = useState(null); // easy, medium, hard
+    const [showAssessment, setShowAssessment] = useState(false);
 
     const fetchMyQuizzes = async () => {
         if (!token || quizzesLoaded) return;  // ✅ Prevent duplicates
@@ -34,7 +36,7 @@ export const QuizProvider = ({ children }) => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
             const data = await res.json();
-            console.log('📋 Raw quizzes data:', data);
+
 
             if (data.status === 'success' && Array.isArray(data.quizzes)) {
                 setMyQuizzes(data.quizzes);
@@ -60,6 +62,8 @@ export const QuizProvider = ({ children }) => {
         setFileUrl(null);
         setFileContent(null);
         setFileName(null);
+        setUserLevel(null);
+        setShowAssessment(false);
     };
 
     return (
@@ -67,12 +71,14 @@ export const QuizProvider = ({ children }) => {
             sourceFile, setSourceFile,
             fileUrl, setFileUrl,
             fileContent, setFileContent,
-            fileName, setFileName,      // ✅ NEW
+            fileName, setFileName,
             generatedQuiz, setGeneratedQuiz,
             quizId, setQuizId,
             myQuizzes, fetchMyQuizzes,
             extractScore,
-            clearFile
+            clearFile,
+            userLevel, setUserLevel,
+            showAssessment, setShowAssessment
         }}>
             {children}
         </QuizContext.Provider>

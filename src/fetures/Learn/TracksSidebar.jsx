@@ -10,7 +10,7 @@ function TracksSidebar() {
     const dir = language === "ar" ? "rtl" : "ltr";
 
     return (
-        <div className='bg-(--main-color) flex items-center gap-5 w-full px-5' dir={dir}>
+        <div className=' pb-2 bg-(--main-color) flex items-center gap-5 w-full px-5' dir={dir}>
             {tracks.map((track) => (
                 <NavLink
                     to={`/tracks/${track._id}`}

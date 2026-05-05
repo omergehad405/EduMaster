@@ -6,19 +6,12 @@ import QuickActions from './QuickActions'
 import { useLocation } from 'react-router-dom'
 import translations from '../../utils/translations'
 
-function getLanguage() {
-    // Try to get language from localStorage, or fallback to browser, or default 'en'
-    return (
-        localStorage.getItem('lang') ||
-        navigator.language?.slice(0, 2) ||
-        'en'
-    )
-}
+import { useLanguage } from '../../hooks/useLanguage'
 
 function Dashboard() {
     const location = useLocation();
-    const lang = getLanguage();
-    const t = translations[lang] || translations['en'];
+    const { language } = useLanguage();
+    const t = translations[language] || translations['en'];
 
     useEffect(() => {
         window.scrollTo(0, 0);

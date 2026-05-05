@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useLanguage } from '../../hooks/useLanguage';
 import translations from '../../utils/translations';
+import { FaArrowRight, FaRocket } from 'react-icons/fa';
 
 function CTAsection() {
     const { language } = useLanguage();
@@ -9,44 +11,61 @@ function CTAsection() {
     const dir = language === 'ar' ? 'rtl' : 'ltr';
 
     return (
-        <section className="relative md:px-32 py-10 flex flex-col items-center bg-(--bg-color)" dir={dir}>
-            <span className="absolute top-6 right-14 text-yellow-300 text-3xl animate-pulse select-none pointer-events-none">✨</span>
-            <span className="absolute bottom-8 left-10 text-pink-400 text-2xl animate-bounce select-none pointer-events-none">★</span>
-            <div className="w-full max-w-3xl text-center flex flex-col items-center">
-                <h2 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-gray-800 drop-shadow">
-                    <span className="text-(--text-color)">
-                        {t.startLearning || "Start learning today"}
-                    </span>
-                    <br className="hidden md:block" />
-                    <span className="text-(--p-color) font-semibold block mt-2 text-xl md:text-2xl">
-                        {t.testYourself
-                            ? <>
-                                {t.testYourself} {language === "ar" ? "مثل المحترفين!" : "like a "}
-                                {language !== "ar" && <span className="text-(--text-color) font-bold px-1">pro</span>}
-                                {language !== "ar" && "!"}
-                                {language === "ar" && <span className="text-(--text-color) font-bold px-1">محترف</span>}!
-                            </>
-                            : <>and test yourself like a <span className="text-(--text-color) font-bold px-1">pro</span>!</>
-                        }
-                    </span>
-                </h2>
-                <p className="text-gray-500 max-w-xl mx-auto mb-10 text-lg md:text-xl font-medium">
-                    {t.ctaDescription || "Unlock interactive quizzes, personalized tracks, and gamified challenges designed to make you smarter, faster."}
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <Link
-                        to="/test"
-                        className="bg-(--second-color) hover:bg-(--text-color) text-(--text-color) hover:text-(--second-color) font-bold py-3 px-8 rounded-full text-lg shadow-lg transition-all duration-500"
+        <section dir={dir} className="py-24 bg-(--bg-color) relative overflow-hidden">
+            <div className="container mx-auto px-6 relative z-10">
+                <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="max-w-5xl mx-auto bg-gradient-to-br from-(--second-color) to-purple-600 rounded-[3rem] p-12 md:p-20 text-center text-white shadow-2xl relative overflow-hidden"
+                >
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                        <motion.div 
+                            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+                            transition={{ duration: 5, repeat: Infinity }}
+                            className="absolute -top-20 -left-20 w-64 h-64 bg-white/20 rounded-full blur-3xl"
+                        />
+                        <motion.div 
+                            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
+                            transition={{ duration: 7, repeat: Infinity }}
+                            className="absolute -bottom-20 -right-20 w-80 h-80 bg-black/20 rounded-full blur-3xl"
+                        />
+                    </div>
+
+                    <motion.div 
+                        initial={{ scale: 0 }}
+                        whileInView={{ scale: 1 }}
+                        viewport={{ once: true }}
+                        className="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl mb-8"
                     >
-                        {t.startLearning || "Get Started"}
-                    </Link>
-                    <Link
-                        to="/learn"
-                        className="bg-(--text-color) hover:bg-(--second-color) text-(--second-color) hover:text-(--text-color) font-bold py-3 px-8 rounded-full text-lg transition-all duration-500"
-                    >
-                        {t.ctaExploreTracks || "Explore Tracks"}
-                    </Link>
-                </div>
+                        <FaRocket className="text-3xl text-white" />
+                    </motion.div>
+
+                    <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight">
+                        {t.startLearningToday || "Start Your Learning Journey Today"}
+                    </h1>
+                    
+                    <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
+                        {t.ctaDescription || "Join thousands of students who are already learning smarter and faster with our AI-powered platform."}
+                    </p>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+                        <Link
+                            to="/register"
+                            className="group bg-white text-(--second-color) hover:bg-gray-100 font-bold py-4 px-10 rounded-full text-lg shadow-xl transition-all duration-300 flex items-center gap-2"
+                        >
+                            {t.ctaJoinNow || "Join for Free"}
+                            <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                        <Link
+                            to="/learn"
+                            className="bg-transparent border-2 border-white/50 hover:border-white text-white font-bold py-4 px-10 rounded-full text-lg transition-all duration-300"
+                        >
+                            {t.ctaExploreTracks || "View All Tracks"}
+                        </Link>
+                    </div>
+                </motion.div>
             </div>
         </section>
     );

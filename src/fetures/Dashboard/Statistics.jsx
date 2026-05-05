@@ -44,10 +44,10 @@ const Statistics = ({ t }) => {
                     {t.dashboardStatsTitle || "Your Stats"}
                 </h1>
                 <Link
-                    to="/statistcs"
+                    to="/profile"
                     className="bg-(--bg-color) hover:bg-(--second-color) text-(--text-color) hover:text-(--main-color) transition-all duration-300 rounded-full py-1 px-5 text-sm capitalize cursor-pointer"
                 >
-                    {t.startLearning || "Start Learning"}
+                    {t.userProfile || "Profile"}
                 </Link>
             </div>
 
@@ -75,13 +75,13 @@ const Statistics = ({ t }) => {
                     <div className="w-[140px] h-[140px] rounded-full overflow-hidden flex items-center justify-center relative bg-(--main-color) z-10">
                         <img
                             src={user.avatar ? `https://edumaster-backend-6xy5.onrender.com${user.avatar}` : "/userImage.jpg"}
-                            alt={`${user.username}'s avatar`}
+                            alt={`${user.firstName}'s avatar`}
                             className="w-full h-full object-cover rounded-full"
                         />
                     </div>
                 </div>
                 <h1 className="flex items-center justify-center gap-1 capitalize font-semibold mt-3 text-xl text-(--text-color)">
-                    {t.dashboardWelcomeMessage || "Welcome back,"} <span className="text-(--second-color) font-bold">{user.username}</span> <span>👋</span>
+                    {t.dashboardWelcomeMessage || "Welcome back,"} <span className="text-(--second-color) font-bold">{user.firstName}</span> <span>👋</span>
                 </h1>
             </div>
 

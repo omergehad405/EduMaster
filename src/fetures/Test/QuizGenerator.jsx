@@ -6,7 +6,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import translations from "../../utils/translations";
 
 const QuizGenerator = ({ setSelected }) => {
-    const { setGeneratedQuiz, setQuizId, sourceFile, fileName } = useContext(QuizContext);
+    const { setGeneratedQuiz, setQuizId, sourceFile, fileName, userLevel } = useContext(QuizContext);
     const { token } = useAuth();
 
     const [type, setType] = useState('mcq');
@@ -40,6 +40,7 @@ const QuizGenerator = ({ setSelected }) => {
         formData.append('type', type);
         formData.append('time', time);
         formData.append('count', count);
+        if (userLevel) formData.append('difficulty', userLevel);
 
         try {
             const response = await axios.post(

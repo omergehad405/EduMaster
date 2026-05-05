@@ -502,6 +502,7 @@ function Lesson() {
                 lessonId={lesson._id}
                 questions={lesson.quiz}
                 onComplete={handleQuizComplete}
+                onNext={nextLesson ? () => goToLesson(nextLesson) : null}
                 completed={quizCompleted}
                 t={t}
               />

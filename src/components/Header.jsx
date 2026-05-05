@@ -4,12 +4,10 @@ import { IoMenu } from "react-icons/io5";
 import { FaHome } from 'react-icons/fa'
 import { GiBookshelf } from "react-icons/gi";
 import { MdQuiz } from "react-icons/md";
-import { FaXmark } from 'react-icons/fa6';
+import { FaXmark, FaUser  } from 'react-icons/fa6';
 import { MdDashboardCustomize } from "react-icons/md";
 import { GiNotebook } from "react-icons/gi";
 import useAuth from '../hooks/useAuth';
-import ThemeBtn from './ThemeBtn';
-import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '../hooks/useLanguage';
 import translations from '../utils/translations';
 
@@ -18,85 +16,36 @@ function Header() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Always call hooks unconditionally:
     const { language } = useLanguage();
     const t = translations[language] || {};
     const dir = language === "ar" ? "rtl" : "ltr";
 
-    // Close sidebar when logging out
     const handleLogOut = () => {
         setSidebarOpen(false);
         logout();
         navigate("/");
     };
 
-    // Sidebar links with translation keys:
     const sidebarLinks = [
-        {
-            // Home
-            label: t.menuHome || 'Home',
-            to: '/',
-            icon: <FaHome />,
-            exact: true,
-            public: true
-        },
-        {
-            // Dashboard
-            label: t.menuDashboard || 'Dashboard',
-            to: '/dashboard',
-            icon: <MdDashboardCustomize />,
-            exact: false,
-            public: false
-        },
-        {
-            // View tracks (uses ctaExploreTracks)
-            label: t.ctaExploreTracks || "View tracks",
-            to: '/learn',
-            icon: <GiBookshelf />,
-            exact: false,
-            public: false
-        },
-        {
-            // My Courses (fallback)
-            label: t.menuMyTracks || t.menuMyCourses || 'My Courses',
-            to: '/courses',
-            icon: <GiNotebook />,
-            exact: false,
-            public: false
-        },
-        {
-            // Test your self
-            label: t.testYourself || t.menuMyQuizzes || 'Test your self',
-            to: '/test',
-            icon: <MdQuiz />,
-            exact: false,
-            public: false
-        },
-        {
-            // My Quizzes (NEW LINK)
-            label: t.menuMyQuizzes || t.myQuizzes || 'My Quizzes',
-            to: '/my-quizzes',
-            icon: <MdQuiz />,
-            exact: false,
-            public: false
-        }
+        { label: t.menuHome || 'Home', to: '/', icon: <FaHome />, exact: true, public: true },
+        { label: t.menuDashboard || 'Dashboard', to: '/dashboard', icon: <MdDashboardCustomize />, exact: false, public: false },
+        { label: t.ctaExploreTracks || "View tracks", to: '/learn', icon: <GiBookshelf />, exact: false, public: false },
+        { label: t.menuMyTracks || t.menuMyCourses || 'My Courses', to: '/courses', icon: <GiNotebook />, exact: false, public: false },
+        { label: t.testYourself || t.menuMyQuizzes || 'Test your self', to: '/test', icon: <MdQuiz />, exact: false, public: false },
+        { label: t.menuMyQuizzes || t.myQuizzes || 'My Quizzes', to: '/my-quizzes', icon: <MdQuiz />, exact: false, public: false }
     ];
 
-    // Helper to check if a link is active
     const isLinkActive = (link) => {
-        if (link.exact)
-            return location.pathname === link.to;
+        if (link.exact) return location.pathname === link.to;
         return location.pathname.startsWith(link.to);
     };
 
-    // Handler for sidebar link clicks
     const handleSidebarLinkClick = (link) => (e) => {
         setSidebarOpen(false);
         if (!user && !link.public && link.to !== "/") {
             e.preventDefault();
             navigate("/register");
         }
-        // Otherwise, normal navigation
     };
 
     return (
@@ -115,19 +64,18 @@ function Header() {
 
             {/* Desktop Header */}
             <div className='hidden md:flex items-center justify-between w-full'>
-                <div className='flex items-center gap-3 '>
-                    <Link to="/" className='capitalize font-bold text-2xl'>
-                        edu<span className='text-(--second-color)'>Master</span>
-                    </Link>
-                    <div className='flex items-center gap-3'>
-                        <ThemeBtn />
-                        <LanguageSwitcher />
-                    </div>
-                </div>
+                <Link to="/" className='capitalize font-bold text-2xl'>
+                    edu<span className='text-(--second-color)'>Master</span>
+                </Link>
                 <div className='flex items-center gap-5'>
                     {!user && (
                         <Link to="/register" className="bg-(--second-color) cursor-pointer text-(--text-color) px-8 py-2 rounded-full font-semibold shadow hover:brightness-105 transition disabled:opacity-50">
                             {t.menuSignUp || t.signUp || "Sign Up"}
+                        </Link>
+                    )}
+                    {user && (
+                        <Link to="/profile" className="text-2xl text-(--text-color) hover:text-(--second-color) transition-colors">
+                            <FaUser  />
                         </Link>
                     )}
                     <button className='cursor-pointer' onClick={() => setSidebarOpen(true)}>
@@ -141,7 +89,6 @@ function Header() {
                         <div>
                             <div className='flex items-center justify-center mb-4'>
                                 <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
-                                <img className={`hidden w-[50px]`} src='logo.jpg' alt='logo' />
                             </div>
                             <div className='flex flex-col gap-3 mt-5'>
                                 {sidebarLinks.map((link) => (
@@ -183,8 +130,11 @@ function Header() {
                 <div className='flex items-center justify-between w-full gap-3 '>
                     <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
                     <div className='flex items-center gap-3'>
-                        <ThemeBtn />
-                        <LanguageSwitcher />
+                        {user && (
+                            <Link to="/profile" className="text-2xl text-(--text-color) hover:text-(--second-color) transition-colors">
+                                <FaUser  />
+                            </Link>
+                        )}
                         <button className='cursor-pointer' onClick={() => setSidebarOpen(true)}>
                             <IoMenu className='text-2xl' />
                         </button>
@@ -197,7 +147,6 @@ function Header() {
                         <div>
                             <div className='flex items-center justify-center mb-4'>
                                 <Link to="/" className='capitalize font-bold text-2xl'>edu<span className='text-(--second-color)'>Master</span></Link>
-                                <img className={`hidden w-[50px]`} src='logo.jpg' alt='logo' />
                             </div>
                             <div className='flex flex-col gap-3 mt-5'>
                                 {sidebarLinks.map((link) => (
@@ -231,17 +180,9 @@ function Header() {
                         )}
                     </div>
                 </div>
-                {/* Opaque overlay for mobile */}
-                {sidebarOpen && (
-                    <div
-                        className="fixed inset-0 bg-black opacity-50 z-30"
-                        style={{ top: 0 }}
-                        onClick={() => setSidebarOpen(false)}
-                    ></div>
-                )}
             </div>
         </header>
     );
 }
 
-export default Header
+export default Header;

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 
 function getRandomQuestions(questions, num = 4) {
   const arr = [...questions];
-  // Fisher-Yates shuffle
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -10,25 +9,38 @@ function getRandomQuestions(questions, num = 4) {
   return arr.slice(0, num);
 }
 
-function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
+function LessonQuiz({ lessonId, questions, onComplete, onNext, completed = false, t }) {
   const numQuestions = Math.min(4, questions.length);
+
   const [selectedQuestions, setSelectedQuestions] = useState(() =>
     getRandomQuestions(questions, numQuestions)
   );
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  // `passed` is ONLY reset when the lessonId changes, not when questions refresh
+  const [passed, setPassed] = useState(false);
 
-  // When lesson changes, select new questions and reset state
+  // Full reset only when the lesson changes
   useEffect(() => {
     setSelectedQuestions(getRandomQuestions(questions, numQuestions));
     setAnswers({});
     setSubmitted(false);
     setCorrectCount(0);
-  }, [lessonId, questions]);
+    setPassed(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId]);
+
+  // When questions refresh (e.g. after fetchTrackById), resample ONLY if not already passed
+  useEffect(() => {
+    if (!passed && !completed) {
+      setSelectedQuestions(getRandomQuestions(questions, numQuestions));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [questions]);
 
   const handleSelect = (qIndex, option) => {
-    if (completed) return;
+    if (completed || submitted) return;
     setAnswers((prev) => ({ ...prev, [qIndex]: option }));
   };
 
@@ -41,7 +53,8 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
     setCorrectCount(correct);
     setSubmitted(true);
     if (correct === selectedQuestions.length) {
-      onComplete(); // unlock lesson
+      setPassed(true);
+      onComplete();
     }
   };
 
@@ -53,30 +66,29 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
     setCorrectCount(0);
   };
 
-  // Determine if all questions have an answer
-  const allAnswered = Object.keys(answers).length === selectedQuestions.length && selectedQuestions.length > 0;
+  const allAnswered =
+    Object.keys(answers).length === selectedQuestions.length &&
+    selectedQuestions.length > 0;
+
+  // The quiz is "done successfully" if it was just passed OR already completed
+  const isSuccess = passed || completed;
 
   return (
-    <div
-      className={`w-full bg-(--main-color) rounded-xl mb-8 shadow-lg`}
-    >
+    <div className="w-full bg-(--main-color) rounded-xl mb-8 shadow-lg">
+      {/* Header */}
       <div className="px-5 py-4 border-b bg-(--bg-color) flex items-center justify-between">
         <h2 className="text-lg font-semibold text-(--text-color)">
           {t.lessonQuizTitle || 'Lesson Quiz'}
         </h2>
-        <span
-          className={`text-xs px-2 py-1 rounded-full ${completed
-            ? 'bg-(--bg-color) text-(--p-color) border border-(--p-color)'
-            : 'bg-(--bg-color) text-(--p-color) border border-(--p-color)'
-            }`}
-        >
-          {completed
+        <span className="text-xs px-2 py-1 rounded-full bg-(--bg-color) text-(--p-color) border border-(--p-color)">
+          {isSuccess
             ? t.quizCompleted || 'Completed'
             : t.lessonQuizInProgress || 'In progress'}
         </span>
       </div>
 
       <div className="px-5 py-4">
+        {/* Questions */}
         {selectedQuestions.map((q, idx) => (
           <div key={idx} className="mb-4">
             <p className="text-sm font-medium text-(--text-color) mb-2">
@@ -95,14 +107,11 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
 
                 if (showResult) {
                   if (isCorrect) {
-                    stateClasses =
-                      'bg-green-700 border-green-500 text-green-200';
+                    stateClasses = 'bg-green-700 border-green-500 text-green-200';
                   } else if (isSelected && !isCorrect) {
-                    stateClasses =
-                      'bg-red-700 border-red-500 text-red-200';
+                    stateClasses = 'bg-red-700 border-red-500 text-red-200';
                   } else {
-                    stateClasses =
-                      'bg-(--bg-color) border-gray-700 text-gray-400';
+                    stateClasses = 'bg-(--bg-color) border-gray-700 text-gray-400';
                   }
                 } else if (isSelected) {
                   stateClasses =
@@ -113,12 +122,11 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
                   <button
                     key={opt}
                     type="button"
-                    disabled={completed || submitted}
+                    disabled={isSuccess || submitted}
                     onClick={() => handleSelect(idx, opt)}
-                    className={`${baseClasses} ${stateClasses} ${completed || submitted
-                      ? 'cursor-default'
-                      : 'cursor-pointer'
-                      }`}
+                    className={`${baseClasses} ${stateClasses} ${
+                      isSuccess || submitted ? 'cursor-default' : 'cursor-pointer'
+                    }`}
                   >
                     {opt}
                   </button>
@@ -128,16 +136,32 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
           </div>
         ))}
 
-        {!submitted && !completed && (
+        {/* ── Bottom action area ── */}
+        {/* 1. Quiz passed → persistent "Next Lesson" button */}
+        {isSuccess && onNext && (
+          <button
+            type="button"
+            onClick={onNext}
+            className="mt-2 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-95"
+          >
+            {t.lessonPageNextLesson || 'Next Lesson'} →
+          </button>
+        )}
+
+        {/* 2. Not yet submitted → Submit button */}
+        {!submitted && !isSuccess && (
           <button
             onClick={handleSubmit}
-            className={`mt-2 w-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium py-2 rounded-md transition-colors ${!allAnswered ? 'opacity-60 cursor-not-allowed' : ''}`}
+            className={`mt-2 w-full bg-green-600 hover:bg-green-500 text-white text-sm font-medium py-2 rounded-md transition-colors ${
+              !allAnswered ? 'opacity-60 cursor-not-allowed' : ''
+            }`}
             disabled={!allAnswered}
           >
             {t.lessonQuizSubmit || 'Submit quiz'}
           </button>
         )}
 
+        {/* ── Results feedback ── */}
         {(submitted || completed) && (
           <div className="mt-3 text-xs text-gray-200 space-y-2">
             <p>
@@ -147,10 +171,10 @@ function LessonQuiz({ lessonId, questions, onComplete, completed = false, t }) {
               <span className="font-semibold">{selectedQuestions.length}</span>{' '}
               {t.lessonQuizCorrectly || 'questions correctly.'}
             </p>
-            {correctCount === selectedQuestions.length ? (
+            {isSuccess ? (
               <p className="text-green-400 font-semibold">
                 {t.lessonQuizAllCorrect ||
-                  'All answers are correct. Next lesson is unlocked \u2714'}
+                  'All answers are correct. Next lesson is unlocked ✔'}
               </p>
             ) : (
               <>

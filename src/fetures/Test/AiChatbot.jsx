@@ -24,12 +24,12 @@ function TypingAnimation() {
 
 function AiChatbot() {
   const { token } = useAuth();
-  const { fileUrl, fileContent, fileName, sourceFile } = useContext(QuizContext);
+  const { fileUrl, fileContent, fileName, sourceFile, userLevel } = useContext(QuizContext);
   const { language } = useLanguage();
   const t = translations[language] || {};
   const dir = language === "ar" ? "rtl" : "ltr";
 
-  const [messages, setMessages] = useState([{ sender: 'ai', text: t.aiChatbotWelcome || "Hello! How can I assist you with your code today?" }]);
+  const [messages, setMessages] = useState([{ sender: 'ai', text: t.aiChatbotWelcome || "Hello! How can I assist you with your document today?" }]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const chatRef = useRef(null);
@@ -38,14 +38,6 @@ function AiChatbot() {
   const API_URL = import.meta.env.VITE_API_URL || "https://edumaster-backend-6xy5.onrender.com";
   const SITE_KEY = import.meta.env.VITE_SITE_KEY;
 
-  // ✅ DEBUG LOG
-  useEffect(() => {
-    console.log("🔍 DEBUG CONTEXT:", {
-      fileUrl,
-      fileName,
-      fileContent: fileContent?.substring(0, 200) + '...'
-    });
-  }, [fileUrl, fileName, fileContent]);
 
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -64,6 +56,7 @@ function AiChatbot() {
       const formData = new FormData();
       formData.append("message", userMessage);
       if (sourceFile) formData.append("file", sourceFile);
+      if (userLevel) formData.append("difficulty", userLevel);
 
       const headers = {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),

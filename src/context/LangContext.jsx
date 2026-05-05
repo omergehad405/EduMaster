@@ -12,9 +12,7 @@ export const LangProvider = ({ children }) => {
         try {
             const saved = localStorage.getItem("lang");
             if (saved) setLanguage(saved);
-        } catch (e) {
-            console.log(e)
-        }
+        } catch { }
         setIsReady(true);
     }, []);
 
@@ -22,7 +20,7 @@ export const LangProvider = ({ children }) => {
         setLanguage(lang);
         try {
             localStorage.setItem("lang", lang);
-        } catch (e) { console.log(e) }
+        } catch { }
     };
 
     if (!isReady) {
