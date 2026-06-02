@@ -17,6 +17,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import MyQuizzesPage from './pages/MyQuizzesPage'
 import QuizReviewPage from './pages/QuizReviewPage'
 import Profile from './pages/Profile'
+import GuidePage from './pages/GuidePage'
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           {/* user profile  */}
           <Route path="/profile" element={<Profile />} />
+          <Route path="/guide" element={<GuidePage />} />
         </Routes>
       </main>
       <Footer />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { IoMenu } from "react-icons/io5";
-import { FaHome } from 'react-icons/fa'
+import { FaHome, FaBookOpen } from 'react-icons/fa'
 import { GiBookshelf } from "react-icons/gi";
 import { MdQuiz } from "react-icons/md";
 import { FaXmark, FaUser  } from 'react-icons/fa6';
@@ -28,6 +28,7 @@ function Header() {
 
     const sidebarLinks = [
         { label: t.menuHome || 'Home', to: '/', icon: <FaHome />, exact: true, public: true },
+        { label: t.guideLink || 'How to Use', to: '/guide', icon: <FaBookOpen />, exact: false, public: true },
         { label: t.menuDashboard || 'Dashboard', to: '/dashboard', icon: <MdDashboardCustomize />, exact: false, public: false },
         { label: t.ctaExploreTracks || "View tracks", to: '/learn', icon: <GiBookshelf />, exact: false, public: false },
         { label: t.menuMyTracks || t.menuMyCourses || 'My Courses', to: '/courses', icon: <GiNotebook />, exact: false, public: false },

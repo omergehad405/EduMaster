@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaHome, FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from 'react-icons/fa'
+import { FaHome, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaBookOpen } from 'react-icons/fa'
 import { GiBookshelf } from "react-icons/gi";
 import { MdQuiz, MdDashboard } from "react-icons/md";
 import { useLanguage } from '../hooks/useLanguage';
@@ -45,6 +45,7 @@ function Footer() {
                     <nav className="flex flex-col gap-4">
                         {[
                             { to: "/", icon: <FaHome />, label: t.menuHome || 'Home' },
+                            { to: "/guide", icon: <FaBookOpen />, label: t.guideLink || 'How to Use' },
                             { to: "/dashboard", icon: <MdDashboard />, label: t.menuDashboard || 'Dashboard' },
                             { to: "/learn", icon: <GiBookshelf />, label: t.ctaExploreTracks || "View Tracks" },
                             { to: "/test", icon: <MdQuiz />, label: t.testYourself || "Test Yourself" }

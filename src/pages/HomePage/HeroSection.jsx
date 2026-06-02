@@ -2,11 +2,13 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useLanguage } from '../../hooks/useLanguage';
+import useAuth from '../../hooks/useAuth';
 import translations from "../../utils/translations"
-import { FaRobot, FaGraduationCap, FaSearch } from 'react-icons/fa'
+import { FaRobot, FaGraduationCap, FaSearch, FaPlayCircle } from 'react-icons/fa'
 import { IoSparkles } from "react-icons/io5";
 function HeroSection() {
     const { language } = useLanguage();
+    const { user } = useAuth();
     const t = translations[language] || {};
     const dir = language === "ar" ? "rtl" : "ltr";
 
@@ -140,16 +142,25 @@ function HeroSection() {
                         className="flex flex-wrap items-center justify-center gap-6 pt-10"
                     >
                         <Link
-                            to="/learn"
+                            to={user ? "/learn" : "/register"}
                             className="bg-(--second-color) text-white font-black py-5 px-12 rounded-2xl text-xl shadow-2xl shadow-(--second-color)/40 hover:bg-(--main-color) hover:text-(--text-color) active:scale-95 transition-all duration-300"
                         >
                             {t.startLearning || "Start Learning"}
                         </Link>
                         <Link
-                            to="/test"
+                            to={user ? "/test" : "/register"}
                             className="bg-(--main-color) text-(--second-color) border-2 border-(--second-color) font-black py-5 px-12 rounded-2xl text-xl shadow-xl hover:bg-(--second-color) hover:text-white transition-all duration-300"
                         >
                             {t.testYourself || "Test Yourself"}
+                        </Link>
+                        <Link
+                            to="/guide"
+                            className="flex items-center gap-2 text-(--text-color) font-bold text-lg hover:text-(--second-color) transition-colors duration-300 group"
+                        >
+                            <span className="w-12 h-12 rounded-full border-2 border-(--second-color)/50 flex items-center justify-center text-(--second-color) group-hover:bg-(--second-color)/10 transition-all duration-300">
+                                <FaPlayCircle />
+                            </span>
+                            {language === 'ar' ? 'شاهد الدليل' : 'Watch Guide'}
                         </Link>
                     </motion.div>
                 </motion.div>
